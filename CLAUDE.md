@@ -19,6 +19,8 @@ Never use playwright or any other library to test the localhost website.
 
 When creating a PR, always upload a screenshot of all the things that you did in the PR description. 
 
+The Screenshot should be in the folder `screenshots/pr-<pr-number>/<screenshot-name>.png`
+
 Always add the link to the issue in the PR description. 
 
 ## Commits
