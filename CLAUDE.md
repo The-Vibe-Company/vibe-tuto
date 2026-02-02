@@ -14,6 +14,9 @@ Never mark an issue as done, let the PR do it.
 
 Use `agent-browser` for testing the localhost website. 
 Never use playwright or any other library to test the localhost website. 
+Never use claude chrome mcp to test the localhost website. 
+
+ALWAYS USE THE BROWSER AUTOMATION TO TEST THE LOCALHOST WEBSITE. 
 
 ## PR Creation
 
