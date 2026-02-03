@@ -5,6 +5,7 @@ interface RecordingState {
   isRecording: boolean;
   startTime: number | null;
   steps: CapturedStep[];
+  audioData: string | null;
 }
 
 interface CapturedStep {
@@ -24,9 +25,44 @@ const state: RecordingState = {
   isRecording: false,
   startTime: null,
   steps: [],
+  audioData: null,
 };
 
-// Handle messages from popup and content scripts
+const OFFSCREEN_DOCUMENT_PATH = 'offscreen/offscreen.html';
+
+// Check if offscreen document exists
+async function hasOffscreenDocument(): Promise<boolean> {
+  const contexts = await chrome.runtime.getContexts({
+    contextTypes: [chrome.runtime.ContextType.OFFSCREEN_DOCUMENT],
+    documentUrls: [chrome.runtime.getURL(OFFSCREEN_DOCUMENT_PATH)],
+  });
+  return contexts.length > 0;
+}
+
+// Create offscreen document for audio recording
+async function setupOffscreenDocument(): Promise<void> {
+  if (await hasOffscreenDocument()) {
+    return;
+  }
+
+  await chrome.offscreen.createDocument({
+    url: OFFSCREEN_DOCUMENT_PATH,
+    reasons: [chrome.offscreen.Reason.USER_MEDIA],
+    justification: 'Recording audio from microphone for tutorial creation',
+  });
+
+  console.log('[Service Worker] Offscreen document created');
+}
+
+// Close offscreen document
+async function closeOffscreenDocument(): Promise<void> {
+  if (await hasOffscreenDocument()) {
+    await chrome.offscreen.closeDocument();
+    console.log('[Service Worker] Offscreen document closed');
+  }
+}
+
+// Handle messages from popup, content scripts, and offscreen document
 chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   console.log('[Service Worker] Message received:', message.type);
 
@@ -49,6 +85,17 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ success: true });
       return true;
 
+    case 'AUDIO_RECORDED':
+      state.audioData = message.data;
+      console.log('[Service Worker] Audio data received');
+      sendResponse({ success: true });
+      return true;
+
+    case 'AUDIO_ERROR':
+      console.error('[Service Worker] Audio error:', message.error);
+      sendResponse({ success: false });
+      return true;
+
     default:
       sendResponse({ error: 'Unknown message type' });
       return true;
@@ -59,8 +106,19 @@ async function handleStartRecording(): Promise<{ success: boolean }> {
   state.isRecording = true;
   state.startTime = Date.now();
   state.steps = [];
+  state.audioData = null;
 
-  // Notify all tabs to start capturing
+  // Setup offscreen document for audio recording
+  try {
+    await setupOffscreenDocument();
+    // Start audio recording
+    await chrome.runtime.sendMessage({ type: 'START_AUDIO' });
+    console.log('[Service Worker] Audio recording started');
+  } catch (error) {
+    console.error('[Service Worker] Failed to start audio:', error);
+  }
+
+  // Notify all tabs to start capturing clicks
   const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
   for (const tab of tabs) {
     if (tab.id) {
@@ -76,10 +134,28 @@ async function handleStartRecording(): Promise<{ success: boolean }> {
   return { success: true };
 }
 
-async function handleStopRecording(): Promise<{ success: boolean; steps: CapturedStep[] }> {
+async function handleStopRecording(): Promise<{
+  success: boolean;
+  steps: CapturedStep[];
+  audioData: string | null;
+}> {
   state.isRecording = false;
 
-  // Notify all tabs to stop capturing
+  // Stop audio recording
+  try {
+    await chrome.runtime.sendMessage({ type: 'STOP_AUDIO' });
+    console.log('[Service Worker] Audio recording stopped');
+
+    // Wait a bit for audio data to be processed
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
+    // Close offscreen document
+    await closeOffscreenDocument();
+  } catch (error) {
+    console.error('[Service Worker] Failed to stop audio:', error);
+  }
+
+  // Notify all tabs to stop capturing clicks
   const tabs = await chrome.tabs.query({});
   for (const tab of tabs) {
     if (tab.id) {
@@ -92,11 +168,14 @@ async function handleStopRecording(): Promise<{ success: boolean; steps: Capture
   }
 
   const steps = [...state.steps];
+  const audioData = state.audioData;
+
   state.steps = [];
   state.startTime = null;
+  state.audioData = null;
 
-  console.log('[Service Worker] Recording stopped, steps:', steps.length);
-  return { success: true, steps };
+  console.log('[Service Worker] Recording stopped, steps:', steps.length, 'audio:', !!audioData);
+  return { success: true, steps, audioData };
 }
 
 async function handleClickCaptured(
