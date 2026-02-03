@@ -119,9 +119,15 @@ export async function DELETE(
   }
 
   // Also delete associated files from storage
-  // Delete screenshots
-  const screenshotsPath = `${user.id}/${tutorialId}`;
-  await supabase.storage.from('screenshots').remove([screenshotsPath]);
+  // Delete screenshots - list files first, then delete them
+  const screenshotsFolder = `${user.id}/${tutorialId}`;
+  const { data: screenshotFiles } = await supabase.storage
+    .from('screenshots')
+    .list(screenshotsFolder);
+  if (screenshotFiles && screenshotFiles.length > 0) {
+    const filePaths = screenshotFiles.map((f) => `${screenshotsFolder}/${f.name}`);
+    await supabase.storage.from('screenshots').remove(filePaths);
+  }
 
   // Delete audio recording
   const audioPath = `${user.id}/${tutorialId}.webm`;
