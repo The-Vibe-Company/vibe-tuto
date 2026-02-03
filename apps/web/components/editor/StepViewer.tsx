@@ -51,12 +51,12 @@ export function StepViewer({ step, stepNumber, onTextChange }: StepViewerProps) 
               className="w-full"
             />
             {/* Click position overlay */}
-            {step.click_x != null && step.click_y != null && (
+            {step.click_x != null && step.click_y != null && step.viewport_width && step.viewport_height && (
               <div
                 className="absolute h-8 w-8 -translate-x-1/2 -translate-y-1/2 animate-pulse rounded-full border-4 border-red-500 bg-red-500/20"
                 style={{
-                  left: `${(step.click_x / 1920) * 100}%`,
-                  top: `${(step.click_y / 1080) * 100}%`,
+                  left: `${(step.click_x / step.viewport_width) * 100}%`,
+                  top: `${(step.click_y / step.viewport_height) * 100}%`,
                 }}
               />
             )}

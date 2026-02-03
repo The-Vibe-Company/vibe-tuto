@@ -20,6 +20,8 @@ interface PendingUpload {
     screenshot?: string;
     x?: number;
     y?: number;
+    viewportWidth?: number;
+    viewportHeight?: number;
     url: string;
   }>;
   audioData: string | null;
@@ -129,6 +131,8 @@ async function uploadRecording(
     screenshot?: string;
     x?: number;
     y?: number;
+    viewportWidth?: number;
+    viewportHeight?: number;
     url: string;
   }>,
   audioData: string | null
@@ -159,6 +163,8 @@ async function uploadRecording(
       screenshot: step.screenshot || '',
       x: step.x,
       y: step.y,
+      viewportWidth: step.viewportWidth,
+      viewportHeight: step.viewportHeight,
       url: step.url,
     })),
   };

@@ -63,6 +63,8 @@ export type Database = {
           click_y: number | null;
           click_type: string | null;
           url: string | null;
+          viewport_width: number | null;
+          viewport_height: number | null;
           created_at: string;
         };
         Insert: {
@@ -77,6 +79,8 @@ export type Database = {
           click_y?: number | null;
           click_type?: string | null;
           url?: string | null;
+          viewport_width?: number | null;
+          viewport_height?: number | null;
           created_at?: string;
         };
         Update: {
@@ -91,6 +95,8 @@ export type Database = {
           click_y?: number | null;
           click_type?: string | null;
           url?: string | null;
+          viewport_width?: number | null;
+          viewport_height?: number | null;
           created_at?: string;
         };
         Relationships: [

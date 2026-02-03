@@ -14,6 +14,8 @@ interface CapturedStep {
   screenshot?: string;
   x?: number;
   y?: number;
+  viewportWidth?: number;
+  viewportHeight?: number;
   url: string;
   elementInfo?: {
     tag: string;

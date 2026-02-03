@@ -6,6 +6,8 @@ interface ClickEventData {
   type: 'click';
   x: number;
   y: number;
+  viewportWidth: number;
+  viewportHeight: number;
   url: string;
   elementInfo: {
     tag: string;
@@ -35,6 +37,8 @@ function captureClickEvent(event: MouseEvent): void {
     type: 'click',
     x: event.clientX,
     y: event.clientY,
+    viewportWidth: window.innerWidth,
+    viewportHeight: window.innerHeight,
     url: window.location.href,
     elementInfo: {
       tag: target.tagName,
