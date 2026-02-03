@@ -4,14 +4,16 @@ import { useState, useCallback } from 'react';
 import { EditorHeader } from './EditorHeader';
 import { StepSidebar } from './StepSidebar';
 import { StepViewer } from './StepViewer';
+import { AudioPlayer } from './AudioPlayer';
 import type { Tutorial, StepWithSignedUrl } from '@/lib/types/editor';
 
 interface EditorClientProps {
   initialTutorial: Tutorial;
   initialSteps: StepWithSignedUrl[];
+  audioUrl: string | null;
 }
 
-export function EditorClient({ initialTutorial, initialSteps }: EditorClientProps) {
+export function EditorClient({ initialTutorial, initialSteps, audioUrl }: EditorClientProps) {
   const [steps, setSteps] = useState(initialSteps);
   const [selectedStepId, setSelectedStepId] = useState<string | null>(
     initialSteps[0]?.id ?? null
@@ -89,6 +91,10 @@ export function EditorClient({ initialTutorial, initialSteps }: EditorClientProp
         hasChanges={hasChanges}
         onSave={handleSave}
       />
+
+      <div className="border-b bg-white px-4 py-3">
+        <AudioPlayer audioUrl={audioUrl} />
+      </div>
 
       <div className="flex flex-1 overflow-hidden">
         <StepSidebar

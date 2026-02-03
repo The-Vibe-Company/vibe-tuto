@@ -69,10 +69,17 @@ export default async function EditorPage({ params }: EditorPageProps) {
     })
   );
 
+  // 6. Generate signed URL for audio
+  const audioPath = `${tutorial.user_id}/${tutorial.id}.webm`;
+  const { data: audioSignedUrl } = await supabase.storage
+    .from('recordings')
+    .createSignedUrl(audioPath, 3600); // 1 hour
+
   return (
     <EditorClient
       initialTutorial={tutorial}
       initialSteps={stepsWithSignedUrls}
+      audioUrl={audioSignedUrl?.signedUrl || null}
     />
   );
 }
