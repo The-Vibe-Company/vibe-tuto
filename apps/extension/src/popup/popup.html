@@ -10,30 +10,47 @@
   <div class="container">
     <header class="header">
       <h1 class="logo">Vibe Tuto</h1>
+      <p id="user-email" class="user-email hidden"></p>
     </header>
 
     <main class="main">
       <div id="not-connected" class="state">
+        <div class="state-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+            <circle cx="12" cy="7" r="4"></circle>
+          </svg>
+        </div>
         <p class="message">Connectez-vous pour commencer</p>
         <button id="login-btn" class="btn btn-primary">Se connecter</button>
       </div>
 
       <div id="idle" class="state hidden">
-        <p class="message">Prêt à enregistrer</p>
-        <button id="start-btn" class="btn btn-primary">
-          <span class="icon">●</span>
+        <div class="state-icon idle-icon">
+          <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
+          </svg>
+        </div>
+        <p class="message">Prêt à enregistrer votre tutoriel</p>
+        <button id="start-btn" class="btn btn-primary btn-record">
+          <span class="record-dot"></span>
           Démarrer l'enregistrement
         </button>
       </div>
 
       <div id="recording" class="state hidden">
-        <div class="recording-indicator">
-          <span class="pulse"></span>
-          <span>Enregistrement en cours...</span>
+        <div class="recording-status">
+          <div class="recording-indicator">
+            <span class="pulse"></span>
+            <span>Enregistrement</span>
+          </div>
+          <div id="timer" class="timer">00:00</div>
         </div>
+        <p class="message recording-message">Cliquez sur les éléments à capturer</p>
         <button id="stop-btn" class="btn btn-danger">
-          <span class="icon">■</span>
-          Arrêter
+          <span class="stop-icon"></span>
+          Arrêter l'enregistrement
         </button>
       </div>
     </main>
