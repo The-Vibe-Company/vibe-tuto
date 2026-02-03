@@ -128,6 +128,8 @@ async function handleStartRecording(): Promise<{ success: boolean }> {
   // Setup offscreen document for audio recording (optional - continue if fails)
   try {
     await setupOffscreenDocument();
+    // Wait for offscreen document to be ready (it needs time to load and execute)
+    await new Promise((resolve) => setTimeout(resolve, 200));
     // Start audio recording
     await chrome.runtime.sendMessage({ type: 'START_AUDIO' });
     console.log('[Service Worker] Audio recording started');

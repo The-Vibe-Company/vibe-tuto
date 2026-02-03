@@ -55,6 +55,38 @@ function captureClickEvent(event: MouseEvent): void {
   });
 }
 
+// Handle microphone permission request via iframe
+function requestMicrophonePermission(sendResponse: (response: { success: boolean }) => void): void {
+  const iframe = document.createElement('iframe');
+  iframe.style.cssText = 'display:none;width:0;height:0;border:none;position:absolute;';
+  iframe.setAttribute('allow', 'microphone');
+  iframe.src = chrome.runtime.getURL('permission-frame/permission-frame.html');
+
+  const onMessage = (event: MessageEvent): void => {
+    // Only accept messages from our iframe
+    if (event.source !== iframe.contentWindow) return;
+
+    if (event.data.type === 'PERMISSION_GRANTED') {
+      console.log('[Content] Microphone permission granted via iframe');
+      chrome.runtime.sendMessage({ type: 'MICROPHONE_PERMISSION_GRANTED' });
+      cleanup();
+    } else if (event.data.type === 'PERMISSION_DENIED') {
+      console.log('[Content] Microphone permission denied:', event.data.error);
+      chrome.runtime.sendMessage({ type: 'MICROPHONE_PERMISSION_DENIED', error: event.data.error });
+      cleanup();
+    }
+  };
+
+  const cleanup = (): void => {
+    window.removeEventListener('message', onMessage);
+    iframe.remove();
+  };
+
+  window.addEventListener('message', onMessage);
+  document.body.appendChild(iframe);
+  sendResponse({ success: true });
+}
+
 // Listen for messages from service worker
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'START_CAPTURE') {
@@ -74,6 +106,11 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     isRecording = false;
     document.removeEventListener('click', captureClickEvent, true);
     sendResponse({ success: true });
+  }
+
+  if (message.type === 'REQUEST_MICROPHONE_PERMISSION') {
+    requestMicrophonePermission(sendResponse);
+    return true; // Keep channel open for async response
   }
 
   return true;

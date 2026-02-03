@@ -109,8 +109,77 @@ async function getCurrentState(): Promise<{
   return { state: 'idle', email: auth.email };
 }
 
+async function checkMicrophonePermission(): Promise<'granted' | 'denied' | 'prompt'> {
+  try {
+    const result = await navigator.permissions.query({ name: 'microphone' as PermissionName });
+    return result.state;
+  } catch (error) {
+    // If permissions API fails, assume we need to prompt
+    console.log('[Popup] Permissions API not available:', error);
+    return 'prompt';
+  }
+}
+
+async function requestMicrophonePermissionViaIframe(): Promise<boolean> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  if (!tab?.id || !tab.url || tab.url.startsWith('chrome://')) {
+    console.log('[Popup] Cannot request permission on this tab');
+    return false;
+  }
+
+  return new Promise((resolve) => {
+    // Add listener BEFORE sending message to avoid race condition
+    const listener = (msg: { type: string; error?: string }): void => {
+      if (msg.type === 'MICROPHONE_PERMISSION_GRANTED') {
+        chrome.runtime.onMessage.removeListener(listener);
+        resolve(true);
+      } else if (msg.type === 'MICROPHONE_PERMISSION_DENIED') {
+        chrome.runtime.onMessage.removeListener(listener);
+        resolve(false);
+      }
+    };
+    chrome.runtime.onMessage.addListener(listener);
+
+    // Send message to content script to inject iframe
+    chrome.tabs.sendMessage(tab.id!, { type: 'REQUEST_MICROPHONE_PERMISSION' }).catch((error) => {
+      console.log('[Popup] Failed to send message to content script:', error);
+      chrome.runtime.onMessage.removeListener(listener);
+      resolve(false);
+    });
+
+    // Timeout after 60s (user might take time to click allow)
+    setTimeout(() => {
+      chrome.runtime.onMessage.removeListener(listener);
+      resolve(false);
+    }, 60000);
+  });
+}
+
 async function startRecording(): Promise<void> {
   try {
+    // Check microphone permission status
+    const permissionState = await checkMicrophonePermission();
+    console.log('[Popup] Microphone permission state:', permissionState);
+
+    if (permissionState === 'denied') {
+      showError('Permission micro refusée. Allez dans les paramètres Chrome pour l\'autoriser.');
+      showState('error');
+      return;
+    }
+
+    if (permissionState === 'prompt') {
+      // Request permission via iframe in content script
+      console.log('[Popup] Requesting permission via iframe...');
+      const granted = await requestMicrophonePermissionViaIframe();
+      if (!granted) {
+        showError('Permission micro refusée ou timeout.');
+        showState('error');
+        return;
+      }
+      console.log('[Popup] Permission granted via iframe');
+    }
+
+    // Permission granted - start recording
     const startTime = Date.now();
     await chrome.runtime.sendMessage({ type: 'START_RECORDING' });
     await chrome.storage.local.set({

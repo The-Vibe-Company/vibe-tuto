@@ -18,6 +18,7 @@ const entryPoints = [
   { in: 'src/content/content.ts', out: 'content/content' },
   { in: 'src/background/service-worker.ts', out: 'background/service-worker' },
   { in: 'src/offscreen/offscreen.ts', out: 'offscreen/offscreen' },
+  { in: 'src/permission-frame/permission-frame.ts', out: 'permission-frame/permission-frame' },
 ];
 
 // Build configuration
@@ -65,6 +66,16 @@ function copyStaticFiles() {
   fs.copyFileSync(
     path.join(srcDir, 'offscreen', 'offscreen.html'),
     path.join(offscreenDir, 'offscreen.html')
+  );
+
+  // Copy permission-frame files
+  const permissionFrameDir = path.join(distDir, 'permission-frame');
+  if (!fs.existsSync(permissionFrameDir)) {
+    fs.mkdirSync(permissionFrameDir, { recursive: true });
+  }
+  fs.copyFileSync(
+    path.join(srcDir, 'permission-frame', 'permission-frame.html'),
+    path.join(permissionFrameDir, 'permission-frame.html')
   );
 
   // Copy icons
