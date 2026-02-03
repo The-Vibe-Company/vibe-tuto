@@ -1,13 +1,19 @@
 // Popup state management
 
-type PopupState = 'not-connected' | 'idle' | 'recording';
+type PopupState = 'not-connected' | 'idle' | 'recording' | 'uploading' | 'success' | 'error';
 
 const APP_URL = 'http://localhost:3000';
+
+interface UploadResult {
+  tutorialId: string;
+  status: string;
+  editorUrl: string;
+}
 
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 
 function showState(state: PopupState): void {
-  const states: PopupState[] = ['not-connected', 'idle', 'recording'];
+  const states: PopupState[] = ['not-connected', 'idle', 'recording', 'uploading', 'success', 'error'];
 
   states.forEach((s) => {
     const element = document.getElementById(s);
@@ -102,17 +108,122 @@ async function startRecording(): Promise<void> {
   }
 }
 
+async function uploadRecording(
+  steps: Array<{
+    timestamp: number;
+    type: 'click' | 'navigation';
+    screenshot?: string;
+    x?: number;
+    y?: number;
+    url: string;
+  }>,
+  audioData: string | null
+): Promise<UploadResult> {
+  const { authToken } = await chrome.storage.local.get(['authToken']);
+
+  if (!authToken) {
+    throw new Error('Not authenticated');
+  }
+
+  const formData = new FormData();
+
+  // Add audio if available
+  if (audioData) {
+    // Convert base64 to blob
+    const audioBlob = base64ToBlob(audioData, 'audio/webm');
+    formData.append('audio', audioBlob, 'recording.webm');
+  }
+
+  // Add metadata
+  const metadata = {
+    title: `Tutoriel du ${new Date().toLocaleDateString('fr-FR')}`,
+    duration: steps.length > 0 ? steps[steps.length - 1].timestamp : 0,
+    startedAt: new Date().toISOString(),
+    steps: steps.map((step, index) => ({
+      timestamp: step.timestamp,
+      type: step.type,
+      screenshot: step.screenshot || '',
+      x: step.x,
+      y: step.y,
+      url: step.url,
+    })),
+  };
+
+  formData.append('metadata', JSON.stringify(metadata));
+
+  const response = await fetch(`${APP_URL}/api/upload`, {
+    method: 'POST',
+    body: formData,
+    credentials: 'include',
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.error || 'Upload failed');
+  }
+
+  return response.json();
+}
+
+function base64ToBlob(base64: string, mimeType: string): Blob {
+  // Handle data URL format
+  const base64Data = base64.includes(',') ? base64.split(',')[1] : base64;
+  const byteCharacters = atob(base64Data);
+  const byteNumbers = new Array(byteCharacters.length);
+
+  for (let i = 0; i < byteCharacters.length; i++) {
+    byteNumbers[i] = byteCharacters.charCodeAt(i);
+  }
+
+  const byteArray = new Uint8Array(byteNumbers);
+  return new Blob([byteArray], { type: mimeType });
+}
+
+function showSuccessLink(editorUrl: string): void {
+  const linkElement = document.getElementById('editor-link') as HTMLAnchorElement;
+  if (linkElement) {
+    linkElement.href = `${APP_URL}${editorUrl}`;
+    linkElement.onclick = (e) => {
+      e.preventDefault();
+      chrome.tabs.create({ url: `${APP_URL}${editorUrl}` });
+    };
+  }
+}
+
+function showError(message: string): void {
+  const errorElement = document.getElementById('error-message');
+  if (errorElement) {
+    errorElement.textContent = message;
+  }
+}
+
 async function stopRecording(): Promise<void> {
   try {
-    await chrome.runtime.sendMessage({ type: 'STOP_RECORDING' });
+    stopTimer();
+    showState('uploading');
+
+    const response = await chrome.runtime.sendMessage({ type: 'STOP_RECORDING' });
+
     await chrome.storage.local.set({
       isRecording: false,
       recordingStartTime: null,
     });
-    stopTimer();
-    showState('idle');
+
+    if (!response.success || !response.steps || response.steps.length === 0) {
+      showError('Aucune étape capturée');
+      showState('error');
+      return;
+    }
+
+    // Upload to API
+    const result = await uploadRecording(response.steps, response.audioData);
+
+    showSuccessLink(result.editorUrl);
+    showState('success');
   } catch (error) {
     console.error('Failed to stop recording:', error);
+    showError(error instanceof Error ? error.message : 'Une erreur est survenue');
+    showState('error');
   }
 }
 
@@ -122,6 +233,10 @@ function openDashboard(): void {
 
 function openLogin(): void {
   chrome.tabs.create({ url: `${APP_URL}/login` });
+}
+
+function backToIdle(): void {
+  showState('idle');
 }
 
 // Initialize popup
@@ -144,6 +259,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     openDashboard();
   });
+  document.getElementById('new-recording-btn')?.addEventListener('click', backToIdle);
+  document.getElementById('retry-btn')?.addEventListener('click', backToIdle);
 });
 
 // Clean up timer when popup closes

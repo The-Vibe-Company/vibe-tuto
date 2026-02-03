@@ -240,3 +240,47 @@ body {
 .link:hover {
   color: #1a1a2e;
 }
+
+/* Spinner */
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid #e5e7eb;
+  border-top-color: #1a1a2e;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Success icon */
+.success-icon {
+  color: #22c55e;
+}
+
+/* Error icon */
+.error-icon {
+  color: #ef4444;
+}
+
+.error-message {
+  color: #ef4444;
+}
+
+/* Secondary button */
+.btn-secondary {
+  background: transparent;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+  box-shadow: none;
+  margin-top: 8px;
+}
+
+.btn-secondary:hover {
+  background: #f9fafb;
+  color: #1a1a2e;
+}
