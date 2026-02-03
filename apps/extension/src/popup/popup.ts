@@ -159,7 +159,8 @@ async function uploadRecording(
 
   if (!response.ok) {
     const error = await response.json();
-    throw new Error(error.error || 'Upload failed');
+    console.error('[Popup] Upload error details:', error);
+    throw new Error(error.details || error.error || 'Upload failed');
   }
 
   return response.json();

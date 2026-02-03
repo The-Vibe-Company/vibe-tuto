@@ -84,8 +84,13 @@ export async function POST(request: Request) {
 
     if (tutorialError || !tutorial) {
       console.error('Failed to create tutorial:', tutorialError);
+      console.error('User ID used:', user.id);
       return NextResponse.json(
-        { error: 'Failed to create tutorial' },
+        {
+          error: 'Failed to create tutorial',
+          details: tutorialError?.message || 'Unknown error',
+          code: tutorialError?.code,
+        },
         { status: 500 }
       );
     }
