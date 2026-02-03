@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vibe Tuto</title>
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <h1 class="logo">Vibe Tuto</h1>
+    </header>
+
+    <main class="main">
+      <div id="not-connected" class="state">
+        <p class="message">Connectez-vous pour commencer</p>
+        <button id="login-btn" class="btn btn-primary">Se connecter</button>
+      </div>
+
+      <div id="idle" class="state hidden">
+        <p class="message">Prêt à enregistrer</p>
+        <button id="start-btn" class="btn btn-primary">
+          <span class="icon">●</span>
+          Démarrer l'enregistrement
+        </button>
+      </div>
+
+      <div id="recording" class="state hidden">
+        <div class="recording-indicator">
+          <span class="pulse"></span>
+          <span>Enregistrement en cours...</span>
+        </div>
+        <button id="stop-btn" class="btn btn-danger">
+          <span class="icon">■</span>
+          Arrêter
+        </button>
+      </div>
+    </main>
+
+    <footer class="footer">
+      <a href="#" id="dashboard-link" class="link">Ouvrir le dashboard</a>
+    </footer>
+  </div>
+
+  <script src="popup.js" type="module"></script>
+</body>
+</html>
