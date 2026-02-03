@@ -1,70 +1,95 @@
 'use client';
 
 import { useState } from 'react';
-import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { createClient } from '@/lib/supabase/client';
 
-export default function LoginPage() {
-  const router = useRouter();
+export default function SignupPage() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
 
-  const syncToExtension = (userEmail: string, accessToken: string) => {
-    // Send auth data to extension via postMessage
-    window.postMessage(
-      { type: 'VIBE_TUTO_AUTH', authToken: accessToken, userEmail },
-      window.location.origin
-    );
-  };
-
-  const handleLogin = async (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
+
+    // Validate passwords match
+    if (password !== confirmPassword) {
+      setError('Les mots de passe ne correspondent pas');
+      return;
+    }
+
+    // Validate password strength
+    if (password.length < 6) {
+      setError('Le mot de passe doit contenir au moins 6 caractères');
+      return;
+    }
+
     setLoading(true);
 
     try {
       const supabase = createClient();
-      const { data, error } = await supabase.auth.signInWithPassword({
+      const { error } = await supabase.auth.signUp({
         email,
         password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth/callback`,
+        },
       });
 
       if (error) {
-        if (error.message.includes('Invalid login credentials')) {
-          setError('Email ou mot de passe incorrect');
-        } else if (error.message.includes('Email not confirmed')) {
-          setError('Veuillez confirmer votre email avant de vous connecter');
+        if (error.message.includes('already registered')) {
+          setError('Cet email est déjà utilisé');
         } else {
           setError(error.message);
         }
         return;
       }
 
-      if (data.session) {
-        // Sync with extension
-        syncToExtension(data.user.email || email, data.session.access_token);
-
-        // Redirect to dashboard
-        router.push('/dashboard');
-      }
+      setSuccess(true);
     } catch (err) {
       setError('Une erreur est survenue. Veuillez réessayer.');
-      console.error('Login error:', err);
+      console.error('Signup error:', err);
     } finally {
       setLoading(false);
     }
   };
+
+  if (success) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
+        <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-xl text-center">
+          <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-8 h-8 text-green-600">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+            </svg>
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900">Vérifiez votre email</h2>
+          <p className="text-gray-600">
+            Un email de confirmation a été envoyé à <strong>{email}</strong>.
+            Cliquez sur le lien pour activer votre compte.
+          </p>
+          <Link
+            href="/login"
+            className="inline-block mt-4 text-indigo-600 hover:text-indigo-500 font-medium"
+          >
+            Retour à la connexion
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-xl">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">Vibe Tuto</h1>
-          <h2 className="mt-2 text-lg text-gray-600">Connexion</h2>
+          <h2 className="mt-2 text-lg text-gray-600">Créer un compte</h2>
         </div>
 
         {error && (
@@ -73,7 +98,7 @@ export default function LoginPage() {
           </div>
         )}
 
-        <form className="mt-8 space-y-6" onSubmit={handleLogin}>
+        <form className="mt-8 space-y-6" onSubmit={handleSignup}>
           <div className="space-y-4">
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -101,7 +126,7 @@ export default function LoginPage() {
                   id="password"
                   name="password"
                   type={showPassword ? 'text' : 'password'}
-                  autoComplete="current-password"
+                  autoComplete="new-password"
                   required
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
@@ -125,6 +150,24 @@ export default function LoginPage() {
                   )}
                 </button>
               </div>
+              <p className="mt-1 text-xs text-gray-500">Minimum 6 caractères</p>
+            </div>
+
+            <div>
+              <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
+                Confirmer le mot de passe
+              </label>
+              <input
+                id="confirmPassword"
+                name="confirmPassword"
+                type={showPassword ? 'text' : 'password'}
+                autoComplete="new-password"
+                required
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
+                placeholder="••••••••"
+              />
             </div>
           </div>
 
@@ -139,15 +182,15 @@ export default function LoginPage() {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              'Se connecter'
+              "S'inscrire"
             )}
           </button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-gray-600">Pas encore de compte ?</span>{' '}
-          <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-            S'inscrire
+          <span className="text-gray-600">Déjà un compte ?</span>{' '}
+          <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
+            Se connecter
           </Link>
         </div>
       </div>
