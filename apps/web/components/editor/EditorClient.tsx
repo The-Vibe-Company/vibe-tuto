@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { WYSIWYGEditor } from './WYSIWYGEditor';
+import { FilmstripEditor, type NewStepType } from './FilmstripEditor';
 import { PreviewOverlay } from './PreviewOverlay';
 import type { Tutorial, StepWithSignedUrl, Annotation } from '@/lib/types/editor';
 
@@ -216,6 +216,71 @@ export function EditorClient({ initialTutorial, initialSteps }: EditorClientProp
     }
   }, [steps, selectedStepId]);
 
+  // Handle adding a new step
+  const handleAddStep = useCallback(async (type: NewStepType, afterStepId?: string) => {
+    // Create optimistic step
+    const tempId = `temp-${Date.now()}`;
+    const afterIndex = afterStepId ? steps.findIndex((s) => s.id === afterStepId) : steps.length - 1;
+
+    const newStep: StepWithSignedUrl = {
+      id: tempId,
+      tutorial_id: initialTutorial.id,
+      order_index: afterIndex + 1,
+      screenshot_url: null,
+      signedScreenshotUrl: null,
+      text_content: type === 'heading' ? '<strong>Nouvelle section</strong>' : type === 'divider' ? '' : 'Nouvelle étape texte',
+      click_x: null,
+      click_y: null,
+      viewport_width: null,
+      viewport_height: null,
+      click_type: type,
+      url: null,
+      timestamp_start: null,
+      timestamp_end: null,
+      annotations: null,
+      element_info: null,
+      created_at: new Date().toISOString(),
+    };
+
+    // Insert after the specified step
+    const newSteps = [...steps];
+    newSteps.splice(afterIndex + 1, 0, newStep);
+    setSteps(newSteps);
+    setSelectedStepId(tempId);
+
+    try {
+      // Create the step in the database
+      const response = await fetch(`/api/steps`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          tutorial_id: initialTutorial.id,
+          order_index: afterIndex + 1,
+          click_type: type,
+          text_content: newStep.text_content,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to create step');
+      }
+
+      const data = await response.json();
+
+      // Update the step with the real ID
+      setSteps((prev) =>
+        prev.map((s) =>
+          s.id === tempId ? { ...s, id: data.step.id } : s
+        )
+      );
+      setSelectedStepId(data.step.id);
+    } catch (error) {
+      console.error('Failed to add step:', error);
+      // Rollback
+      setSteps(steps);
+    }
+  }, [steps, initialTutorial.id]);
+
   // Auto-save with debounce (1 second delay)
   useEffect(() => {
     if (!hasChanges) return;
@@ -266,7 +331,7 @@ export function EditorClient({ initialTutorial, initialSteps }: EditorClientProp
 
   return (
     <>
-      <WYSIWYGEditor
+      <FilmstripEditor
         tutorial={initialTutorial}
         steps={steps}
         saveStatus={isSaving || isReordering ? 'saving' : saveStatus}
@@ -276,6 +341,7 @@ export function EditorClient({ initialTutorial, initialSteps }: EditorClientProp
         onStepAnnotationsChange={handleStepAnnotationsChange}
         onDeleteStep={handleDeleteStep}
         onReorderSteps={handleReorderSteps}
+        onAddStep={handleAddStep}
         onPreview={handleOpenPreview}
       />
 
