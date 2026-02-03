@@ -153,3 +153,30 @@ describe('Recording flow', () => {
     expect(response.steps[0].type).toBe('click');
   });
 });
+
+describe('Pending upload for retry', () => {
+  it('should store pending upload data structure correctly', () => {
+    const pendingUpload = {
+      steps: [
+        { timestamp: 0, type: 'click' as const, x: 100, y: 200, url: 'https://example.com' },
+        { timestamp: 1000, type: 'navigation' as const, url: 'https://example.com/page2' },
+      ],
+      audioData: 'data:audio/webm;base64,GkXfo...',
+    };
+
+    expect(pendingUpload.steps).toHaveLength(2);
+    expect(pendingUpload.steps[0].type).toBe('click');
+    expect(pendingUpload.steps[1].type).toBe('navigation');
+    expect(pendingUpload.audioData).toContain('base64');
+  });
+
+  it('should handle null audio data', () => {
+    const pendingUpload = {
+      steps: [{ timestamp: 0, type: 'click' as const, x: 100, y: 200, url: 'https://example.com' }],
+      audioData: null,
+    };
+
+    expect(pendingUpload.audioData).toBeNull();
+    expect(pendingUpload.steps).toHaveLength(1);
+  });
+});

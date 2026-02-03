@@ -12,6 +12,20 @@ interface UploadResult {
 
 let timerInterval: ReturnType<typeof setInterval> | null = null;
 
+// Store pending upload data for retry functionality
+interface PendingUpload {
+  steps: Array<{
+    timestamp: number;
+    type: 'click' | 'navigation';
+    screenshot?: string;
+    x?: number;
+    y?: number;
+    url: string;
+  }>;
+  audioData: string | null;
+}
+let pendingUpload: PendingUpload | null = null;
+
 function showState(state: PopupState): void {
   const states: PopupState[] = ['not-connected', 'idle', 'recording', 'uploading', 'success', 'error'];
 
@@ -154,6 +168,9 @@ async function uploadRecording(
   const response = await fetch(`${APP_URL}/api/upload`, {
     method: 'POST',
     body: formData,
+    headers: {
+      Authorization: `Bearer ${authToken}`,
+    },
     credentials: 'include',
   });
 
@@ -207,8 +224,9 @@ async function stopRecording(): Promise<void> {
     // Send message to stop recording - don't rely on sendResponse for data
     await chrome.runtime.sendMessage({ type: 'STOP_RECORDING' });
 
-    // Wait a bit for the service worker to process and store result
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    // Wait for the service worker to process and store result
+    // Service worker waits 500ms for audio processing, so we wait a bit longer
+    await new Promise((resolve) => setTimeout(resolve, 800));
 
     // Get recording result from storage (more reliable than sendResponse for large data)
     const { recordingResult } = await chrome.storage.local.get(['recordingResult']);
@@ -229,13 +247,44 @@ async function stopRecording(): Promise<void> {
       return;
     }
 
+    // Store for potential retry
+    pendingUpload = {
+      steps: recordingResult.steps,
+      audioData: recordingResult.audioData,
+    };
+
     // Upload to API
     const result = await uploadRecording(recordingResult.steps, recordingResult.audioData);
 
+    // Clear pending upload on success
+    pendingUpload = null;
     showSuccessLink(result.editorUrl);
     showState('success');
   } catch (error) {
     console.error('Failed to stop recording:', error);
+    showError(error instanceof Error ? error.message : 'Une erreur est survenue');
+    showState('error');
+    // Keep pendingUpload for retry
+  }
+}
+
+async function retryUpload(): Promise<void> {
+  if (!pendingUpload) {
+    showError('Aucune donnée à réessayer');
+    showState('error');
+    return;
+  }
+
+  try {
+    showState('uploading');
+    const result = await uploadRecording(pendingUpload.steps, pendingUpload.audioData);
+
+    // Clear pending upload on success
+    pendingUpload = null;
+    showSuccessLink(result.editorUrl);
+    showState('success');
+  } catch (error) {
+    console.error('Failed to retry upload:', error);
     showError(error instanceof Error ? error.message : 'Une erreur est survenue');
     showState('error');
   }
@@ -273,8 +322,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     e.preventDefault();
     openDashboard();
   });
-  document.getElementById('new-recording-btn')?.addEventListener('click', backToIdle);
-  document.getElementById('retry-btn')?.addEventListener('click', backToIdle);
+  document.getElementById('new-recording-btn')?.addEventListener('click', () => {
+    pendingUpload = null; // Clear pending data when starting fresh
+    backToIdle();
+  });
+  document.getElementById('retry-btn')?.addEventListener('click', retryUpload);
 });
 
 // Clean up timer when popup closes
