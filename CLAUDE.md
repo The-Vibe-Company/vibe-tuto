@@ -18,6 +18,11 @@ Never use claude chrome mcp to test the localhost website.
 
 ALWAYS USE THE BROWSER AUTOMATION TO TEST THE LOCALHOST WEBSITE. 
 
+## Testing
+
+- **Unit tests** : Vitest in `apps/web` and `apps/extension`. Run from root: `pnpm test` or `pnpm test:run`.
+- **E2E localhost** : Use **agent-browser** (MCP) only. Never Playwright or Chrome MCP.
+
 ## PR Creation
 
 When creating a PR, always upload a screenshot of all the things that you did in the PR description.
