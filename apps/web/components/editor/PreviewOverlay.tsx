@@ -123,6 +123,25 @@ export function PreviewOverlay({
           ctx.filter = 'none';
           break;
         }
+        case 'click-indicator': {
+          // Draw cursor icon similar to MousePointer2
+          const size = 28;
+          ctx.save();
+          ctx.translate(x - 4, y - 4);
+          ctx.scale(size / 24, size / 24);
+
+          ctx.fillStyle = ann.color || '#8b5cf6';
+          ctx.strokeStyle = 'white';
+          ctx.lineWidth = 1.5 / (size / 24);
+
+          // MousePointer2 SVG path
+          const cursorPath = new Path2D('M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z');
+          ctx.fill(cursorPath);
+          ctx.stroke(cursorPath);
+
+          ctx.restore();
+          break;
+        }
       }
     });
   }, [currentStep?.annotations]);
