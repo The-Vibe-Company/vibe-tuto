@@ -35,3 +35,6 @@ Always add the link to the issue in the PR description.
 
 Use conventional commits for the commits and PR
 
+## PR Comment
+
+When asked to fix a PR, use the skill address-github-comments to address the comments. 

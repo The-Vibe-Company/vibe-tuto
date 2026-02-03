@@ -4,7 +4,7 @@
 let mediaRecorder: MediaRecorder | null = null;
 let audioChunks: Blob[] = [];
 
-async function startAudioRecording(): Promise<void> {
+async function startAudioRecording(): Promise<boolean> {
   try {
     const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 
@@ -39,12 +39,14 @@ async function startAudioRecording(): Promise<void> {
 
     mediaRecorder.start(1000); // Collect data every second
     console.log('[Offscreen] Audio recording started');
+    return true;
   } catch (error) {
     console.error('[Offscreen] Failed to start audio recording:', error);
     chrome.runtime.sendMessage({
       type: 'AUDIO_ERROR',
       error: (error as Error).message,
     });
+    return false;
   }
 }
 
@@ -59,7 +61,7 @@ function stopAudioRecording(): void {
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   switch (message.type) {
     case 'START_AUDIO':
-      startAudioRecording().then(() => sendResponse({ success: true }));
+      startAudioRecording().then((success) => sendResponse({ success }));
       return true;
 
     case 'STOP_AUDIO':

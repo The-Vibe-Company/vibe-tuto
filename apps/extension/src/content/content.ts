@@ -24,6 +24,12 @@ function captureClickEvent(event: MouseEvent): void {
   const target = event.target as HTMLElement;
   const timestamp = Date.now() - recordingStartTime;
 
+  // Handle SVG elements where className is SVGAnimatedString instead of string
+  const className =
+    typeof target.className === 'string'
+      ? target.className
+      : target.getAttribute?.('class') || undefined;
+
   const clickData: ClickEventData = {
     timestamp,
     type: 'click',
@@ -34,7 +40,7 @@ function captureClickEvent(event: MouseEvent): void {
       tag: target.tagName,
       text: target.textContent?.slice(0, 100) || '',
       id: target.id || undefined,
-      className: target.className || undefined,
+      className: className || undefined,
     },
   };
 
