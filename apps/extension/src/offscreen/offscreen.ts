@@ -56,11 +56,15 @@ async function stopAudioRecording(): Promise<void> {
         reader.onloadend = async () => {
           console.log('[Offscreen] Sending audio data to service worker');
           // Await sendMessage to ensure it's delivered before resolving
-          await chrome.runtime.sendMessage({
-            type: 'AUDIO_RECORDED',
-            data: reader.result,
-          });
-          console.log('[Offscreen] Audio data sent successfully');
+          try {
+            await chrome.runtime.sendMessage({
+              type: 'AUDIO_RECORDED',
+              data: reader.result,
+            });
+            console.log('[Offscreen] Audio data sent successfully');
+          } catch (error) {
+            console.error('[Offscreen] Failed to send audio data:', error);
+          }
           // Stop all tracks after sending data
           if (currentStream) {
             currentStream.getTracks().forEach((track) => track.stop());
