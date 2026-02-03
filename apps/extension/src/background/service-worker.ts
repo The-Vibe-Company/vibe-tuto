@@ -263,4 +263,37 @@ chrome.webNavigation.onCompleted.addListener(async (details) => {
   }
 });
 
+// Listen for tab activation changes during recording
+chrome.tabs.onActivated.addListener(async (activeInfo) => {
+  if (!state.isRecording) return;
+
+  const tab = await chrome.tabs.get(activeInfo.tabId);
+
+  // Ignore chrome:// and other unsupported URLs
+  if (!tab.url || tab.url.startsWith('chrome://')) return;
+
+  console.log('[Service Worker] Tab activated during recording:', activeInfo.tabId);
+
+  try {
+    // Try to send START_CAPTURE to the new active tab
+    await chrome.tabs.sendMessage(activeInfo.tabId, { type: 'START_CAPTURE' });
+    console.log('[Service Worker] START_CAPTURE sent to new active tab');
+  } catch (error) {
+    // Content script not ready - inject it
+    console.log('[Service Worker] Injecting content script to new tab...');
+    try {
+      await chrome.scripting.executeScript({
+        target: { tabId: activeInfo.tabId },
+        files: ['content/content.js'],
+      });
+      // Wait for initialization
+      await new Promise((resolve) => setTimeout(resolve, 100));
+      await chrome.tabs.sendMessage(activeInfo.tabId, { type: 'START_CAPTURE' });
+      console.log('[Service Worker] Content script injected and START_CAPTURE sent');
+    } catch (injectError) {
+      console.error('[Service Worker] Failed to inject content script:', injectError);
+    }
+  }
+});
+
 console.log('[Service Worker] Vibe Tuto extension loaded');
