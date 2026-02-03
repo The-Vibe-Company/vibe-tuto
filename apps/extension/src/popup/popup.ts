@@ -203,18 +203,25 @@ async function stopRecording(): Promise<void> {
     showState('uploading');
 
     console.log('[Popup] Sending STOP_RECORDING...');
-    const response = await chrome.runtime.sendMessage({ type: 'STOP_RECORDING' });
-    console.log('[Popup] Received response:', response);
-    console.log('[Popup] Response type:', typeof response);
-    console.log('[Popup] Steps:', response?.steps);
-    console.log('[Popup] Steps length:', response?.steps?.length);
+    // Send message to stop recording - don't rely on sendResponse for data
+    await chrome.runtime.sendMessage({ type: 'STOP_RECORDING' });
 
+    // Wait a bit for the service worker to process and store result
+    await new Promise((resolve) => setTimeout(resolve, 200));
+
+    // Get recording result from storage (more reliable than sendResponse for large data)
+    const { recordingResult } = await chrome.storage.local.get(['recordingResult']);
+    console.log('[Popup] Recording result from storage:', recordingResult);
+    console.log('[Popup] Steps length:', recordingResult?.steps?.length);
+
+    // Clean up storage
     await chrome.storage.local.set({
       isRecording: false,
       recordingStartTime: null,
+      recordingResult: null,
     });
 
-    if (!response || !response.success || !response.steps || response.steps.length === 0) {
+    if (!recordingResult || !recordingResult.success || !recordingResult.steps || recordingResult.steps.length === 0) {
       console.log('[Popup] No steps - showing error');
       showError('Aucune étape capturée');
       showState('error');
@@ -222,7 +229,7 @@ async function stopRecording(): Promise<void> {
     }
 
     // Upload to API
-    const result = await uploadRecording(response.steps, response.audioData);
+    const result = await uploadRecording(recordingResult.steps, recordingResult.audioData);
 
     showSuccessLink(result.editorUrl);
     showState('success');

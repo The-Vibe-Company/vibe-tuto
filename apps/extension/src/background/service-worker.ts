@@ -207,7 +207,14 @@ async function handleStopRecording(): Promise<{
   state.audioData = null;
 
   console.log('[Service Worker] Recording stopped, steps:', steps.length, 'audio:', !!audioData);
-  return { success: true, steps, audioData };
+
+  // Store result in chrome.storage for popup to retrieve
+  // This avoids message size limits with sendResponse
+  const result = { success: true, steps, audioData };
+  await chrome.storage.local.set({ recordingResult: result });
+  console.log('[Service Worker] Recording result stored in storage');
+
+  return result;
 }
 
 async function handleClickCaptured(
