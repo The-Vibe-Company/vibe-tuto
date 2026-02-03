@@ -7,6 +7,8 @@ interface UploadStep {
   screenshot: string;
   x?: number;
   y?: number;
+  viewportWidth?: number;
+  viewportHeight?: number;
   url: string;
 }
 
@@ -147,6 +149,8 @@ export async function POST(request: Request) {
         screenshot_url: screenshotPath,
         click_x: step.x ?? null,
         click_y: step.y ?? null,
+        viewport_width: step.viewportWidth ?? null,
+        viewport_height: step.viewportHeight ?? null,
         click_type: step.type,
         url: step.url,
         timestamp_start: step.timestamp,
