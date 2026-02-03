@@ -48,3 +48,15 @@ Use conventional commits for the commits and PR
 ## PR Comment
 
 When asked to fix a PR, use the skill address-github-comments to address the comments. Mark all the comments as resolved when you are done with a short text explaining what you did.
+
+## Frontend Design Guidelines
+
+- Always use shadcn components.
+- Always use tailwindcss for styling.
+- Use the design system
+- Always look if there are components that already exist and use them instead of creating new ones.
+
+
+### Designing Pages and Components
+
+Always use frontend-design skill and ui-ux-pro-max skill for designing pages and components or when the user asks you to design something.
