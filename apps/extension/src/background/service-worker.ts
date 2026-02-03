@@ -94,7 +94,7 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       console.log('[Service Worker] Content script ready in tab:', sender.tab?.id);
       // If we're recording and a content script just loaded, tell it to start capturing
       if (state.isRecording && sender.tab?.id) {
-        chrome.tabs.sendMessage(sender.tab.id, { type: 'START_CAPTURE' }).catch(() => {
+        chrome.tabs.sendMessage(sender.tab.id, { type: 'START_CAPTURE', startTime: state.startTime }).catch(() => {
           // Ignore errors
         });
         console.log('[Service Worker] Sent START_CAPTURE to newly ready tab:', sender.tab.id);
@@ -142,7 +142,7 @@ async function handleStartRecording(): Promise<{ success: boolean }> {
     if (tab.id && tab.url && !tab.url.startsWith('chrome://')) {
       try {
         // Try to send message to existing content script
-        await chrome.tabs.sendMessage(tab.id, { type: 'START_CAPTURE' });
+        await chrome.tabs.sendMessage(tab.id, { type: 'START_CAPTURE', startTime: state.startTime });
         console.log('[Service Worker] START_CAPTURE sent to tab:', tab.id);
       } catch (error) {
         // Content script not ready - inject it programmatically
@@ -155,7 +155,7 @@ async function handleStartRecording(): Promise<{ success: boolean }> {
           // Wait a bit for script to initialize
           await new Promise((resolve) => setTimeout(resolve, 100));
           // Retry sending the message
-          await chrome.tabs.sendMessage(tab.id, { type: 'START_CAPTURE' });
+          await chrome.tabs.sendMessage(tab.id, { type: 'START_CAPTURE', startTime: state.startTime });
           console.log('[Service Worker] Content script injected and START_CAPTURE sent');
         } catch (injectError) {
           console.error('[Service Worker] Failed to inject content script:', injectError);
@@ -275,8 +275,8 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   console.log('[Service Worker] Tab activated during recording:', activeInfo.tabId);
 
   try {
-    // Try to send START_CAPTURE to the new active tab
-    await chrome.tabs.sendMessage(activeInfo.tabId, { type: 'START_CAPTURE' });
+    // Try to send START_CAPTURE to the new active tab with the original startTime
+    await chrome.tabs.sendMessage(activeInfo.tabId, { type: 'START_CAPTURE', startTime: state.startTime });
     console.log('[Service Worker] START_CAPTURE sent to new active tab');
   } catch (error) {
     // Content script not ready - inject it
@@ -288,7 +288,7 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
       });
       // Wait for initialization
       await new Promise((resolve) => setTimeout(resolve, 100));
-      await chrome.tabs.sendMessage(activeInfo.tabId, { type: 'START_CAPTURE' });
+      await chrome.tabs.sendMessage(activeInfo.tabId, { type: 'START_CAPTURE', startTime: state.startTime });
       console.log('[Service Worker] Content script injected and START_CAPTURE sent');
     } catch (injectError) {
       console.error('[Service Worker] Failed to inject content script:', injectError);

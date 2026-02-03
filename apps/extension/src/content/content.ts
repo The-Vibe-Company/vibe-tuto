@@ -59,7 +59,8 @@ function captureClickEvent(event: MouseEvent): void {
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   if (message.type === 'START_CAPTURE') {
     isRecording = true;
-    recordingStartTime = Date.now();
+    // Use provided startTime from service worker, or fallback to Date.now()
+    recordingStartTime = message.startTime || Date.now();
     document.addEventListener('click', captureClickEvent, true);
     sendResponse({ success: true });
   }
