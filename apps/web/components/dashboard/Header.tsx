@@ -3,12 +3,14 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { createClient } from '@/lib/supabase/client';
+import { LayoutDashboard, Settings, HelpCircle, LogOut, ExternalLink } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
+  DropdownMenuLabel,
 } from '@/components/ui/dropdown-menu';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
@@ -62,22 +64,46 @@ export function Header({ userEmail }: HeaderProps) {
               </Avatar>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
-            <div className="flex items-center justify-start gap-2 p-2">
-              <div className="flex flex-col space-y-1 leading-none">
-                <p className="text-sm font-medium text-gray-900">{userEmail}</p>
+          <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium text-gray-900">Mon compte</p>
+                <p className="text-xs text-gray-500 truncate">{userEmail}</p>
               </div>
-            </div>
+            </DropdownMenuLabel>
             <DropdownMenuSeparator />
             <DropdownMenuItem asChild>
-              <Link href="/dashboard">Dashboard</Link>
+              <Link href="/dashboard" className="flex items-center">
+                <LayoutDashboard className="mr-2 h-4 w-4" />
+                Dashboard
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuItem asChild>
+              <Link href="/settings" className="flex items-center">
+                <Settings className="mr-2 h-4 w-4" />
+                Parametres
+              </Link>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem asChild>
+              <a
+                href="https://vibetuto.notion.site/Centre-d-aide"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center"
+              >
+                <HelpCircle className="mr-2 h-4 w-4" />
+                Centre d'aide
+                <ExternalLink className="ml-auto h-3 w-3 text-gray-400" />
+              </a>
             </DropdownMenuItem>
             <DropdownMenuSeparator />
             <DropdownMenuItem
               onClick={handleLogout}
               className="text-red-600 focus:text-red-600"
             >
-              Se déconnecter
+              <LogOut className="mr-2 h-4 w-4" />
+              Se deconnecter
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

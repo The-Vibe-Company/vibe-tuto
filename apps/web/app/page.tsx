@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { motion } from "framer-motion";
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import {
   MousePointer2,
@@ -12,6 +13,8 @@ import {
   Zap,
   Brain,
   Share2,
+  Menu,
+  X,
 } from "lucide-react";
 import {
   AnnouncementBar,
@@ -24,6 +27,8 @@ import {
 } from "@/components/landing";
 
 export default function Home() {
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Announcement Bar */}
@@ -54,7 +59,8 @@ export default function Home() {
               Tarifs
             </a>
           </div>
-          <div className="flex items-center gap-3">
+          {/* Desktop buttons */}
+          <div className="hidden md:flex items-center gap-3">
             <Link href="/login">
               <Button
                 variant="ghost"
@@ -69,7 +75,68 @@ export default function Home() {
               </Button>
             </Link>
           </div>
+          {/* Mobile menu button */}
+          <button
+            className="md:hidden p-2 text-stone-600 hover:text-stone-900"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+          >
+            {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+          </button>
         </div>
+
+        {/* Mobile menu */}
+        <AnimatePresence>
+          {mobileMenuOpen && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="md:hidden border-t border-stone-100 bg-white"
+            >
+              <div className="px-6 py-4 space-y-4">
+                <div className="flex flex-col gap-2">
+                  <a
+                    href="#features"
+                    className="py-2 text-stone-600 hover:text-stone-900 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Fonctionnalites
+                  </a>
+                  <a
+                    href="#how-it-works"
+                    className="py-2 text-stone-600 hover:text-stone-900 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Comment ca marche
+                  </a>
+                  <a
+                    href="#pricing"
+                    className="py-2 text-stone-600 hover:text-stone-900 transition-colors"
+                    onClick={() => setMobileMenuOpen(false)}
+                  >
+                    Tarifs
+                  </a>
+                </div>
+                <div className="flex flex-col gap-2 pt-2 border-t border-stone-100">
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-center"
+                    >
+                      Se connecter
+                    </Button>
+                  </Link>
+                  <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                    <Button className="w-full justify-center bg-violet-600 text-white hover:bg-violet-700">
+                      Essayer gratuitement
+                    </Button>
+                  </Link>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </nav>
 
       {/* Hero Section */}
