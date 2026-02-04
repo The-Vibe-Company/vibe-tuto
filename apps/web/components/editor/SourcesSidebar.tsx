@@ -73,7 +73,7 @@ function TimelineItem({
 
       <Card
         className={cn(
-          'transition-all duration-200 group-hover:shadow-md',
+          'overflow-hidden transition-all duration-200 group-hover:shadow-md',
           isClick
             ? 'border-primary/20 bg-primary/5 hover:border-primary/30'
             : 'border-blue-200 bg-blue-50/50 hover:border-blue-300 dark:border-blue-900 dark:bg-blue-950/30'
@@ -100,13 +100,13 @@ function TimelineItem({
 
           {/* Screenshot thumbnail (if exists) */}
           {source.signedScreenshotUrl && (
-            <div className="relative mb-2 aspect-video w-full max-w-full overflow-hidden rounded-md bg-muted">
+            <div className="relative mb-2 h-32 w-full overflow-hidden rounded-md bg-muted">
               <Image
                 src={source.signedScreenshotUrl}
                 alt={`Action ${index + 1}`}
                 fill
-                className="object-contain transition-transform group-hover:scale-105"
-                sizes="(max-width: 300px) 100vw, 250px"
+                className="object-cover object-top transition-transform group-hover:scale-105"
+                sizes="250px"
               />
 
               {/* Click indicator on screenshot */}
