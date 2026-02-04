@@ -100,13 +100,13 @@ function TimelineItem({
 
           {/* Screenshot thumbnail (if exists) */}
           {source.signedScreenshotUrl && (
-            <div className="relative mb-2 aspect-video w-full overflow-hidden rounded-md bg-muted">
+            <div className="relative mb-2 aspect-video w-full max-w-full overflow-hidden rounded-md bg-muted">
               <Image
                 src={source.signedScreenshotUrl}
                 alt={`Action ${index + 1}`}
                 fill
-                className="object-cover transition-transform group-hover:scale-105"
-                sizes="250px"
+                className="object-contain transition-transform group-hover:scale-105"
+                sizes="(max-width: 300px) 100vw, 250px"
               />
 
               {/* Click indicator on screenshot */}
