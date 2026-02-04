@@ -13,23 +13,25 @@ import { cn } from '@/lib/utils';
 interface DocStepCardProps {
   step: StepWithSignedUrl;
   stepNumber: number;
-  sources: SourceWithSignedUrl[];
-  onCaptionChange: (caption: string) => void;
-  onAnnotationsChange: (annotations: Annotation[]) => void;
-  onDelete: () => void;
-  onRemoveImage: () => void;
-  onSetImage: (source: SourceWithSignedUrl) => void;
+  sources?: SourceWithSignedUrl[];
+  onCaptionChange?: (caption: string) => void;
+  onAnnotationsChange?: (annotations: Annotation[]) => void;
+  onDelete?: () => void;
+  onRemoveImage?: () => void;
+  onSetImage?: (source: SourceWithSignedUrl) => void;
+  readOnly?: boolean;
 }
 
 export function DocStepCard({
   step,
   stepNumber,
-  sources,
+  sources = [],
   onCaptionChange,
   onAnnotationsChange,
   onDelete,
   onRemoveImage,
   onSetImage,
+  readOnly = false,
 }: DocStepCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
@@ -41,21 +43,23 @@ export function DocStepCard({
   // Handler to update a single annotation
   const handleUpdateAnnotation = useCallback(
     (id: string, updates: Partial<Annotation>) => {
+      if (readOnly) return;
       const updatedAnnotations = annotations.map((ann) =>
         ann.id === id ? { ...ann, ...updates } : ann
       );
-      onAnnotationsChange(updatedAnnotations);
+      onAnnotationsChange?.(updatedAnnotations);
     },
-    [annotations, onAnnotationsChange]
+    [annotations, onAnnotationsChange, readOnly]
   );
 
   // Handler to delete a single annotation
   const handleDeleteAnnotation = useCallback(
     (id: string) => {
+      if (readOnly) return;
       const updatedAnnotations = annotations.filter((ann) => ann.id !== id);
-      onAnnotationsChange(updatedAnnotations);
+      onAnnotationsChange?.(updatedAnnotations);
     },
-    [annotations, onAnnotationsChange]
+    [annotations, onAnnotationsChange, readOnly]
   );
 
   const {
@@ -80,27 +84,29 @@ export function DocStepCard({
   if (isDivider) {
     return (
       <div
-        ref={setNodeRef}
-        style={style}
+        ref={readOnly ? undefined : setNodeRef}
+        style={readOnly ? undefined : style}
         className={cn(
           'group relative py-4',
-          isDragging && 'z-50 opacity-50'
+          !readOnly && isDragging && 'z-50 opacity-50'
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex items-center gap-4">
-          {/* Drag handle */}
-          <button
-            {...attributes}
-            {...listeners}
-            className={cn(
-              'cursor-grab touch-none text-slate-300 transition-opacity hover:text-slate-400',
-              isHovered ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            <GripVertical className="h-5 w-5" />
-          </button>
+          {/* Drag handle (hidden in readOnly) */}
+          {!readOnly && (
+            <button
+              {...attributes}
+              {...listeners}
+              className={cn(
+                'cursor-grab touch-none text-slate-300 transition-opacity hover:text-slate-400',
+                isHovered ? 'opacity-100' : 'opacity-0'
+              )}
+            >
+              <GripVertical className="h-5 w-5" />
+            </button>
+          )}
 
           {/* Divider line */}
           <div className="flex flex-1 items-center gap-3">
@@ -109,17 +115,19 @@ export function DocStepCard({
             <div className="h-px flex-1 bg-slate-200" />
           </div>
 
-          {/* Delete */}
-          <button
-            type="button"
-            onClick={onDelete}
-            className={cn(
-              'text-slate-300 transition-all hover:text-red-500',
-              isHovered ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          {/* Delete (hidden in readOnly) */}
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className={cn(
+                'text-slate-300 transition-all hover:text-red-500',
+                isHovered ? 'opacity-100' : 'opacity-0'
+              )}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     );
@@ -129,27 +137,29 @@ export function DocStepCard({
   if (isHeading) {
     return (
       <div
-        ref={setNodeRef}
-        style={style}
+        ref={readOnly ? undefined : setNodeRef}
+        style={readOnly ? undefined : style}
         className={cn(
           'group relative py-2',
-          isDragging && 'z-50 opacity-50'
+          !readOnly && isDragging && 'z-50 opacity-50'
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex items-start gap-4">
-          {/* Drag handle */}
-          <button
-            {...attributes}
-            {...listeners}
-            className={cn(
-              'mt-2 cursor-grab touch-none text-slate-300 transition-opacity hover:text-slate-400',
-              isHovered ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            <GripVertical className="h-5 w-5" />
-          </button>
+          {/* Drag handle (hidden in readOnly) */}
+          {!readOnly && (
+            <button
+              {...attributes}
+              {...listeners}
+              className={cn(
+                'mt-2 cursor-grab touch-none text-slate-300 transition-opacity hover:text-slate-400',
+                isHovered ? 'opacity-100' : 'opacity-0'
+              )}
+            >
+              <GripVertical className="h-5 w-5" />
+            </button>
+          )}
 
           {/* Icon */}
           <div className="mt-1.5 flex h-6 w-6 items-center justify-center rounded bg-violet-100">
@@ -163,20 +173,23 @@ export function DocStepCard({
               onChange={onCaptionChange}
               placeholder="Titre de section..."
               isHeading
+              readOnly={readOnly}
             />
           </div>
 
-          {/* Delete */}
-          <button
-            type="button"
-            onClick={onDelete}
-            className={cn(
-              'mt-2 text-slate-300 transition-all hover:text-red-500',
-              isHovered ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            <Trash2 className="h-4 w-4" />
-          </button>
+          {/* Delete (hidden in readOnly) */}
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={onDelete}
+              className={cn(
+                'mt-2 text-slate-300 transition-all hover:text-red-500',
+                isHovered ? 'opacity-100' : 'opacity-0'
+              )}
+            >
+              <Trash2 className="h-4 w-4" />
+            </button>
+          )}
         </div>
       </div>
     );
@@ -185,11 +198,11 @@ export function DocStepCard({
   // Regular step (with or without screenshot)
   return (
     <div
-      ref={setNodeRef}
-      style={style}
+      ref={readOnly ? undefined : setNodeRef}
+      style={readOnly ? undefined : style}
       className={cn(
         'group relative rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md',
-        isDragging && 'z-50 opacity-50 shadow-lg'
+        !readOnly && isDragging && 'z-50 opacity-50 shadow-lg'
       )}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -198,16 +211,18 @@ export function DocStepCard({
       <div className="flex items-start gap-3 p-4 pb-0">
         {/* Drag handle + badge */}
         <div className="flex items-center gap-2">
-          <button
-            {...attributes}
-            {...listeners}
-            className={cn(
-              'cursor-grab touch-none text-slate-300 transition-opacity hover:text-slate-400',
-              isHovered ? 'opacity-100' : 'opacity-0'
-            )}
-          >
-            <GripVertical className="h-5 w-5" />
-          </button>
+          {!readOnly && (
+            <button
+              {...attributes}
+              {...listeners}
+              className={cn(
+                'cursor-grab touch-none text-slate-300 transition-opacity hover:text-slate-400',
+                isHovered ? 'opacity-100' : 'opacity-0'
+              )}
+            >
+              <GripVertical className="h-5 w-5" />
+            </button>
+          )}
 
           <div className="flex h-8 w-8 items-center justify-center rounded-full bg-violet-500 text-sm font-semibold text-white shadow-sm">
             {stepNumber}
@@ -224,37 +239,42 @@ export function DocStepCard({
                 ? 'Cliquez sur "..."'
                 : 'Décrivez cette étape...'
             }
+            readOnly={readOnly}
           />
         </div>
 
-        {/* Delete button */}
-        <button
-          type="button"
-          onClick={onDelete}
-          className={cn(
-            'mt-1 text-slate-300 transition-all hover:text-red-500',
-            isHovered ? 'opacity-100' : 'opacity-0'
-          )}
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        {/* Delete button (hidden in readOnly) */}
+        {!readOnly && (
+          <button
+            type="button"
+            onClick={onDelete}
+            className={cn(
+              'mt-1 text-slate-300 transition-all hover:text-red-500',
+              isHovered ? 'opacity-100' : 'opacity-0'
+            )}
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        )}
       </div>
 
       {/* Screenshot (if exists) */}
       {hasScreenshot ? (
         <div className="relative p-4 pt-3">
-          {/* Remove image button */}
-          <button
-            type="button"
-            onClick={onRemoveImage}
-            className={cn(
-              'absolute right-6 top-5 z-10 flex h-7 w-7 items-center justify-center rounded-md bg-red-500/90 text-white shadow-sm transition-all hover:bg-red-600',
-              isHovered ? 'opacity-100' : 'opacity-0'
-            )}
-            title="Supprimer l'image"
-          >
-            <ImageOff className="h-4 w-4" />
-          </button>
+          {/* Remove image button (hidden in readOnly) */}
+          {!readOnly && (
+            <button
+              type="button"
+              onClick={onRemoveImage}
+              className={cn(
+                'absolute right-6 top-5 z-10 flex h-7 w-7 items-center justify-center rounded-md bg-red-500/90 text-white shadow-sm transition-all hover:bg-red-600',
+                isHovered ? 'opacity-100' : 'opacity-0'
+              )}
+              title="Supprimer l'image"
+            >
+              <ImageOff className="h-4 w-4" />
+            </button>
+          )}
           <StepScreenshot
             src={step.signedScreenshotUrl!}
             alt={`Step ${stepNumber} screenshot`}
@@ -262,10 +282,11 @@ export function DocStepCard({
             onAnnotationsChange={onAnnotationsChange}
             onUpdateAnnotation={handleUpdateAnnotation}
             onDeleteAnnotation={handleDeleteAnnotation}
+            readOnly={readOnly}
           />
         </div>
-      ) : (
-        /* Text-only step - show option to add image */
+      ) : !readOnly ? (
+        /* Text-only step - show option to add image (only in edit mode) */
         <div className="px-4 pb-4 pt-2">
           {showImagePicker ? (
             <div className="rounded-lg border border-slate-200 bg-slate-50 p-3">
@@ -286,7 +307,7 @@ export function DocStepCard({
                       key={source.id}
                       type="button"
                       onClick={() => {
-                        onSetImage(source);
+                        onSetImage?.(source);
                         setShowImagePicker(false);
                       }}
                       className="group relative aspect-video overflow-hidden rounded-md border border-slate-200 bg-white transition-all hover:border-violet-400 hover:ring-2 hover:ring-violet-200"
@@ -316,6 +337,9 @@ export function DocStepCard({
             </button>
           )}
         </div>
+      ) : (
+        /* Text-only step in readOnly - just add padding */
+        <div className="pb-4" />
       )}
     </div>
   );

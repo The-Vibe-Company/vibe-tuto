@@ -6,7 +6,7 @@ import { Plus } from 'lucide-react';
 import { TutorialCard, TutorialCardProps } from '@/components/dashboard/TutorialCard';
 import { TutorialCardSkeleton } from '@/components/dashboard/TutorialCardSkeleton';
 
-type Tutorial = Omit<TutorialCardProps, 'onEdit' | 'onDelete' | 'onShare'>;
+type Tutorial = Omit<TutorialCardProps, 'onEdit' | 'onDelete' | 'onShare' | 'onProcess'>;
 
 export default function DashboardPage() {
   const router = useRouter();
@@ -59,11 +59,6 @@ export default function DashboardPage() {
       console.error('Delete error:', err);
       // Could show a toast notification here
     }
-  };
-
-  const handleShare = (tutorialId: string) => {
-    // TODO: Implement share functionality
-    console.log('Share tutorial:', tutorialId);
   };
 
   const handleProcess = async (tutorialId: string) => {
@@ -155,7 +150,6 @@ export default function DashboardPage() {
               {...tutorial}
               onEdit={() => handleEdit(tutorial.id)}
               onDelete={() => handleDelete(tutorial.id)}
-              onShare={() => handleShare(tutorial.id)}
               onProcess={() => handleProcess(tutorial.id)}
             />
           ))}

@@ -21,17 +21,20 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
+import { ShareDialog } from './ShareDialog';
 
 export interface TutorialCardProps {
   id: string;
   title: string;
+  slug?: string | null;
   status: 'draft' | 'processing' | 'ready' | 'error';
+  visibility?: string;
   stepsCount: number;
   thumbnailUrl?: string;
   createdAt: string;
   onEdit: () => void;
   onDelete: () => void;
-  onShare: () => void;
+  onShare?: () => void;
   onProcess?: () => Promise<void>;
 }
 
@@ -61,7 +64,9 @@ const statusConfig = {
 export function TutorialCard({
   id,
   title,
+  slug,
   status,
+  visibility,
   stepsCount,
   thumbnailUrl,
   createdAt,
@@ -71,6 +76,7 @@ export function TutorialCard({
   onProcess,
 }: TutorialCardProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
 
@@ -181,7 +187,7 @@ export function TutorialCard({
                   <Pencil className="mr-2 h-4 w-4" />
                   Modifier
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={onShare}>
+                <DropdownMenuItem onClick={() => setShareDialogOpen(true)}>
                   <Share2 className="mr-2 h-4 w-4" />
                   Partager
                 </DropdownMenuItem>
@@ -243,6 +249,15 @@ export function TutorialCard({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Share Dialog */}
+      <ShareDialog
+        open={shareDialogOpen}
+        onOpenChange={setShareDialogOpen}
+        tutorialId={id}
+        tutorialTitle={title}
+        tutorialSlug={slug || null}
+      />
     </>
   );
 }

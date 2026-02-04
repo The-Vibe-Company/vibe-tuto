@@ -7,9 +7,10 @@ import { cn } from '@/lib/utils';
 
 interface InlineCaptionProps {
   content: string;
-  onChange: (content: string) => void;
+  onChange?: (content: string) => void;
   placeholder?: string;
   isHeading?: boolean;
+  readOnly?: boolean;
 }
 
 /**
@@ -21,6 +22,7 @@ export function InlineCaption({
   onChange,
   placeholder,
   isHeading = false,
+  readOnly = false,
 }: InlineCaptionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -47,7 +49,7 @@ export function InlineCaption({
       },
     },
     onUpdate: ({ editor }) => {
-      onChange(editor.getHTML());
+      onChange?.(editor.getHTML());
     },
   });
 
@@ -92,6 +94,25 @@ export function InlineCaption({
       return () => document.removeEventListener('keydown', handleKeyDown);
     }
   }, [isEditing]);
+
+  // Read-only mode - just display content
+  if (readOnly) {
+    return (
+      <div className="px-2 py-1">
+        {content ? (
+          <div
+            className={cn(
+              'max-w-none',
+              isHeading
+                ? 'text-lg font-semibold text-slate-900'
+                : 'prose prose-sm prose-slate prose-strong:text-violet-600'
+            )}
+            dangerouslySetInnerHTML={{ __html: content }}
+          />
+        ) : null}
+      </div>
+    );
+  }
 
   // Display mode (not editing)
   if (!isEditing) {

@@ -13,9 +13,10 @@ interface StepScreenshotProps {
   src: string;
   alt: string;
   annotations: Annotation[];
-  onAnnotationsChange: (annotations: Annotation[]) => void;
+  onAnnotationsChange?: (annotations: Annotation[]) => void;
   onUpdateAnnotation?: (id: string, updates: Partial<Annotation>) => void;
   onDeleteAnnotation?: (id: string) => void;
+  readOnly?: boolean;
 }
 
 const ZOOM_LEVELS = [1, 1.5, 2];
@@ -27,6 +28,7 @@ export function StepScreenshot({
   onAnnotationsChange,
   onUpdateAnnotation,
   onDeleteAnnotation,
+  readOnly = false,
 }: StepScreenshotProps) {
   const [zoomIndex, setZoomIndex] = useState(0);
   const [isAnnotating, setIsAnnotating] = useState(false);
@@ -46,16 +48,18 @@ export function StepScreenshot({
 
   const handleAddAnnotation = useCallback(
     (annotation: Annotation) => {
-      onAnnotationsChange([...annotations, annotation]);
+      if (readOnly) return;
+      onAnnotationsChange?.([...annotations, annotation]);
     },
-    [annotations, onAnnotationsChange]
+    [annotations, onAnnotationsChange, readOnly]
   );
 
   const handleClearAnnotations = useCallback(() => {
+    if (readOnly) return;
     if (confirm('Supprimer toutes les annotations ?')) {
-      onAnnotationsChange([]);
+      onAnnotationsChange?.([]);
     }
-  }, [onAnnotationsChange]);
+  }, [onAnnotationsChange, readOnly]);
 
   const handleDone = useCallback(() => {
     setIsAnnotating(false);
@@ -63,9 +67,10 @@ export function StepScreenshot({
   }, []);
 
   const handleQuickToolSelect = useCallback((tool: AnnotationType) => {
+    if (readOnly) return;
     setIsAnnotating(true);
     setActiveTool(tool);
-  }, []);
+  }, [readOnly]);
 
   return (
     <div
@@ -73,8 +78,8 @@ export function StepScreenshot({
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Annotation toolbar (shown when annotating) */}
-      {isAnnotating && (
+      {/* Annotation toolbar (shown when annotating, hidden in readOnly) */}
+      {!readOnly && isAnnotating && (
         <div className="absolute -top-14 left-1/2 z-20 -translate-x-1/2">
           <AnnotationToolbar
             activeTool={activeTool}
@@ -131,8 +136,8 @@ export function StepScreenshot({
           </div>
         </div>
 
-        {/* Quick annotation bar (bottom-left, shown on hover) */}
-        {isHovering && !isAnnotating && (
+        {/* Quick annotation bar (bottom-left, shown on hover, hidden in readOnly) */}
+        {!readOnly && isHovering && !isAnnotating && (
           <div className="absolute bottom-3 left-3 z-10 animate-in fade-in duration-150">
             <QuickAnnotationBar onToolSelect={handleQuickToolSelect} />
           </div>

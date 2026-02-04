@@ -1,8 +1,16 @@
-import { type NextRequest } from "next/server";
+import { type NextRequest, NextResponse } from "next/server";
 import { updateSession } from "@/lib/supabase/middleware";
 
 export async function middleware(request: NextRequest) {
-  return await updateSession(request);
+  const response = await updateSession(request);
+
+  // Allow embedding for /t/[token]/embed routes
+  if (request.nextUrl.pathname.match(/^\/t\/[^/]+\/embed$/)) {
+    response.headers.set('X-Frame-Options', 'ALLOWALL');
+    response.headers.set('Content-Security-Policy', 'frame-ancestors *');
+  }
+
+  return response;
 }
 
 export const config = {

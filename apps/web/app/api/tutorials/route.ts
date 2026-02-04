@@ -15,13 +15,17 @@ export async function GET() {
   }
 
   // Fetch tutorials with step count
-  const { data: tutorials, error: tutorialsError } = await supabase
+  // Note: Using type assertion as visibility column is added by migration
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: tutorials, error: tutorialsError } = await (supabase as any)
     .from('tutorials')
     .select(
       `
       id,
       title,
+      slug,
       status,
+      visibility,
       created_at,
       steps:steps(count)
     `
@@ -39,7 +43,8 @@ export async function GET() {
 
   // Generate signed URLs for thumbnails (first source's screenshot)
   const tutorialsWithThumbnails = await Promise.all(
-    (tutorials || []).map(async (tutorial) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (tutorials || []).map(async (tutorial: any) => {
       // Get the first source's screenshot (sources = raw captured data)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { data: firstSource } = await (supabase as any)
@@ -68,7 +73,9 @@ export async function GET() {
       return {
         id: tutorial.id,
         title: tutorial.title,
+        slug: tutorial.slug,
         status: tutorial.status as 'draft' | 'processing' | 'ready' | 'error',
+        visibility: tutorial.visibility || 'private',
         stepsCount,
         thumbnailUrl,
         createdAt: tutorial.created_at,
