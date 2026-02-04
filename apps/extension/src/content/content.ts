@@ -119,17 +119,33 @@ chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
 // Notify service worker that content script is ready
 chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' });
 
-// Listen for auth messages from the web app (localhost:3000)
+// Allowed origins for auth sync messages
+const ALLOWED_ORIGINS = [
+  'http://localhost:3000',
+  'https://localhost:3000',
+  'https://vibe-tuto.vercel.app',
+];
+
+// Listen for auth messages from the web app
 window.addEventListener('message', async (event) => {
-  // Only accept messages from localhost:3000
-  if (!event.origin.includes('localhost:3000')) return;
+  // Strict origin validation - only accept exact matches
+  if (!ALLOWED_ORIGINS.includes(event.origin)) return;
 
   if (event.data?.type === 'VIBE_TUTO_AUTH') {
     const { authToken, userEmail } = event.data;
+
+    // Handle logout: clear storage when tokens are null/undefined
+    if (authToken === null || authToken === undefined) {
+      await chrome.storage.local.remove(['authToken', 'userEmail']);
+      console.log('[Vibe Tuto] Auth cleared (logout)');
+      window.postMessage({ type: 'VIBE_TUTO_AUTH_SYNCED' }, '*');
+      return;
+    }
+
+    // Handle login: store auth when both values are present
     if (authToken && userEmail) {
       await chrome.storage.local.set({ authToken, userEmail });
       console.log('[Vibe Tuto] Auth synced from web app');
-      // Notify the page that sync is complete
       window.postMessage({ type: 'VIBE_TUTO_AUTH_SYNCED' }, '*');
     }
   }
