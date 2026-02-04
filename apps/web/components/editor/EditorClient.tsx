@@ -366,6 +366,18 @@ export function EditorClient({
   const handleSetStepImage = useCallback(async (stepId: string, source: SourceWithSignedUrl) => {
     const previousSteps = steps;
 
+    // Generate click indicator annotation if source has coordinates
+    const generatedAnnotations = source.click_x != null && source.click_y != null &&
+                source.viewport_width && source.viewport_height
+      ? [{
+          id: crypto.randomUUID(),
+          type: 'click-indicator' as const,
+          x: source.click_x / source.viewport_width,
+          y: source.click_y / source.viewport_height,
+          color: '#8b5cf6',
+        }]
+      : null;
+
     // Optimistic update
     setSteps((prev) =>
       prev.map((s) =>
@@ -380,17 +392,7 @@ export function EditorClient({
               viewport_width: source.viewport_width,
               viewport_height: source.viewport_height,
               element_info: source.element_info,
-              // Generate click indicator annotation if source has coordinates
-              annotations: source.click_x != null && source.click_y != null &&
-                          source.viewport_width && source.viewport_height
-                ? [{
-                    id: crypto.randomUUID(),
-                    type: 'click-indicator' as const,
-                    x: source.click_x / source.viewport_width,
-                    y: source.click_y / source.viewport_height,
-                    color: '#8b5cf6',
-                  }]
-                : null,
+              annotations: generatedAnnotations,
             }
           : s
       )
@@ -400,7 +402,7 @@ export function EditorClient({
       const response = await fetch(`/api/steps/${stepId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ source_id: source.id }),
+        body: JSON.stringify({ source_id: source.id, annotations: generatedAnnotations }),
       });
 
       if (!response.ok) {
