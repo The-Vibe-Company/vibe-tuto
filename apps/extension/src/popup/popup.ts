@@ -2,7 +2,14 @@
 
 type PopupState = 'not-connected' | 'idle' | 'recording' | 'uploading' | 'success' | 'error';
 
-const APP_URL = 'http://localhost:3000';
+// API URL configuration - stored in chrome.storage for easy switching between local and prod
+const DEFAULT_API_URL = 'http://localhost:3000';
+const API_URL_STORAGE_KEY = 'apiUrl';
+
+async function getApiUrl(): Promise<string> {
+  const result = await chrome.storage.local.get([API_URL_STORAGE_KEY]);
+  return result[API_URL_STORAGE_KEY] || DEFAULT_API_URL;
+}
 
 interface UploadResult {
   tutorialId: string;
@@ -212,6 +219,7 @@ async function uploadRecording(
     throw new Error('Not authenticated');
   }
 
+  const apiUrl = await getApiUrl();
   const formData = new FormData();
 
   // Add audio if available
@@ -241,7 +249,7 @@ async function uploadRecording(
 
   formData.append('metadata', JSON.stringify(metadata));
 
-  const response = await fetch(`${APP_URL}/api/upload`, {
+  const response = await fetch(`${apiUrl}/api/upload`, {
     method: 'POST',
     body: formData,
     headers: {
@@ -273,13 +281,14 @@ function base64ToBlob(base64: string, mimeType: string): Blob {
   return new Blob([byteArray], { type: mimeType });
 }
 
-function showSuccessLink(editorUrl: string): void {
+async function showSuccessLink(editorUrl: string): Promise<void> {
+  const apiUrl = await getApiUrl();
   const linkElement = document.getElementById('editor-link') as HTMLAnchorElement;
   if (linkElement) {
-    linkElement.href = `${APP_URL}${editorUrl}`;
+    linkElement.href = `${apiUrl}${editorUrl}`;
     linkElement.onclick = (e) => {
       e.preventDefault();
-      chrome.tabs.create({ url: `${APP_URL}${editorUrl}` });
+      chrome.tabs.create({ url: `${apiUrl}${editorUrl}` });
     };
   }
 }
@@ -334,7 +343,7 @@ async function stopRecording(): Promise<void> {
 
     // Clear pending upload on success
     pendingUpload = null;
-    showSuccessLink(result.editorUrl);
+    await showSuccessLink(result.editorUrl);
     showState('success');
   } catch (error) {
     console.error('Failed to stop recording:', error);
@@ -357,7 +366,7 @@ async function retryUpload(): Promise<void> {
 
     // Clear pending upload on success
     pendingUpload = null;
-    showSuccessLink(result.editorUrl);
+    await showSuccessLink(result.editorUrl);
     showState('success');
   } catch (error) {
     console.error('Failed to retry upload:', error);
@@ -366,16 +375,58 @@ async function retryUpload(): Promise<void> {
   }
 }
 
-function openDashboard(): void {
-  chrome.tabs.create({ url: `${APP_URL}/dashboard` });
+async function openDashboard(): Promise<void> {
+  const apiUrl = await getApiUrl();
+  chrome.tabs.create({ url: `${apiUrl}/dashboard` });
 }
 
-function openLogin(): void {
-  chrome.tabs.create({ url: `${APP_URL}/login` });
+async function openLogin(): Promise<void> {
+  const apiUrl = await getApiUrl();
+  chrome.tabs.create({ url: `${apiUrl}/login` });
 }
 
 function backToIdle(): void {
   showState('idle');
+}
+
+// Settings modal functions
+function openSettings(): void {
+  const modal = document.getElementById('settings-modal');
+  if (modal) {
+    modal.classList.remove('hidden');
+    loadSettings();
+  }
+}
+
+function closeSettings(): void {
+  const modal = document.getElementById('settings-modal');
+  if (modal) {
+    modal.classList.add('hidden');
+  }
+}
+
+async function loadSettings(): Promise<void> {
+  const apiUrl = await getApiUrl();
+  const input = document.getElementById('api-url-input') as HTMLInputElement;
+  if (input) {
+    input.value = apiUrl;
+  }
+}
+
+async function saveSettings(): Promise<void> {
+  const input = document.getElementById('api-url-input') as HTMLInputElement;
+  if (input) {
+    let apiUrl = input.value.trim();
+    // Remove trailing slash if present
+    apiUrl = apiUrl.replace(/\/$/, '');
+    await chrome.storage.local.set({ [API_URL_STORAGE_KEY]: apiUrl });
+    closeSettings();
+  }
+}
+
+async function resetSettings(): Promise<void> {
+  await chrome.storage.local.remove(API_URL_STORAGE_KEY);
+  loadSettings();
 }
 
 // Initialize popup
@@ -403,6 +454,19 @@ document.addEventListener('DOMContentLoaded', async () => {
     backToIdle();
   });
   document.getElementById('retry-btn')?.addEventListener('click', retryUpload);
+  
+  // Settings modal listeners
+  document.getElementById('settings-btn')?.addEventListener('click', openSettings);
+  document.getElementById('close-settings')?.addEventListener('click', closeSettings);
+  document.getElementById('save-settings')?.addEventListener('click', saveSettings);
+  document.getElementById('reset-settings')?.addEventListener('click', resetSettings);
+  
+  // Close modal when clicking outside
+  document.getElementById('settings-modal')?.addEventListener('click', (e) => {
+    if (e.target === document.getElementById('settings-modal')) {
+      closeSettings();
+    }
+  });
 });
 
 // Clean up timer when popup closes
