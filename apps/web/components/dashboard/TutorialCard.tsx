@@ -111,7 +111,7 @@ export function TutorialCard({
 
   return (
     <>
-      <Card className="group overflow-hidden transition-all hover:shadow-lg">
+      <Card className="group overflow-hidden transition-all hover:shadow-lg cursor-pointer" onClick={onEdit}>
         {/* Thumbnail */}
         <div className="relative aspect-video bg-gradient-to-br from-gray-50 to-gray-100">
           {thumbnailUrl ? (
@@ -132,7 +132,7 @@ export function TutorialCard({
           )}
 
           {/* Status Badge */}
-          <Badge 
+          <Badge
             variant="outline"
             className={`absolute left-2 top-2 gap-1.5 border px-2 py-1 text-xs font-medium shadow-sm ${statusInfo.className}`}
           >
@@ -148,7 +148,10 @@ export function TutorialCard({
 
           {/* Process Button - Only show for processing status */}
           {status === 'processing' && onProcess && (
-            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+            <div
+              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+              onClick={(e) => e.stopPropagation()}
+            >
               <Button
                 onClick={handleProcess}
                 disabled={isProcessing}
@@ -171,7 +174,10 @@ export function TutorialCard({
           )}
 
           {/* Actions Menu */}
-          <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100">
+          <div
+            className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
+            onClick={(e) => e.stopPropagation()}
+          >
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button
@@ -208,7 +214,7 @@ export function TutorialCard({
         <CardContent className="p-4">
           <h3 className="truncate font-medium text-gray-900">{title}</h3>
           <div className="mt-2 flex items-center justify-between text-sm text-gray-500">
-            <span>{stepsCount} étape{stepsCount !== 1 ? 's' : ''}</span>
+            <span>{stepsCount} etape{stepsCount !== 1 ? 's' : ''}</span>
             <span>{formattedDate}</span>
           </div>
         </CardContent>
