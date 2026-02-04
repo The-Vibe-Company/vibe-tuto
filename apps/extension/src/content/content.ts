@@ -1,6 +1,8 @@
 // Content script - Injected into all pages
 // Handles click detection and DOM events
 
+import { getElementInfo } from './element-label';
+
 interface ClickEventData {
   timestamp: number;
   type: 'click';
@@ -14,6 +16,8 @@ interface ClickEventData {
     text: string;
     id?: string;
     className?: string;
+    role?: string;
+    actionableTag?: string;
   };
 }
 
@@ -26,11 +30,8 @@ function captureClickEvent(event: MouseEvent): void {
   const target = event.target as HTMLElement;
   const timestamp = Date.now() - recordingStartTime;
 
-  // Handle SVG elements where className is SVGAnimatedString instead of string
-  const className =
-    typeof target.className === 'string'
-      ? target.className
-      : target.getAttribute?.('class') || undefined;
+  // Use smart element labeling to get clean, human-readable labels
+  const elementInfo = getElementInfo(target);
 
   const clickData: ClickEventData = {
     timestamp,
@@ -40,12 +41,7 @@ function captureClickEvent(event: MouseEvent): void {
     viewportWidth: window.innerWidth,
     viewportHeight: window.innerHeight,
     url: window.location.href,
-    elementInfo: {
-      tag: target.tagName,
-      text: target.textContent?.slice(0, 100) || '',
-      id: target.id || undefined,
-      className: className || undefined,
-    },
+    elementInfo,
   };
 
   // Send to service worker
