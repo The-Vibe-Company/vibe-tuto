@@ -186,7 +186,7 @@ export function EditorClient({
   }, [steps, selectedStepId]);
 
   // Handle adding a new step (text, heading, divider)
-  const handleAddStep = useCallback(async (type: NewStepType, afterStepId?: string) => {
+  const handleAddStep = useCallback(async (type: NewStepType, afterStepId?: string | null) => {
     const tempId = `temp-${Date.now()}`;
 
     let afterIndex = -1;
@@ -194,7 +194,8 @@ export function EditorClient({
 
     setSteps((currentSteps) => {
       previousSteps = currentSteps;
-      afterIndex = afterStepId ? currentSteps.findIndex((s) => s.id === afterStepId) : currentSteps.length - 1;
+      // null = insert at beginning, undefined = insert at end, string = insert after specific step
+      afterIndex = afterStepId === null ? -1 : afterStepId ? currentSteps.findIndex((s) => s.id === afterStepId) : currentSteps.length - 1;
 
       const newStep: StepWithSignedUrl = {
         id: tempId,

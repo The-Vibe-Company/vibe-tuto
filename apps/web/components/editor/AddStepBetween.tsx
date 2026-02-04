@@ -15,6 +15,9 @@ interface AddStepBetweenProps {
   onAddStep: (type: NewStepType) => void;
 }
 
+// Type for the parent component callback
+export type AddStepCallback = (type: NewStepType, afterStepId?: string | null) => void;
+
 const stepOptions: { type: NewStepType; icon: typeof FileText; label: string }[] = [
   { type: 'text', icon: FileText, label: 'Texte' },
   { type: 'heading', icon: Heading, label: 'Titre' },

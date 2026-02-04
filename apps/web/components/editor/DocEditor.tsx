@@ -37,7 +37,7 @@ interface DocEditorProps {
   onStepAnnotationsChange: (stepId: string, annotations: Annotation[]) => void;
   onDeleteStep: (stepId: string) => void;
   onReorderSteps: (newSteps: StepWithSignedUrl[]) => void;
-  onAddStep: (type: NewStepType, afterStepId?: string) => void;
+  onAddStep: (type: NewStepType, afterStepId?: string | null) => void;
   onCreateStepFromSource: (source: SourceWithSignedUrl) => void;
   onRemoveStepImage: (stepId: string) => void;
   onSetStepImage: (stepId: string, source: SourceWithSignedUrl) => void;
@@ -129,7 +129,7 @@ export function DocEditor({
                         {/* Add step button before the first step */}
                         {index === 0 && (
                           <AddStepBetween
-                            onAddStep={(type) => onAddStep(type, undefined)}
+                            onAddStep={(type) => onAddStep(type, null)}
                           />
                         )}
                         <DocStepCard
