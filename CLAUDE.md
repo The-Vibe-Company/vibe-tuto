@@ -60,3 +60,11 @@ When asked to fix a PR, use the skill address-github-comments to address the com
 ### Designing Pages and Components
 
 Always use frontend-design skill and ui-ux-pro-max skill for designing pages and components or when the user asks you to design something.
+
+## Planning 
+
+When planning, always create a graph of tasks and dependencies between them. 
+
+## Vercel
+
+never deploy to vercel manually, let the CI/CD do it. 
