@@ -180,3 +180,45 @@ describe('Pending upload for retry', () => {
     expect(pendingUpload.steps).toHaveLength(1);
   });
 });
+
+describe('getApiUrl', () => {
+  const DEFAULT_API_URL = 'http://localhost:3000';
+  const API_URL_STORAGE_KEY = 'apiUrl';
+
+  async function getApiUrl(): Promise<string> {
+    const result = await mockChrome.storage.local.get([API_URL_STORAGE_KEY]);
+    return result[API_URL_STORAGE_KEY] || DEFAULT_API_URL;
+  }
+
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  it('returns default URL when no custom URL is set', async () => {
+    mockChrome.storage.local.get.mockResolvedValue({});
+
+    const url = await getApiUrl();
+
+    expect(url).toBe(DEFAULT_API_URL);
+  });
+
+  it('returns custom URL when set in storage', async () => {
+    mockChrome.storage.local.get.mockResolvedValue({
+      [API_URL_STORAGE_KEY]: 'https://vibetuto.com',
+    });
+
+    const url = await getApiUrl();
+
+    expect(url).toBe('https://vibetuto.com');
+  });
+
+  it('returns custom URL for production environment', async () => {
+    mockChrome.storage.local.get.mockResolvedValue({
+      [API_URL_STORAGE_KEY]: 'https://app.vibetuto.com',
+    });
+
+    const url = await getApiUrl();
+
+    expect(url).toBe('https://app.vibetuto.com');
+  });
+});
