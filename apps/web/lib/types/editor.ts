@@ -2,6 +2,28 @@ import type { Tables } from '@/lib/supabase/types';
 
 export type Tutorial = Tables<'tutorials'>;
 
+// Source action type for timeline display
+export type SourceActionType = 'click' | 'navigation';
+
+// Helper to determine the action type of a source
+export function getSourceActionType(source: Source | SourceWithSignedUrl): SourceActionType {
+  if (source.click_type === 'navigation') return 'navigation';
+  if (source.click_x != null && source.click_y != null) return 'click';
+  return 'navigation';
+}
+
+// Helper to format a URL for display
+export function formatSourceUrl(url: string | null): string {
+  if (!url) return 'Unknown page';
+  try {
+    const parsed = new URL(url);
+    const path = parsed.pathname !== '/' ? parsed.pathname : '';
+    return parsed.hostname + path;
+  } catch {
+    return url;
+  }
+}
+
 // Element info captured during click events
 export interface ElementInfo {
   tag: string;       // HTML tag name (e.g., "BUTTON", "A", "DIV")

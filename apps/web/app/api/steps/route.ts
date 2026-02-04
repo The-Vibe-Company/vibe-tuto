@@ -131,15 +131,31 @@ export async function POST(request: Request) {
       insertData.annotations = annotations;
     }
 
-    // Generate auto-caption from source element_info if no text_content provided
-    if (!text_content && source?.element_info) {
-      const elementInfo = typeof source.element_info === 'string'
-        ? JSON.parse(source.element_info)
-        : source.element_info;
+    // Generate auto-caption from source if no text_content provided
+    if (!text_content && source) {
+      // Check if it's a navigation event
+      if (source.click_type === 'navigation' && source.url) {
+        // Generate "Navigate to domain.com/path" caption
+        let pageDesc = source.url;
+        try {
+          const parsed = new URL(source.url);
+          const path = parsed.pathname !== '/' ? parsed.pathname : '';
+          pageDesc = parsed.hostname + path;
+        } catch {
+          // Keep original URL if parsing fails
+        }
+        insertData.text_content = `Navigate to <strong>${pageDesc}</strong>`;
+      }
+      // Otherwise check for element_info (click events)
+      else if (source.element_info) {
+        const elementInfo = typeof source.element_info === 'string'
+          ? JSON.parse(source.element_info)
+          : source.element_info;
 
-      if (elementInfo?.text) {
-        const cleanText = elementInfo.text.replace(/\s+/g, ' ').trim().slice(0, 50);
-        insertData.text_content = `Click on <strong>${cleanText}</strong>`;
+        if (elementInfo?.text) {
+          const cleanText = elementInfo.text.replace(/\s+/g, ' ').trim().slice(0, 50);
+          insertData.text_content = `Click on <strong>${cleanText}</strong>`;
+        }
       }
     }
 
