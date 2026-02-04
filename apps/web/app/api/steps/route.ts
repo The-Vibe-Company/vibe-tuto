@@ -1,5 +1,10 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextResponse } from 'next/server';
+import {
+  generateStepDescription,
+  generateNavigationDescription,
+  type ElementInfo,
+} from '@/lib/label-utils';
 
 // POST /api/steps - Create a new step
 export async function POST(request: Request) {
@@ -135,26 +140,34 @@ export async function POST(request: Request) {
     if (!text_content && source) {
       // Check if it's a navigation event
       if (source.click_type === 'navigation' && source.url) {
-        // Generate "Navigate to domain.com/path" caption
-        let pageDesc = source.url;
-        try {
-          const parsed = new URL(source.url);
-          const path = parsed.pathname !== '/' ? parsed.pathname : '';
-          pageDesc = parsed.hostname + path;
-        } catch {
-          // Keep original URL if parsing fails
+        const navDescription = generateNavigationDescription(source.url);
+        if (navDescription) {
+          insertData.text_content = navDescription;
         }
-        insertData.text_content = `Navigate to <strong>${pageDesc}</strong>`;
       }
       // Otherwise check for element_info (click events)
       else if (source.element_info) {
-        const elementInfo = typeof source.element_info === 'string'
-          ? JSON.parse(source.element_info)
-          : source.element_info;
+        let elementInfo: ElementInfo | null = null;
+        try {
+          elementInfo = typeof source.element_info === 'string'
+            ? JSON.parse(source.element_info)
+            : source.element_info;
 
-        if (elementInfo?.text) {
-          const cleanText = elementInfo.text.replace(/\s+/g, ' ').trim().slice(0, 50);
-          insertData.text_content = `Click on <strong>${cleanText}</strong>`;
+          // Validate it's an object
+          if (elementInfo && typeof elementInfo !== 'object') {
+            elementInfo = null;
+          }
+        } catch {
+          // Invalid JSON, skip
+          elementInfo = null;
+        }
+
+        // Use the improved label generation
+        if (elementInfo) {
+          const description = generateStepDescription(elementInfo, 'click');
+          if (description) {
+            insertData.text_content = description;
+          }
         }
       }
     }
