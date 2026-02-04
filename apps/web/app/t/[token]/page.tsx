@@ -1,28 +1,15 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { PublicTutorialViewer } from '@/components/public/PublicTutorialViewer';
+import { getPublicTutorialByToken } from '@/lib/queries/public-tutorials';
 
 interface PageProps {
   params: Promise<{ token: string }>;
 }
 
-async function getPublicTutorial(token: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
-  const response = await fetch(`${baseUrl}/api/public/tutorials/token/${token}`, {
-    cache: 'no-store', // Don't cache to ensure fresh data
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  return response.json();
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { token } = await params;
-  const data = await getPublicTutorial(token);
+  const data = await getPublicTutorialByToken(token);
 
   if (!data) {
     return {
@@ -42,14 +29,14 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: tutorial.title,
       description: tutorial.description || `Tutorial: ${tutorial.title}`,
       type: 'article',
-      publishedTime: tutorial.publishedAt,
+      publishedTime: tutorial.publishedAt ?? undefined,
     },
   };
 }
 
 export default async function PublicTutorialPage({ params }: PageProps) {
   const { token } = await params;
-  const data = await getPublicTutorial(token);
+  const data = await getPublicTutorialByToken(token);
 
   if (!data) {
     notFound();

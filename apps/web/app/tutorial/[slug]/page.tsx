@@ -1,28 +1,15 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { PublicTutorialViewer } from '@/components/public/PublicTutorialViewer';
+import { getPublicTutorialBySlug } from '@/lib/queries/public-tutorials';
 
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
 
-async function getPublicTutorial(slug: string) {
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
-
-  const response = await fetch(`${baseUrl}/api/public/tutorials/slug/${slug}`, {
-    cache: 'no-store', // Don't cache to ensure fresh data
-  });
-
-  if (!response.ok) {
-    return null;
-  }
-
-  return response.json();
-}
-
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const data = await getPublicTutorial(slug);
+  const data = await getPublicTutorialBySlug(slug);
 
   if (!data) {
     return {
@@ -44,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: tutorial.title,
       description: tutorial.description || `Tutorial: ${tutorial.title}`,
       type: 'article',
-      publishedTime: tutorial.publishedAt,
+      publishedTime: tutorial.publishedAt ?? undefined,
       url: `${baseUrl}/tutorial/${slug}`,
     },
     twitter: {
@@ -57,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
 export default async function PublicTutorialBySlugPage({ params }: PageProps) {
   const { slug } = await params;
-  const data = await getPublicTutorial(slug);
+  const data = await getPublicTutorialBySlug(slug);
 
   if (!data) {
     notFound();
