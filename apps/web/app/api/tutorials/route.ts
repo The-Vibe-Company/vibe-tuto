@@ -37,12 +37,13 @@ export async function GET() {
     );
   }
 
-  // Generate signed URLs for thumbnails (first step's screenshot)
+  // Generate signed URLs for thumbnails (first source's screenshot)
   const tutorialsWithThumbnails = await Promise.all(
     (tutorials || []).map(async (tutorial) => {
-      // Get the first step's screenshot
-      const { data: firstStep } = await supabase
-        .from('steps')
+      // Get the first source's screenshot (sources = raw captured data)
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      const { data: firstSource } = await (supabase as any)
+        .from('sources')
         .select('screenshot_url')
         .eq('tutorial_id', tutorial.id)
         .order('order_index', { ascending: true })
@@ -51,10 +52,10 @@ export async function GET() {
 
       let thumbnailUrl: string | null = null;
 
-      if (firstStep?.screenshot_url) {
+      if (firstSource?.screenshot_url) {
         const { data: signedUrlData } = await supabase.storage
           .from('screenshots')
-          .createSignedUrl(firstStep.screenshot_url, 3600); // 1 hour
+          .createSignedUrl(firstSource.screenshot_url, 3600); // 1 hour
 
         thumbnailUrl = signedUrlData?.signedUrl || null;
       }

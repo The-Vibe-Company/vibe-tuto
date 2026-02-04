@@ -66,6 +66,34 @@ export default function DashboardPage() {
     console.log('Share tutorial:', tutorialId);
   };
 
+  const handleProcess = async (tutorialId: string) => {
+    try {
+      const response = await fetch('/api/process', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ tutorialId }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to process tutorial');
+      }
+
+      const data = await response.json();
+      
+      // Update local state
+      setTutorials((prev) =>
+        prev.map((t) =>
+          t.id === tutorialId ? { ...t, status: data.status || 'ready' } : t
+        )
+      );
+    } catch (err) {
+      console.error('Process error:', err);
+      // Could show a toast notification here
+    }
+  };
+
   if (error) {
     return (
       <div className="rounded-xl bg-white p-8 text-center shadow-sm">
@@ -128,6 +156,7 @@ export default function DashboardPage() {
               onEdit={() => handleEdit(tutorial.id)}
               onDelete={() => handleDelete(tutorial.id)}
               onShare={() => handleShare(tutorial.id)}
+              onProcess={() => handleProcess(tutorial.id)}
             />
           ))}
         </div>

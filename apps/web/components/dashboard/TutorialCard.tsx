@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { MoreVertical, Pencil, Share2, Trash2, Loader2 } from 'lucide-react';
+import { MoreVertical, Pencil, Share2, Trash2, Loader2, Play, ImageIcon, CheckCircle2, AlertCircle } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -32,28 +32,29 @@ export interface TutorialCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onShare: () => void;
+  onProcess?: () => Promise<void>;
 }
 
 const statusConfig = {
   draft: {
     label: 'Brouillon',
-    variant: 'secondary' as const,
-    className: 'bg-gray-100 text-gray-700',
+    className: 'bg-gray-100 text-gray-700 border-gray-200',
+    icon: null,
   },
   processing: {
-    label: 'En cours...',
-    variant: 'default' as const,
-    className: 'bg-yellow-100 text-yellow-700',
+    label: 'En attente de traitement',
+    className: 'bg-amber-100 text-amber-700 border-amber-200',
+    icon: Loader2,
   },
   ready: {
     label: 'Prêt',
-    variant: 'default' as const,
-    className: 'bg-green-100 text-green-700',
+    className: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+    icon: CheckCircle2,
   },
   error: {
     label: 'Erreur',
-    variant: 'destructive' as const,
-    className: 'bg-red-100 text-red-700',
+    className: 'bg-red-100 text-red-700 border-red-200',
+    icon: AlertCircle,
   },
 };
 
@@ -67,11 +68,24 @@ export function TutorialCard({
   onEdit,
   onDelete,
   onShare,
+  onProcess,
 }: TutorialCardProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   const statusInfo = statusConfig[status];
+  const StatusIcon = statusInfo.icon;
+
+  const handleProcess = async () => {
+    if (!onProcess) return;
+    setIsProcessing(true);
+    try {
+      await onProcess();
+    } finally {
+      setIsProcessing(false);
+    }
+  };
 
   const formattedDate = new Date(createdAt).toLocaleDateString('fr-FR', {
     day: 'numeric',
@@ -91,9 +105,9 @@ export function TutorialCard({
 
   return (
     <>
-      <Card className="group overflow-hidden transition-shadow hover:shadow-md">
+      <Card className="group overflow-hidden transition-all hover:shadow-lg">
         {/* Thumbnail */}
-        <div className="relative aspect-video bg-gray-100">
+        <div className="relative aspect-video bg-gradient-to-br from-gray-50 to-gray-100">
           {thumbnailUrl ? (
             <Image
               src={thumbnailUrl}
@@ -103,30 +117,52 @@ export function TutorialCard({
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             />
           ) : (
-            <div className="flex h-full items-center justify-center text-gray-400">
-              <svg
-                className="h-12 w-12"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={1.5}
-                  d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
-                />
-              </svg>
+            <div className="flex h-full flex-col items-center justify-center text-gray-300">
+              <div className="rounded-xl bg-gray-200/50 p-4">
+                <ImageIcon className="h-10 w-10" />
+              </div>
+              <span className="mt-2 text-xs text-gray-400">Aucun aperçu</span>
             </div>
           )}
 
           {/* Status Badge */}
-          <Badge className={`absolute left-2 top-2 ${statusInfo.className}`}>
-            {status === 'processing' && (
-              <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+          <Badge 
+            variant="outline"
+            className={`absolute left-2 top-2 gap-1.5 border px-2 py-1 text-xs font-medium shadow-sm ${statusInfo.className}`}
+          >
+            {StatusIcon && status === 'processing' && !isProcessing && (
+              <StatusIcon className="h-3 w-3 animate-spin" />
             )}
+            {StatusIcon && status !== 'processing' && (
+              <StatusIcon className="h-3 w-3" />
+            )}
+            {isProcessing && <Loader2 className="h-3 w-3 animate-spin" />}
             {statusInfo.label}
           </Badge>
+
+          {/* Process Button - Only show for processing status */}
+          {status === 'processing' && onProcess && (
+            <div className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100">
+              <Button
+                onClick={handleProcess}
+                disabled={isProcessing}
+                className="gap-2 bg-white text-gray-900 hover:bg-gray-100"
+                size="sm"
+              >
+                {isProcessing ? (
+                  <>
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                    Traitement...
+                  </>
+                ) : (
+                  <>
+                    <Play className="h-4 w-4" />
+                    Finaliser
+                  </>
+                )}
+              </Button>
+            </div>
+          )}
 
           {/* Actions Menu */}
           <div className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100">
