@@ -1,68 +1,68 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus } from 'lucide-react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { TutorialCard, TutorialCardProps } from '@/components/dashboard/TutorialCard';
 import { TutorialCardSkeleton } from '@/components/dashboard/TutorialCardSkeleton';
 
 type Tutorial = Omit<TutorialCardProps, 'onEdit' | 'onDelete' | 'onShare' | 'onProcess'>;
 
+async function fetchTutorials(): Promise<Tutorial[]> {
+  const response = await fetch('/api/tutorials');
+  if (!response.ok) {
+    if (response.status === 401) {
+      throw new Error('UNAUTHORIZED');
+    }
+    throw new Error('Failed to fetch tutorials');
+  }
+  const data = await response.json();
+  return data.tutorials;
+}
+
 export default function DashboardPage() {
   const router = useRouter();
-  const [tutorials, setTutorials] = useState<Tutorial[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
 
-  const fetchTutorials = useCallback(async () => {
-    try {
-      const response = await fetch('/api/tutorials');
+  const {
+    data: tutorials = [],
+    isLoading: loading,
+    error,
+    refetch,
+  } = useQuery({
+    queryKey: ['tutorials'],
+    queryFn: fetchTutorials,
+  });
 
-      if (!response.ok) {
-        if (response.status === 401) {
-          router.push('/login');
-          return;
-        }
-        throw new Error('Failed to fetch tutorials');
-      }
+  // Redirect to login on unauthorized error
+  if (error?.message === 'UNAUTHORIZED') {
+    router.push('/login');
+    return null;
+  }
 
-      const data = await response.json();
-      setTutorials(data.tutorials);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : 'An error occurred');
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    fetchTutorials();
-  }, [fetchTutorials]);
-
-  const handleEdit = (tutorialId: string) => {
-    router.push(`/editor/${tutorialId}`);
-  };
-
-  const handleDelete = async (tutorialId: string) => {
-    try {
+  const deleteMutation = useMutation({
+    mutationFn: async (tutorialId: string) => {
       const response = await fetch(`/api/tutorials/${tutorialId}`, {
         method: 'DELETE',
       });
-
       if (!response.ok) {
         throw new Error('Failed to delete tutorial');
       }
-
-      // Remove from local state
-      setTutorials((prev) => prev.filter((t) => t.id !== tutorialId));
-    } catch (err) {
+      return tutorialId;
+    },
+    onSuccess: (deletedId) => {
+      // Optimistically update the cache
+      queryClient.setQueryData<Tutorial[]>(['tutorials'], (old) =>
+        old?.filter((t) => t.id !== deletedId) ?? []
+      );
+    },
+    onError: (err) => {
       console.error('Delete error:', err);
-      // Could show a toast notification here
-    }
-  };
+    },
+  });
 
-  const handleProcess = async (tutorialId: string) => {
-    try {
+  const processMutation = useMutation({
+    mutationFn: async (tutorialId: string) => {
       const response = await fetch('/api/process', {
         method: 'POST',
         headers: {
@@ -70,35 +70,41 @@ export default function DashboardPage() {
         },
         body: JSON.stringify({ tutorialId }),
       });
-
       if (!response.ok) {
         throw new Error('Failed to process tutorial');
       }
-
       const data = await response.json();
-      
-      // Update local state
-      setTutorials((prev) =>
-        prev.map((t) =>
-          t.id === tutorialId ? { ...t, status: data.status || 'ready' } : t
-        )
+      return { tutorialId, status: data.status || 'ready' };
+    },
+    onSuccess: ({ tutorialId, status }) => {
+      // Optimistically update the cache
+      queryClient.setQueryData<Tutorial[]>(['tutorials'], (old) =>
+        old?.map((t) => (t.id === tutorialId ? { ...t, status } : t)) ?? []
       );
-    } catch (err) {
+    },
+    onError: (err) => {
       console.error('Process error:', err);
-      // Could show a toast notification here
-    }
+    },
+  });
+
+  const handleEdit = (tutorialId: string) => {
+    router.push(`/editor/${tutorialId}`);
   };
 
-  if (error) {
+  const handleDelete = (tutorialId: string) => {
+    deleteMutation.mutate(tutorialId);
+  };
+
+  const handleProcess = async (tutorialId: string) => {
+    await processMutation.mutateAsync(tutorialId);
+  };
+
+  if (error && error.message !== 'UNAUTHORIZED') {
     return (
       <div className="rounded-xl bg-white p-8 text-center shadow-sm">
-        <p className="text-red-600">{error}</p>
+        <p className="text-red-600">{error.message}</p>
         <button
-          onClick={() => {
-            setError(null);
-            setLoading(true);
-            fetchTutorials();
-          }}
+          onClick={() => refetch()}
           className="mt-4 text-sm text-violet-600 hover:underline"
         >
           Réessayer

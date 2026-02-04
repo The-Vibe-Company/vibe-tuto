@@ -11,15 +11,17 @@ export default async function EditorPage({ params }: EditorPageProps) {
   const { id } = await params;
   const supabase = await createClient();
 
-  // 1. Verify authentication
+  // 1. Get user from session (middleware already validated auth and redirects if not authenticated)
+  // Using getSession() which reads from cookies (no network call) instead of getUser()
   const {
-    data: { user },
-    error: authError,
-  } = await supabase.auth.getUser();
+    data: { session },
+  } = await supabase.auth.getSession();
 
-  if (authError || !user) {
+  // Session is guaranteed by middleware, but fallback for safety
+  if (!session?.user) {
     redirect('/login');
   }
+  const user = session.user;
 
   // 2. Fetch tutorial
   const { data: tutorial, error: tutorialError } = await supabase
@@ -37,64 +39,87 @@ export default async function EditorPage({ params }: EditorPageProps) {
     redirect('/dashboard?error=access_denied');
   }
 
-  // 4. Fetch sources (raw captured data)
-  // Note: Using type assertion due to regenerated types not including all columns
+  // 4. Fetch sources and steps IN PARALLEL (they don't depend on each other)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: sources, error: sourcesError } = await (supabase as any)
-    .from('sources')
-    .select('*')
-    .eq('tutorial_id', id)
-    .order('order_index', { ascending: true });
+  const [sourcesResult, stepsResult] = await Promise.all([
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
+      .from('sources')
+      .select('*')
+      .eq('tutorial_id', id)
+      .order('order_index', { ascending: true }),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (supabase as any)
+      .from('steps')
+      .select('*')
+      .eq('tutorial_id', id)
+      .order('order_index', { ascending: true }),
+  ]);
 
-  if (sourcesError) {
-    console.error('Failed to fetch sources:', sourcesError);
-    // Don't throw - sources table might not exist yet during migration
+  const sources = sourcesResult.data;
+  const steps = stepsResult.data;
+
+  if (sourcesResult.error) {
+    console.error('Failed to fetch sources:', sourcesResult.error);
+  }
+  if (stepsResult.error) {
+    console.error('Failed to fetch steps:', stepsResult.error);
   }
 
-  // 5. Fetch steps (authored content)
-  // Note: Using type assertion due to regenerated types not including all columns
+  // 5. Collect all screenshot paths that need signed URLs
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: steps, error: stepsError } = await (supabase as any)
-    .from('steps')
-    .select('*')
-    .eq('tutorial_id', id)
-    .order('order_index', { ascending: true });
+  const screenshotPaths: string[] = (sources || [])
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .filter((s: any) => s.screenshot_url)
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    .map((s: any) => s.screenshot_url);
 
-  if (stepsError) {
-    console.error('Failed to fetch steps:', stepsError);
-    // Don't throw - steps table might be empty
-  }
+  // Also add audio path
+  const audioPath = `${tutorial.user_id}/${tutorial.id}.webm`;
 
-  // 6. Generate signed URLs for sources
+  // 6. Generate ALL signed URLs in one parallel batch
+  const [screenshotSignedUrls, audioSignedUrlResult] = await Promise.all([
+    // Batch all screenshot signed URLs
+    Promise.all(
+      screenshotPaths.map(path =>
+        supabase.storage.from('screenshots').createSignedUrl(path, 3600)
+      )
+    ),
+    // Audio signed URL
+    supabase.storage.from('recordings').createSignedUrl(audioPath, 3600),
+  ]);
+
+  // Build path -> signed URL map for screenshots
+  const signedUrlMap = new Map<string, string>();
+  screenshotPaths.forEach((path, index) => {
+    const result = screenshotSignedUrls[index];
+    if (result.data?.signedUrl) {
+      signedUrlMap.set(path, result.data.signedUrl);
+    }
+  });
+
+  // 7. Build sources with signed URLs
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const sourcesWithSignedUrls: SourceWithSignedUrl[] = await Promise.all(
-    (sources || []).map(async (source: any) => {
-      let signedScreenshotUrl: string | null = null;
+  const sourcesWithSignedUrls: SourceWithSignedUrl[] = (sources || []).map((source: any) => {
+    const signedScreenshotUrl = source.screenshot_url
+      ? signedUrlMap.get(source.screenshot_url) || null
+      : null;
 
-      if (source.screenshot_url) {
-        const { data: signedUrl } = await supabase.storage
-          .from('screenshots')
-          .createSignedUrl(source.screenshot_url, 3600);
+    // Parse element_info from JSON if present
+    const element_info = source.element_info
+      ? (typeof source.element_info === 'string'
+          ? JSON.parse(source.element_info)
+          : source.element_info as ElementInfo)
+      : null;
 
-        signedScreenshotUrl = signedUrl?.signedUrl || null;
-      }
+    return {
+      ...source,
+      signedScreenshotUrl,
+      element_info,
+    };
+  });
 
-      // Parse element_info from JSON if present
-      const element_info = source.element_info
-        ? (typeof source.element_info === 'string'
-            ? JSON.parse(source.element_info)
-            : source.element_info as ElementInfo)
-        : null;
-
-      return {
-        ...source,
-        signedScreenshotUrl,
-        element_info,
-      };
-    })
-  );
-
-  // 7. Build steps with source data
+  // 8. Build steps with source data
   const sourcesMap = new Map(sourcesWithSignedUrls.map(s => [s.id, s]));
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -127,18 +152,12 @@ export default async function EditorPage({ params }: EditorPageProps) {
     };
   });
 
-  // 8. Generate signed URL for audio
-  const audioPath = `${tutorial.user_id}/${tutorial.id}.webm`;
-  const { data: audioSignedUrl } = await supabase.storage
-    .from('recordings')
-    .createSignedUrl(audioPath, 3600);
-
   return (
     <EditorClient
       initialTutorial={tutorial}
       initialSources={sourcesWithSignedUrls}
       initialSteps={stepsWithSources}
-      audioUrl={audioSignedUrl?.signedUrl || null}
+      audioUrl={audioSignedUrlResult.data?.signedUrl || null}
     />
   );
 }

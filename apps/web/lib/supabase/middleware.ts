@@ -1,6 +1,9 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
 
+// Protected routes that require authentication
+const PROTECTED_ROUTES = ['/dashboard', '/editor'];
+
 export async function updateSession(request: NextRequest) {
   let supabaseResponse = NextResponse.next({
     request,
@@ -30,7 +33,22 @@ export async function updateSession(request: NextRequest) {
   );
 
   // Refresh session if expired - required for Server Components
-  await supabase.auth.getUser();
+  const { data: { user } } = await supabase.auth.getUser();
+
+  // Check if current route is protected
+  const pathname = request.nextUrl.pathname;
+  const isProtectedRoute = PROTECTED_ROUTES.some(route => pathname.startsWith(route));
+
+  // Redirect to login if accessing protected route without auth
+  if (isProtectedRoute && !user) {
+    const loginUrl = new URL('/login', request.url);
+    return NextResponse.redirect(loginUrl);
+  }
+
+  // Store user email in response header for layouts to use (avoids duplicate getUser calls)
+  if (user?.email) {
+    supabaseResponse.headers.set('x-user-email', user.email);
+  }
 
   return supabaseResponse;
 }

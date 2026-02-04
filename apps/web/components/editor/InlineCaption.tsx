@@ -1,9 +1,10 @@
 'use client';
 
-import { useState, useRef, useEffect } from 'react';
-import { useEditor, EditorContent } from '@tiptap/react';
-import StarterKit from '@tiptap/starter-kit';
+import { useState, useRef, useEffect, Suspense, lazy } from 'react';
 import { cn } from '@/lib/utils';
+
+// Lazy load the Tiptap editor component - only loaded when user clicks to edit
+const TiptapEditor = lazy(() => import('./TiptapEditor').then(m => ({ default: m.TiptapEditor })));
 
 interface InlineCaptionProps {
   content: string;
@@ -16,6 +17,7 @@ interface InlineCaptionProps {
 /**
  * Click-to-edit caption component using Tiptap.
  * Shows formatted HTML when not editing, Tiptap editor when clicked.
+ * Tiptap is ONLY loaded when user enters edit mode (lazy loading).
  */
 export function InlineCaption({
   content,
@@ -26,46 +28,6 @@ export function InlineCaption({
 }: InlineCaptionProps) {
   const [isEditing, setIsEditing] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  const editor = useEditor({
-    extensions: [
-      StarterKit.configure({
-        heading: false,
-        bulletList: false,
-        orderedList: false,
-        blockquote: false,
-        codeBlock: false,
-        horizontalRule: false,
-      }),
-    ],
-    content,
-    immediatelyRender: false,
-    editorProps: {
-      attributes: {
-        class: cn(
-          'focus:outline-none min-h-[1.5em] max-w-none',
-          isHeading ? 'text-lg font-semibold' : 'prose prose-sm prose-stone'
-        ),
-      },
-    },
-    onUpdate: ({ editor }) => {
-      onChange?.(editor.getHTML());
-    },
-  });
-
-  // Sync content when prop changes
-  useEffect(() => {
-    if (editor && !isEditing && content !== editor.getHTML()) {
-      editor.commands.setContent(content || '');
-    }
-  }, [content, editor, isEditing]);
-
-  // Focus editor when entering edit mode
-  useEffect(() => {
-    if (isEditing && editor) {
-      editor.commands.focus('end');
-    }
-  }, [isEditing, editor]);
 
   // Click outside to close editor
   useEffect(() => {
@@ -114,7 +76,7 @@ export function InlineCaption({
     );
   }
 
-  // Display mode (not editing)
+  // Display mode (not editing) - NO Tiptap loaded here
   if (!isEditing) {
     return (
       <div
@@ -140,53 +102,23 @@ export function InlineCaption({
     );
   }
 
-  // Edit mode
+  // Edit mode - Tiptap is lazily loaded ONLY here
   return (
     <div
       ref={containerRef}
       className="rounded-md border border-violet-300 bg-white px-2 py-1 ring-2 ring-violet-100"
     >
-      <EditorContent editor={editor} />
-      {!isHeading && (
-        <div className="mt-1 flex gap-1 border-t border-stone-100 pt-1">
-          <button
-            type="button"
-            onClick={() => editor?.chain().focus().toggleBold().run()}
-            className={cn(
-              'rounded px-2 py-0.5 text-xs font-medium transition-colors',
-              editor?.isActive('bold')
-                ? 'bg-violet-100 text-violet-700'
-                : 'text-stone-500 hover:bg-stone-100'
-            )}
-          >
-            B
-          </button>
-          <button
-            type="button"
-            onClick={() => editor?.chain().focus().toggleItalic().run()}
-            className={cn(
-              'rounded px-2 py-0.5 text-xs italic transition-colors',
-              editor?.isActive('italic')
-                ? 'bg-violet-100 text-violet-700'
-                : 'text-stone-500 hover:bg-stone-100'
-            )}
-          >
-            I
-          </button>
-          <button
-            type="button"
-            onClick={() => editor?.chain().focus().toggleCode().run()}
-            className={cn(
-              'rounded px-2 py-0.5 text-xs font-mono transition-colors',
-              editor?.isActive('code')
-                ? 'bg-violet-100 text-violet-700'
-                : 'text-stone-500 hover:bg-stone-100'
-            )}
-          >
-            {'</>'}
-          </button>
-        </div>
-      )}
+      <Suspense
+        fallback={
+          <div className="min-h-[1.5em] animate-pulse bg-stone-100 rounded" />
+        }
+      >
+        <TiptapEditor
+          content={content}
+          onChange={onChange}
+          isHeading={isHeading}
+        />
+      </Suspense>
     </div>
   );
 }
