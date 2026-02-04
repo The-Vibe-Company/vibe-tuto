@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Plus, AlertCircle, RefreshCw } from 'lucide-react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -35,12 +36,6 @@ export default function DashboardPage() {
     queryKey: ['tutorials'],
     queryFn: fetchTutorials,
   });
-
-  // Redirect to login on unauthorized error
-  if (error?.message === 'UNAUTHORIZED') {
-    router.push('/login');
-    return null;
-  }
 
   const deleteMutation = useMutation({
     mutationFn: async (tutorialId: string) => {
@@ -101,7 +96,19 @@ export default function DashboardPage() {
     await processMutation.mutateAsync(tutorialId);
   };
 
-  if (error && error.message !== 'UNAUTHORIZED') {
+  // Redirect to login on unauthorized error
+  useEffect(() => {
+    if (error?.message === 'UNAUTHORIZED') {
+      router.push('/login');
+    }
+  }, [error, router]);
+
+  // Show nothing while redirecting to login
+  if (error?.message === 'UNAUTHORIZED') {
+    return null;
+  }
+
+  if (error) {
     return (
       <Card className="border-red-100">
         <CardContent className="flex flex-col items-center justify-center p-8 text-center">
