@@ -228,6 +228,33 @@ function pointToLineDistance(
   return Math.sqrt(dx * dx + dy * dy);
 }
 
+export type ResizeCorner = 'nw' | 'ne' | 'sw' | 'se';
+
+export function hitTestCorner(
+  annotation: Annotation,
+  point: { x: number; y: number },
+  tolerance: number = 0.03
+): ResizeCorner | null {
+  if (!['circle', 'highlight', 'blur'].includes(annotation.type)) return null;
+
+  const bounds = getAnnotationBounds(annotation);
+  const corners: [ResizeCorner, number, number][] = [
+    ['nw', bounds.minX, bounds.minY],
+    ['ne', bounds.maxX, bounds.minY],
+    ['sw', bounds.minX, bounds.maxY],
+    ['se', bounds.maxX, bounds.maxY],
+  ];
+
+  for (const [corner, cx, cy] of corners) {
+    const dx = point.x - cx;
+    const dy = point.y - cy;
+    if (Math.sqrt(dx * dx + dy * dy) < tolerance) {
+      return corner;
+    }
+  }
+  return null;
+}
+
 /**
  * Find the topmost annotation at a given point
  * Returns the annotation id or null if no hit

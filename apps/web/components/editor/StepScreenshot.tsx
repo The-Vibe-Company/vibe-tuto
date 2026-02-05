@@ -4,7 +4,6 @@ import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
 import { AnnotationCanvas } from './AnnotationCanvas';
 import { AnnotationToolbar, type AnnotationStyle } from './AnnotationToolbar';
-import { QuickAnnotationBar } from './QuickAnnotationBar';
 import type { Annotation, AnnotationType } from '@/lib/types/editor';
 import { Badge } from '@/components/ui/badge';
 import { cn } from '@/lib/utils';
@@ -74,11 +73,14 @@ export function StepScreenshot({
     setActiveTool(null);
   }, []);
 
-  const handleQuickToolSelect = useCallback((tool: AnnotationType) => {
-    if (readOnly) return;
-    setIsAnnotating(true);
+  const handleToolChange = useCallback((tool: AnnotationType | null) => {
     setActiveTool(tool);
-  }, [readOnly]);
+    if (tool) {
+      setIsAnnotating(true);
+    }
+  }, []);
+
+  const showToolbar = !readOnly && (isAnnotating || isHovering);
 
   return (
     <div
@@ -86,20 +88,22 @@ export function StepScreenshot({
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Annotation toolbar */}
-      {!readOnly && isAnnotating && (
-        <div className="absolute -top-14 left-1/2 z-20 -translate-x-1/2 animate-in fade-in slide-in-from-bottom-2 duration-200">
-          <AnnotationToolbar
-            activeTool={activeTool}
-            onToolChange={setActiveTool}
-            onClearAll={handleClearAnnotations}
-            onDone={handleDone}
-            hasAnnotations={annotations.length > 0}
-            annotationStyle={annotationStyle}
-            onStyleChange={setAnnotationStyle}
-          />
-        </div>
-      )}
+      {/* Annotation toolbar - inside the hover zone */}
+      <div className={cn('flex justify-center', showToolbar ? 'mb-2' : 'h-0')}>
+        {showToolbar && (
+          <div className="animate-in fade-in slide-in-from-bottom-2 duration-200">
+            <AnnotationToolbar
+              activeTool={activeTool}
+              onToolChange={handleToolChange}
+              onClearAll={handleClearAnnotations}
+              onDone={handleDone}
+              hasAnnotations={annotations.length > 0}
+              annotationStyle={annotationStyle}
+              onStyleChange={setAnnotationStyle}
+            />
+          </div>
+        )}
+      </div>
 
       {/* Screenshot container */}
       <div
@@ -149,44 +153,39 @@ export function StepScreenshot({
           </div>
         </div>
 
-        {/* Quick annotation bar */}
-        {!readOnly && isHovering && !isAnnotating && (
-          <div className="absolute bottom-3 left-3 z-10 animate-in fade-in slide-in-from-left-2 duration-150">
-            <QuickAnnotationBar onToolSelect={handleQuickToolSelect} />
+        {/* Controls overlay (hidden in readOnly) */}
+        {!readOnly && (
+          <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
+            {/* Annotation count badge */}
+            {annotations.length > 0 && !isAnnotating && (
+              <Badge
+                variant="secondary"
+                className="h-6 gap-1 bg-background/90 backdrop-blur-sm text-xs shadow-sm"
+              >
+                <span className="tabular-nums">{annotations.length}</span>
+                <span className="text-muted-foreground">annotations</span>
+              </Badge>
+            )}
+
+            {/* Zoom controls - button group */}
+            <div className="flex items-center rounded-lg border border-border bg-background/90 shadow-sm backdrop-blur-sm overflow-hidden">
+              {ZOOM_LEVELS.map((level, i) => (
+                <button
+                  key={level}
+                  onClick={() => setZoomIndex(i)}
+                  className={cn(
+                    'px-2.5 py-1 text-xs font-medium transition-colors',
+                    i === zoomIndex
+                      ? 'bg-primary text-primary-foreground'
+                      : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                  )}
+                >
+                  {level}x
+                </button>
+              ))}
+            </div>
           </div>
         )}
-
-        {/* Controls overlay */}
-        <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
-          {/* Annotation count badge */}
-          {annotations.length > 0 && !isAnnotating && (
-            <Badge
-              variant="secondary"
-              className="h-6 gap-1 bg-background/90 backdrop-blur-sm text-xs shadow-sm"
-            >
-              <span className="tabular-nums">{annotations.length}</span>
-              <span className="text-muted-foreground">annotations</span>
-            </Badge>
-          )}
-
-          {/* Zoom controls - button group */}
-          <div className="flex items-center rounded-lg border border-border bg-background/90 shadow-sm backdrop-blur-sm overflow-hidden">
-            {ZOOM_LEVELS.map((level, i) => (
-              <button
-                key={level}
-                onClick={() => setZoomIndex(i)}
-                className={cn(
-                  'px-2.5 py-1 text-xs font-medium transition-colors',
-                  i === zoomIndex
-                    ? 'bg-primary text-primary-foreground'
-                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
-                )}
-              >
-                {level}x
-              </button>
-            ))}
-          </div>
-        </div>
       </div>
     </div>
   );

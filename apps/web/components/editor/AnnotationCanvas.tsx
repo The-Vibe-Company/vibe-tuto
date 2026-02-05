@@ -2,7 +2,7 @@
 
 import { useRef, useEffect, useState, useCallback } from 'react';
 import type { Annotation, AnnotationType } from '@/lib/types/editor';
-import { findAnnotationAtPoint, moveAnnotation, getAnnotationBounds } from '@/lib/utils/annotation-hit-test';
+import { findAnnotationAtPoint, moveAnnotation, getAnnotationBounds, hitTestCorner, type ResizeCorner } from '@/lib/utils/annotation-hit-test';
 import { getStrokePx, DEFAULT_ANNOTATION_STYLE } from '@/lib/constants/annotation-styles';
 import type { AnnotationStyle } from './AnnotationToolbar';
 
@@ -18,7 +18,7 @@ interface AnnotationCanvasProps {
 }
 
 const SELECTION_COLOR = '#8b5cf6';
-const BLUR_RADIUS = 10;
+const PIXELATE_BLOCK_SIZE = 12; // Size of each pixelated block in pixels
 
 // Auto-incrementing callout counter
 let nextCalloutNumber = 1;
@@ -41,6 +41,12 @@ export function AnnotationCanvas({
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null);
   const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(null);
+  const [isResizing, setIsResizing] = useState(false);
+  const [resizeCorner, setResizeCorner] = useState<ResizeCorner | null>(null);
+  const [resizeStartPos, setResizeStartPos] = useState<{ x: number; y: number } | null>(null);
+  const [hoveredCorner, setHoveredCorner] = useState<ResizeCorner | null>(null);
+  const [textInputState, setTextInputState] = useState<{ x: number; y: number } | null>(null);
+  const textInputRef = useRef<HTMLInputElement>(null);
 
   const style = annotationStyle || {
     color: DEFAULT_ANNOTATION_STYLE.color,
@@ -84,7 +90,7 @@ export function AnnotationCanvas({
       ctx.setLineDash([]);
 
       // Corner handles - filled circles with shadow
-      const handleRadius = 4;
+      const handleRadius = 5;
       const corners = [
         [x, y],
         [x + w, y],
@@ -286,18 +292,64 @@ export function AnnotationCanvas({
           const w = (ann.width || 0.1) * width;
           const h = (ann.height || 0.1) * height;
 
-          // Frosted glass blur effect
-          ctx.save();
-          ctx.filter = `blur(${BLUR_RADIUS}px)`;
-          ctx.fillStyle = 'rgba(128, 128, 128, 0.85)';
-          ctx.beginPath();
-          ctx.roundRect(x, y, w, h, 6);
-          ctx.fill();
-          ctx.filter = 'none';
-          ctx.restore();
+          // Pixelate effect: read underlying image, scale down then up
+          // Canvas is inside a wrapper div → go up to the container to find the <img>
+          const imgEl = containerRef.current?.querySelector('img') as HTMLImageElement | null;
+          if (imgEl && imgEl.complete && imgEl.naturalWidth > 0) {
+            try {
+              ctx.save();
+              // Clip to rounded rect
+              ctx.beginPath();
+              ctx.roundRect(x, y, w, h, 6);
+              ctx.clip();
 
-          // Subtle border around blur area
-          ctx.strokeStyle = 'rgba(128, 128, 128, 0.3)';
+              // Calculate how many pixel blocks fit
+              const blockSize = PIXELATE_BLOCK_SIZE;
+              const smallW = Math.max(1, Math.ceil(w / blockSize));
+              const smallH = Math.max(1, Math.ceil(h / blockSize));
+
+              // Use offscreen canvas to pixelate
+              const offscreen = document.createElement('canvas');
+              offscreen.width = smallW;
+              offscreen.height = smallH;
+              const offCtx = offscreen.getContext('2d');
+              if (offCtx) {
+                // Calculate source region from the image's natural dimensions
+                const scaleX = imgEl.naturalWidth / width;
+                const scaleY = imgEl.naturalHeight / height;
+                // Draw the source region scaled down (this averages the pixels)
+                offCtx.drawImage(
+                  imgEl,
+                  x * scaleX, y * scaleY, w * scaleX, h * scaleY,
+                  0, 0, smallW, smallH
+                );
+                // Draw it back at full size without smoothing → blocky pixels
+                ctx.imageSmoothingEnabled = false;
+                ctx.drawImage(offscreen, 0, 0, smallW, smallH, x, y, w, h);
+                ctx.imageSmoothingEnabled = true;
+              }
+              ctx.restore();
+            } catch {
+              // Fallback if image can't be read (CORS etc.)
+              ctx.save();
+              ctx.fillStyle = 'rgba(180, 180, 180, 0.9)';
+              ctx.beginPath();
+              ctx.roundRect(x, y, w, h, 6);
+              ctx.fill();
+              ctx.restore();
+            }
+          } else {
+            // Fallback: gray rectangle if image not loaded
+            ctx.save();
+            ctx.fillStyle = 'rgba(180, 180, 180, 0.9)';
+            ctx.beginPath();
+            ctx.roundRect(x, y, w, h, 6);
+            ctx.fill();
+            ctx.restore();
+          }
+
+          // Subtle border
+          ctx.strokeStyle = 'rgba(160, 160, 160, 0.3)';
           ctx.lineWidth = 1;
           ctx.beginPath();
           ctx.roundRect(x, y, w, h, 6);
@@ -449,11 +501,27 @@ export function AnnotationCanvas({
     drawAnnotations();
   }, [drawAnnotations]);
 
+  // Redraw when underlying image loads (needed for pixelate blur effect)
+  useEffect(() => {
+    const hasBlur = annotations.some(a => a.type === 'blur');
+    if (!hasBlur) return;
+
+    const imgEl = containerRef.current?.querySelector('img');
+    if (!imgEl) return;
+
+    const onLoad = () => drawAnnotations();
+    imgEl.addEventListener('load', onLoad);
+    // Also handle decode completion
+    if (imgEl.complete) drawAnnotations();
+    return () => imgEl.removeEventListener('load', onLoad);
+  }, [annotations, containerRef, drawAnnotations]);
+
   // Handle keyboard events for deletion
   useEffect(() => {
     if (readOnly) return;
 
     const handleKeyDown = (e: KeyboardEvent) => {
+      if (textInputState) return;
       if ((e.key === 'Delete' || e.key === 'Backspace') && selectedAnnotationId && onDeleteAnnotation) {
         e.preventDefault();
         onDeleteAnnotation(selectedAnnotationId);
@@ -466,7 +534,7 @@ export function AnnotationCanvas({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedAnnotationId, onDeleteAnnotation, readOnly]);
+  }, [selectedAnnotationId, onDeleteAnnotation, readOnly, textInputState]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (readOnly) return;
@@ -474,20 +542,35 @@ export function AnnotationCanvas({
     if (!pos) return;
 
     if (activeTool) {
-      if (activeTool === 'text') {
-        const content = window.prompt('Annotation text:');
-        if (content) {
-          onAddAnnotation({
-            id: crypto.randomUUID(),
-            type: 'text',
-            x: pos.x,
-            y: pos.y,
-            content,
-            color: style.color,
-            fontSize: style.fontSize,
-            textBackground: style.textBackground,
-          });
+      // Check resize corners on selected annotation first (corners may be outside body hit area)
+      if (selectedAnnotationId) {
+        const selectedAnn = annotations.find(a => a.id === selectedAnnotationId);
+        if (selectedAnn) {
+          const corner = hitTestCorner(selectedAnn, pos);
+          if (corner) {
+            setIsResizing(true);
+            setResizeCorner(corner);
+            setResizeStartPos(pos);
+            return;
+          }
         }
+      }
+
+      // Check if clicking on an existing annotation → select it instead of drawing
+      const hitId = findAnnotationAtPoint(annotations, pos);
+      if (hitId) {
+        if (hitId === selectedAnnotationId) {
+          // Start dragging
+          setIsDragging(true);
+          setDragStartPos(pos);
+          return;
+        }
+        setSelectedAnnotationId(hitId);
+        return;
+      }
+
+      if (activeTool === 'text') {
+        setTextInputState({ x: pos.x, y: pos.y });
         return;
       }
 
@@ -515,10 +598,25 @@ export function AnnotationCanvas({
       return;
     }
 
+    // Check resize corners on selected annotation first (corners may be outside body hit area)
+    if (selectedAnnotationId) {
+      const selectedAnn = annotations.find(a => a.id === selectedAnnotationId);
+      if (selectedAnn) {
+        const corner = hitTestCorner(selectedAnn, pos);
+        if (corner) {
+          setIsResizing(true);
+          setResizeCorner(corner);
+          setResizeStartPos(pos);
+          return;
+        }
+      }
+    }
+
     const hitAnnotationId = findAnnotationAtPoint(annotations, pos);
 
     if (hitAnnotationId) {
       if (selectedAnnotationId === hitAnnotationId) {
+        // Start dragging
         setIsDragging(true);
         setDragStartPos(pos);
       } else {
@@ -557,9 +655,56 @@ export function AnnotationCanvas({
       return;
     }
 
-    if (!activeTool) {
-      const hitAnnotationId = findAnnotationAtPoint(annotations, pos);
-      setHoveredAnnotationId(hitAnnotationId);
+    if (isResizing && resizeCorner && resizeStartPos && selectedAnnotationId && onUpdateAnnotation) {
+      const annotation = annotations.find(a => a.id === selectedAnnotationId);
+      if (annotation) {
+        let newX = annotation.x;
+        let newY = annotation.y;
+        let newW = annotation.width || 0.1;
+        let newH = annotation.height || 0.1;
+
+        switch (resizeCorner) {
+          case 'se':
+            newW = Math.max(0.02, pos.x - annotation.x);
+            newH = Math.max(0.02, pos.y - annotation.y);
+            break;
+          case 'sw':
+            newW = Math.max(0.02, (annotation.x + newW) - pos.x);
+            newH = Math.max(0.02, pos.y - annotation.y);
+            newX = pos.x;
+            break;
+          case 'ne':
+            newW = Math.max(0.02, pos.x - annotation.x);
+            newH = Math.max(0.02, (annotation.y + newH) - pos.y);
+            newY = pos.y;
+            break;
+          case 'nw':
+            newW = Math.max(0.02, (annotation.x + newW) - pos.x);
+            newH = Math.max(0.02, (annotation.y + newH) - pos.y);
+            newX = pos.x;
+            newY = pos.y;
+            break;
+        }
+
+        onUpdateAnnotation(selectedAnnotationId, { x: newX, y: newY, width: newW, height: newH });
+        setResizeStartPos(pos);
+      }
+      return;
+    }
+
+    const hitAnnotationId = findAnnotationAtPoint(annotations, pos);
+    setHoveredAnnotationId(hitAnnotationId);
+
+    // Corner hover detection for resize cursor
+    if (selectedAnnotationId) {
+      const selectedAnn = annotations.find(a => a.id === selectedAnnotationId);
+      if (selectedAnn) {
+        setHoveredCorner(hitTestCorner(selectedAnn, pos));
+      } else {
+        setHoveredCorner(null);
+      }
+    } else {
+      setHoveredCorner(null);
     }
   };
 
@@ -611,6 +756,9 @@ export function AnnotationCanvas({
     setCurrentPos(null);
     setIsDragging(false);
     setDragStartPos(null);
+    setIsResizing(false);
+    setResizeCorner(null);
+    setResizeStartPos(null);
   };
 
   const handleMouseLeave = () => {
@@ -618,26 +766,79 @@ export function AnnotationCanvas({
     setHoveredAnnotationId(null);
   };
 
+  const handleTextInputConfirm = useCallback((content: string) => {
+    if (content.trim() && textInputState) {
+      onAddAnnotation({
+        id: crypto.randomUUID(),
+        type: 'text',
+        x: textInputState.x,
+        y: textInputState.y,
+        content: content.trim(),
+        color: style.color,
+        fontSize: style.fontSize,
+        textBackground: style.textBackground,
+      });
+    }
+    setTextInputState(null);
+  }, [textInputState, onAddAnnotation, style.color, style.fontSize, style.textBackground]);
+
+  const handleTextInputKeyDown = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
+    e.stopPropagation();
+    if (e.key === 'Enter') {
+      handleTextInputConfirm((e.target as HTMLInputElement).value);
+    } else if (e.key === 'Escape') {
+      setTextInputState(null);
+    }
+  }, [handleTextInputConfirm]);
+
+  useEffect(() => {
+    if (textInputState && textInputRef.current) {
+      textInputRef.current.focus();
+    }
+  }, [textInputState]);
+
   const getCursorStyle = () => {
     if (readOnly) return 'default';
-    if (activeTool) return 'crosshair';
+    if (isResizing) return resizeCorner === 'nw' || resizeCorner === 'se' ? 'nwse-resize' : 'nesw-resize';
+    // Resize corners take priority over everything (including active tool)
+    if (hoveredCorner) return hoveredCorner === 'nw' || hoveredCorner === 'se' ? 'nwse-resize' : 'nesw-resize';
     if (isDragging) return 'grabbing';
+    if (activeTool) return hoveredAnnotationId ? 'pointer' : 'crosshair';
     if (hoveredAnnotationId) return 'pointer';
     if (selectedAnnotationId && hoveredAnnotationId === selectedAnnotationId) return 'grab';
     return 'default';
   };
 
   return (
-    <canvas
-      ref={canvasRef}
-      className="absolute inset-0"
-      style={{ cursor: getCursorStyle(), pointerEvents: readOnly ? 'none' : 'auto' }}
-      onMouseDown={handleMouseDown}
-      onMouseMove={handleMouseMove}
-      onMouseUp={handleMouseUp}
-      onMouseLeave={handleMouseLeave}
-      tabIndex={readOnly ? -1 : 0}
-    />
+    <div className="absolute inset-0">
+      <canvas
+        ref={canvasRef}
+        className="absolute inset-0"
+        style={{ cursor: getCursorStyle(), pointerEvents: readOnly ? 'none' : 'auto' }}
+        onMouseDown={handleMouseDown}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        tabIndex={readOnly ? -1 : 0}
+      />
+      {textInputState && (
+        <input
+          ref={textInputRef}
+          type="text"
+          placeholder="Type annotation text..."
+          className="absolute z-10 rounded border border-primary bg-background/95 px-2 py-1 text-sm shadow-lg outline-none ring-2 ring-primary/30 backdrop-blur-sm"
+          style={{
+            left: `${textInputState.x * 100}%`,
+            top: `${textInputState.y * 100}%`,
+            transform: 'translateY(-50%)',
+            minWidth: '150px',
+            maxWidth: '300px',
+          }}
+          onKeyDown={handleTextInputKeyDown}
+          onBlur={(e) => handleTextInputConfirm(e.target.value)}
+        />
+      )}
+    </div>
   );
 }
 
