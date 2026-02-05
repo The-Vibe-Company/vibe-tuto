@@ -15,8 +15,13 @@ import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
-import type { GeneratedTutorialContent, GenerateTutorialResponse } from '@/lib/types/generation';
+import type {
+  GeneratedTutorialContent,
+  GenerateTutorialResponse,
+  GenerationStyle,
+} from '@/lib/types/generation';
 import type { SourceWithSignedUrl, StepWithSignedUrl } from '@/lib/types/editor';
 
 type GenerateStatus = 'idle' | 'generating' | 'preview' | 'applying' | 'error';
@@ -49,6 +54,10 @@ export function GenerateDialog({
   const [metadata, setMetadata] = useState<GenerateTutorialResponse['metadata'] | null>(null);
   const [expandedSteps, setExpandedSteps] = useState<Set<number>>(new Set());
 
+  // Generation options
+  const [userGoal, setUserGoal] = useState('');
+  const [style, setStyle] = useState<GenerationStyle>('normal');
+
   const handleGenerate = async () => {
     setStatus('generating');
     setError(null);
@@ -57,7 +66,13 @@ export function GenerateDialog({
       const response = await fetch('/api/generate-tutorial', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ tutorialId }),
+        body: JSON.stringify({
+          tutorialId,
+          options: {
+            userGoal: userGoal.trim() || undefined,
+            style,
+          },
+        }),
       });
 
       const data = await response.json();
@@ -89,6 +104,8 @@ export function GenerateDialog({
       setGenerated(null);
       setEditedContent(null);
       setMetadata(null);
+      setUserGoal('');
+      setStyle('normal');
     } catch (err) {
       console.error('Apply error:', err);
       setError(err instanceof Error ? err.message : 'Failed to apply changes');
@@ -106,6 +123,8 @@ export function GenerateDialog({
       setMetadata(null);
       setError(null);
       setExpandedSteps(new Set());
+      setUserGoal('');
+      setStyle('normal');
     }, 200);
   };
 
@@ -131,6 +150,16 @@ export function GenerateDialog({
     });
   };
 
+  const updateStepDescription = (index: number, description: string) => {
+    if (!editedContent) return;
+    setEditedContent({
+      ...editedContent,
+      steps: editedContent.steps.map((step, i) =>
+        i === index ? { ...step, description: description || undefined } : step
+      ),
+    });
+  };
+
   // Find the source for a step to show its thumbnail
   const getSourceForStep = (sourceId: string) => {
     return sources.find((s) => s.id === sourceId);
@@ -142,6 +171,12 @@ export function GenerateDialog({
     return step?.text_content || '';
   };
 
+  // Find current step description for comparison
+  const getCurrentStepDescription = (sourceId: string) => {
+    const step = steps.find((s) => s.source_id === sourceId);
+    return step?.description || '';
+  };
+
   return (
     <Dialog open={open} onOpenChange={handleClose}>
       <DialogContent className="max-w-2xl max-h-[90vh] flex flex-col">
@@ -151,7 +186,7 @@ export function GenerateDialog({
             Generate with AI
           </DialogTitle>
           <DialogDescription>
-            {status === 'idle' && 'Use AI to automatically generate tutorial content from your screenshots and audio.'}
+            {status === 'idle' && 'Configure options and generate tutorial content from your screenshots and audio.'}
             {status === 'generating' && 'Analyzing your tutorial...'}
             {status === 'preview' && 'Review and edit the generated content before applying.'}
             {status === 'applying' && 'Applying changes...'}
@@ -160,20 +195,79 @@ export function GenerateDialog({
         </DialogHeader>
 
         <div className="flex-1 overflow-hidden">
-          {/* Idle State - Show generate button */}
+          {/* Idle State - Show options and generate button */}
           {status === 'idle' && (
-            <div className="flex flex-col items-center justify-center py-12 text-center">
-              <div className="rounded-full bg-violet-100 p-4 mb-4">
-                <Sparkles className="h-8 w-8 text-violet-500" />
+            <div className="space-y-6 py-4">
+              {/* User Goal */}
+              <div className="space-y-2">
+                <Label htmlFor="user-goal">What should this tutorial teach? (optional)</Label>
+                <Textarea
+                  id="user-goal"
+                  placeholder="Example: How to create a new project and configure team settings..."
+                  value={userGoal}
+                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => setUserGoal(e.target.value)}
+                  rows={3}
+                  className="resize-none"
+                />
+                <p className="text-xs text-muted-foreground">
+                  Describe the goal to help AI generate more focused content.
+                </p>
               </div>
-              <h3 className="text-lg font-medium mb-2">Ready to generate</h3>
-              <p className="text-sm text-stone-500 mb-6 max-w-sm">
-                AI will analyze {sources.length} screenshot{sources.length !== 1 ? 's' : ''} and any audio transcription to generate tutorial content.
-              </p>
-              <Button onClick={handleGenerate} className="gap-2">
-                <Sparkles className="h-4 w-4" />
-                Generate Tutorial
-              </Button>
+
+              {/* Writing Style */}
+              <div className="space-y-3">
+                <Label>Writing style</Label>
+                <RadioGroup
+                  value={style}
+                  onValueChange={(v) => setStyle(v as GenerationStyle)}
+                  className="space-y-2"
+                >
+                  <div className="flex items-start space-x-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="concise" id="concise" className="mt-0.5" />
+                    <div className="space-y-0.5">
+                      <Label htmlFor="concise" className="font-medium cursor-pointer">
+                        Concise
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Short, action-focused instructions only. No detailed explanations.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors border-violet-200 bg-violet-50/30">
+                    <RadioGroupItem value="normal" id="normal" className="mt-0.5" />
+                    <div className="space-y-0.5">
+                      <Label htmlFor="normal" className="font-medium cursor-pointer">
+                        Normal (Recommended)
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Clear instructions with brief context. Good balance.
+                      </p>
+                    </div>
+                  </div>
+                  <div className="flex items-start space-x-3 rounded-lg border p-3 hover:bg-muted/50 transition-colors">
+                    <RadioGroupItem value="detailed" id="detailed" className="mt-0.5" />
+                    <div className="space-y-0.5">
+                      <Label htmlFor="detailed" className="font-medium cursor-pointer">
+                        Detailed
+                      </Label>
+                      <p className="text-xs text-muted-foreground">
+                        Comprehensive instructions with explanations of WHY each step matters.
+                      </p>
+                    </div>
+                  </div>
+                </RadioGroup>
+              </div>
+
+              {/* Generate Button */}
+              <div className="flex flex-col items-center pt-4">
+                <p className="text-sm text-muted-foreground mb-4">
+                  AI will analyze {sources.length} screenshot{sources.length !== 1 ? 's' : ''} and any audio transcription.
+                </p>
+                <Button onClick={handleGenerate} size="lg" className="gap-2">
+                  <Sparkles className="h-4 w-4" />
+                  Generate Tutorial
+                </Button>
+              </div>
             </div>
           )}
 
@@ -246,8 +340,11 @@ export function GenerateDialog({
                     {editedContent.steps.map((step, index) => {
                       const source = getSourceForStep(step.sourceId);
                       const currentText = getCurrentStepText(step.sourceId);
+                      const currentDesc = getCurrentStepDescription(step.sourceId);
                       const isExpanded = expandedSteps.has(index);
-                      const hasChanged = step.textContent !== currentText;
+                      const hasTextChanged = step.textContent !== currentText;
+                      const hasDescChanged = (step.description || '') !== currentDesc;
+                      const hasChanged = hasTextChanged || hasDescChanged;
 
                       return (
                         <div
@@ -280,6 +377,11 @@ export function GenerateDialog({
                                     Modified
                                   </span>
                                 )}
+                                {step.description && (
+                                  <span className="text-xs text-blue-600">
+                                    + description
+                                  </span>
+                                )}
                               </div>
                               <p className="text-sm truncate">
                                 {step.textContent || 'No content'}
@@ -293,19 +395,42 @@ export function GenerateDialog({
                           </button>
 
                           {isExpanded && (
-                            <div className="mt-3 space-y-2">
-                              <Textarea
-                                value={step.textContent}
-                                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateStepText(index, e.target.value)}
-                                rows={3}
-                                className="text-sm"
-                              />
-                              {currentText && currentText !== step.textContent && (
-                                <div className="text-xs text-stone-500">
-                                  <span className="font-medium">Current:</span>{' '}
-                                  &quot;{currentText.substring(0, 150)}{currentText.length > 150 ? '...' : ''}&quot;
-                                </div>
-                              )}
+                            <div className="mt-3 space-y-3">
+                              {/* Instruction text */}
+                              <div className="space-y-1">
+                                <Label className="text-xs">Instruction</Label>
+                                <Textarea
+                                  value={step.textContent}
+                                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateStepText(index, e.target.value)}
+                                  rows={2}
+                                  className="text-sm"
+                                  placeholder="Short instruction..."
+                                />
+                                {currentText && currentText !== step.textContent && (
+                                  <div className="text-xs text-stone-500">
+                                    <span className="font-medium">Current:</span>{' '}
+                                    &quot;{currentText.substring(0, 100)}{currentText.length > 100 ? '...' : ''}&quot;
+                                  </div>
+                                )}
+                              </div>
+
+                              {/* Description (detailed explanation) */}
+                              <div className="space-y-1">
+                                <Label className="text-xs">Detailed explanation (optional)</Label>
+                                <Textarea
+                                  value={step.description || ''}
+                                  onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => updateStepDescription(index, e.target.value)}
+                                  rows={3}
+                                  className="text-sm text-muted-foreground"
+                                  placeholder="Add detailed explanation of why this step matters..."
+                                />
+                                {currentDesc && currentDesc !== (step.description || '') && (
+                                  <div className="text-xs text-stone-500">
+                                    <span className="font-medium">Current:</span>{' '}
+                                    &quot;{currentDesc.substring(0, 100)}{currentDesc.length > 100 ? '...' : ''}&quot;
+                                  </div>
+                                )}
+                              </div>
                             </div>
                           )}
                         </div>

@@ -57,6 +57,7 @@ export type Database = {
           order_index: number;
           screenshot_url: string | null;
           text_content: string | null;
+          description: string | null;
           timestamp_start: number | null;
           timestamp_end: number | null;
           click_x: number | null;
@@ -75,6 +76,7 @@ export type Database = {
           order_index: number;
           screenshot_url?: string | null;
           text_content?: string | null;
+          description?: string | null;
           timestamp_start?: number | null;
           timestamp_end?: number | null;
           click_x?: number | null;
@@ -93,6 +95,7 @@ export type Database = {
           order_index?: number;
           screenshot_url?: string | null;
           text_content?: string | null;
+          description?: string | null;
           timestamp_start?: number | null;
           timestamp_end?: number | null;
           click_x?: number | null;

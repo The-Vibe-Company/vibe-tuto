@@ -4,6 +4,7 @@ import { createClient } from '@/lib/supabase/server';
 interface StepUpdate {
   id: string;
   text_content?: string;
+  description?: string | null;
   annotations?: unknown[];
   order_index?: number;
   source_id?: string | null;
@@ -94,6 +95,9 @@ export async function PATCH(request: NextRequest) {
 
       if (update.text_content !== undefined) {
         updateData.text_content = update.text_content;
+      }
+      if (update.description !== undefined) {
+        updateData.description = update.description;
       }
       if (update.annotations !== undefined) {
         updateData.annotations = update.annotations;

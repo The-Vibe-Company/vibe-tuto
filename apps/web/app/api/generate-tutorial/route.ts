@@ -3,16 +3,18 @@ import { createClient } from '@/lib/supabase/server';
 import { getAnthropicClient, GENERATION_MODEL, GENERATION_CONFIG } from '@/lib/anthropic';
 import {
   TUTORIAL_GENERATION_SCHEMA,
-  GENERATION_SYSTEM_PROMPT,
+  getGenerationSystemPrompt,
   type GeneratedTutorialContent,
   type GenerateTutorialResponse,
   type GenerateTutorialErrorResponse,
+  type GenerationOptions,
 } from '@/lib/types/generation';
 import type { ElementInfo } from '@/lib/types/editor';
 import { alignStepsWithTranscription, type TranscriptionSegment } from '@/lib/alignment';
 
 interface GenerateRequest {
   tutorialId: string;
+  options?: GenerationOptions;
 }
 
 interface SourceData {
@@ -91,6 +93,12 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
+
+    // Extract generation options with defaults
+    const options: GenerationOptions = {
+      style: body.options?.style || 'normal',
+      userGoal: body.options?.userGoal,
+    };
 
     // 3. Fetch tutorial and verify ownership
     const { data: tutorial, error: tutorialError } = await supabase
@@ -327,12 +335,13 @@ Here are the steps in order:`,
 
     // 10. Call Claude API with structured output
     const anthropic = getAnthropicClient();
+    const systemPrompt = getGenerationSystemPrompt(options);
 
     const response = await anthropic.messages.create({
       model: GENERATION_MODEL,
       max_tokens: GENERATION_CONFIG.maxTokens,
       temperature: GENERATION_CONFIG.temperature,
-      system: GENERATION_SYSTEM_PROMPT,
+      system: systemPrompt,
       messages: [
         {
           role: 'user',

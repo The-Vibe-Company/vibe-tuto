@@ -75,6 +75,7 @@ export interface StepWithSignedUrl {
   source_id: string | null;
   order_index: number;
   text_content: string | null;
+  description: string | null;
   step_type: StepType;
   annotations?: Annotation[] | null;
   created_at: string;

@@ -38,17 +38,24 @@ export async function PATCH(
 
     // 4. Parse request body
     const body = await request.json();
-    const { text_content, annotations, source_id, url } = body;
+    const { text_content, description, annotations, source_id, url } = body;
 
     // Build update object with only provided fields
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const updateData: { text_content?: string; annotations?: any; source_id?: string | null; url?: string | null } = {};
+    const updateData: { text_content?: string; description?: string | null; annotations?: any; source_id?: string | null; url?: string | null } = {};
 
     if (text_content !== undefined) {
       if (typeof text_content !== 'string') {
         return NextResponse.json({ error: 'Invalid text_content' }, { status: 400 });
       }
       updateData.text_content = text_content;
+    }
+
+    if (description !== undefined) {
+      if (description !== null && typeof description !== 'string') {
+        return NextResponse.json({ error: 'Invalid description' }, { status: 400 });
+      }
+      updateData.description = description;
     }
 
     if (annotations !== undefined) {

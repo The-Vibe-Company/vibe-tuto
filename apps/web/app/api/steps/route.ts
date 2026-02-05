@@ -30,6 +30,7 @@ export async function POST(request: Request) {
       order_index,
       step_type,
       text_content,
+      description,
       annotations,
     } = body;
 
@@ -117,6 +118,7 @@ export async function POST(request: Request) {
     // Add optional fields
     if (source_id) insertData.source_id = source_id;
     if (text_content) insertData.text_content = text_content;
+    if (description !== undefined) insertData.description = description;
 
     // Handle annotations
     // If source has click coordinates and no annotations provided, create click-indicator

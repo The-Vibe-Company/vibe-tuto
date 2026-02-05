@@ -43,6 +43,7 @@ interface DocEditorProps {
   saveStatus: SaveStatus;
   onTitleChange: (title: string) => void;
   onStepCaptionChange: (stepId: string, caption: string) => void;
+  onStepDescriptionChange: (stepId: string, description: string) => void;
   onStepAnnotationsChange: (stepId: string, annotations: Annotation[]) => void;
   onStepUrlChange: (stepId: string, url: string) => void;
   onDeleteStep: (stepId: string) => void;
@@ -63,6 +64,7 @@ export function DocEditor({
   saveStatus,
   onTitleChange,
   onStepCaptionChange,
+  onStepDescriptionChange,
   onStepAnnotationsChange,
   onStepUrlChange,
   onDeleteStep,
@@ -178,6 +180,7 @@ export function DocEditor({
                             }
                             sources={sources}
                             onCaptionChange={(caption) => onStepCaptionChange(step.id, caption)}
+                            onDescriptionChange={(description) => onStepDescriptionChange(step.id, description)}
                             onAnnotationsChange={(annotations) =>
                               onStepAnnotationsChange(step.id, annotations)
                             }

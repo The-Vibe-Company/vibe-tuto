@@ -4,7 +4,7 @@ import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2, Heading, Minus, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X } from 'lucide-react';
+import { GripVertical, Trash2, Heading, Minus, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X, FileText } from 'lucide-react';
 import type { StepWithSignedUrl, SourceWithSignedUrl, Annotation } from '@/lib/types/editor';
 import { formatSourceUrl, getSourceActionType } from '@/lib/types/editor';
 import { InlineCaption } from './InlineCaption';
@@ -32,6 +32,7 @@ interface DocStepCardProps {
   stepNumber: number;
   sources?: SourceWithSignedUrl[];
   onCaptionChange?: (caption: string) => void;
+  onDescriptionChange?: (description: string) => void;
   onUrlChange?: (url: string) => void;
   onAnnotationsChange?: (annotations: Annotation[]) => void;
   onDelete?: () => void;
@@ -47,6 +48,7 @@ function DocStepCardComponent({
   stepNumber,
   sources = [],
   onCaptionChange,
+  onDescriptionChange,
   onUrlChange,
   onAnnotationsChange,
   onDelete,
@@ -439,6 +441,32 @@ function DocStepCardComponent({
             /* Text-only step in readOnly - just add padding */
             <div className="pb-4" />
           )}
+
+          {/* Description (optional long text below step content) */}
+          {step.description != null ? (
+            <div className="px-4 pb-4">
+              <div className="rounded-lg bg-muted/50 border p-3">
+                <InlineCaption
+                  content={step.description}
+                  onChange={onDescriptionChange}
+                  placeholder="Add details, context, or notes..."
+                  readOnly={readOnly}
+                />
+              </div>
+            </div>
+          ) : !readOnly ? (
+            <div className="px-4 pb-4">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => onDescriptionChange?.('')}
+                className="text-muted-foreground hover:text-foreground"
+              >
+                <FileText className="h-4 w-4 mr-2" />
+                <span>Add description</span>
+              </Button>
+            </div>
+          ) : null}
         </CardContent>
       </Card>
 
@@ -496,6 +524,7 @@ export const DocStepCard = memo(DocStepCardComponent, (prev, next) => {
   return (
     prev.step.id === next.step.id &&
     prev.step.text_content === next.step.text_content &&
+    prev.step.description === next.step.description &&
     prev.step.signedScreenshotUrl === next.step.signedScreenshotUrl &&
     prev.step.step_type === next.step.step_type &&
     prev.step.url === next.step.url &&

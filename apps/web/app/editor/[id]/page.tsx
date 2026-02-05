@@ -137,6 +137,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
       source_id: step.source_id,
       order_index: step.order_index,
       text_content: step.text_content,
+      description: step.description ?? null,
       step_type: step.step_type || 'text',
       annotations,
       created_at: step.created_at,
