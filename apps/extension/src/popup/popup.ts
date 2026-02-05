@@ -23,13 +23,15 @@ let timerInterval: ReturnType<typeof setInterval> | null = null;
 interface PendingUpload {
   steps: Array<{
     timestamp: number;
-    type: 'click' | 'navigation';
+    type: 'click' | 'navigation' | 'tab_change';
     screenshot?: string;
     x?: number;
     y?: number;
     viewportWidth?: number;
     viewportHeight?: number;
     url: string;
+    elementInfo?: { tag: string; text: string } | null;
+    tabTitle?: string;
   }>;
   audioData: string | null;
 }
@@ -203,13 +205,15 @@ async function startRecording(): Promise<void> {
 async function uploadRecording(
   steps: Array<{
     timestamp: number;
-    type: 'click' | 'navigation';
+    type: 'click' | 'navigation' | 'tab_change';
     screenshot?: string;
     x?: number;
     y?: number;
     viewportWidth?: number;
     viewportHeight?: number;
     url: string;
+    elementInfo?: { tag: string; text: string } | null;
+    tabTitle?: string;
   }>,
   audioData: string | null
 ): Promise<UploadResult> {
@@ -234,7 +238,7 @@ async function uploadRecording(
     title: `Tutoriel du ${new Date().toLocaleDateString('fr-FR')}`,
     duration: steps.length > 0 ? steps[steps.length - 1].timestamp : 0,
     startedAt: new Date().toISOString(),
-    steps: steps.map((step, index) => ({
+    steps: steps.map((step) => ({
       timestamp: step.timestamp,
       type: step.type,
       screenshot: step.screenshot || '',
@@ -244,6 +248,7 @@ async function uploadRecording(
       viewportHeight: step.viewportHeight,
       url: step.url,
       elementInfo: step.elementInfo || null,
+      tabTitle: step.tabTitle || null,
     })),
   };
 

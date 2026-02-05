@@ -11,7 +11,7 @@ interface ElementInfo {
 
 interface UploadSource {
   timestamp: number;
-  type: 'click' | 'navigation';
+  type: 'click' | 'navigation' | 'tab_change';
   screenshot: string;
   x?: number;
   y?: number;
@@ -19,6 +19,7 @@ interface UploadSource {
   viewportHeight?: number;
   url: string;
   elementInfo?: ElementInfo | null;
+  tabTitle?: string | null;
 }
 
 interface UploadMetadata {
@@ -153,6 +154,11 @@ export async function POST(request: Request) {
       }
 
       // Sources contain raw captured data, no annotations or text_content
+      // For tab_change events, store tabTitle in element_info
+      const elementInfo = source.type === 'tab_change' && source.tabTitle
+        ? { tabTitle: source.tabTitle }
+        : source.elementInfo ?? null;
+
       sourceInserts.push({
         tutorial_id: tutorial.id,
         order_index: i,
@@ -164,7 +170,7 @@ export async function POST(request: Request) {
         click_type: source.type,
         url: source.url,
         timestamp_start: source.timestamp,
-        element_info: (source.elementInfo ?? null) as Json,
+        element_info: elementInfo as Json,
       });
     }
 

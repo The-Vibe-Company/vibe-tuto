@@ -3,10 +3,11 @@ import type { Tables } from '@/lib/supabase/types';
 export type Tutorial = Tables<'tutorials'>;
 
 // Source action type for timeline display
-export type SourceActionType = 'click' | 'navigation';
+export type SourceActionType = 'click' | 'navigation' | 'tab_change';
 
 // Helper to determine the action type of a source
 export function getSourceActionType(source: Source | SourceWithSignedUrl): SourceActionType {
+  if (source.click_type === 'tab_change') return 'tab_change';
   if (source.click_type === 'navigation') return 'navigation';
   if (source.click_x != null && source.click_y != null) return 'click';
   return 'navigation';
@@ -26,10 +27,11 @@ export function formatSourceUrl(url: string | null): string {
 
 // Element info captured during click events
 export interface ElementInfo {
-  tag: string;       // HTML tag name (e.g., "BUTTON", "A", "DIV")
-  text: string;      // Text content of element (e.g., "Settings", "Submit")
+  tag?: string;       // HTML tag name (e.g., "BUTTON", "A", "DIV")
+  text?: string;      // Text content of element (e.g., "Settings", "Submit")
   id?: string;       // Element ID attribute
   className?: string; // Element class names
+  tabTitle?: string; // Tab title for tab_change events
 }
 
 // ============================================

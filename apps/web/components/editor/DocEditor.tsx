@@ -44,6 +44,7 @@ interface DocEditorProps {
   onTitleChange: (title: string) => void;
   onStepCaptionChange: (stepId: string, caption: string) => void;
   onStepAnnotationsChange: (stepId: string, annotations: Annotation[]) => void;
+  onStepUrlChange: (stepId: string, url: string) => void;
   onDeleteStep: (stepId: string) => void;
   onReorderSteps: (newSteps: StepWithSignedUrl[]) => void;
   onAddStep: (type: NewStepType, afterStepId?: string | null) => void;
@@ -60,6 +61,7 @@ export function DocEditor({
   onTitleChange,
   onStepCaptionChange,
   onStepAnnotationsChange,
+  onStepUrlChange,
   onDeleteStep,
   onReorderSteps,
   onAddStep,
@@ -171,6 +173,7 @@ export function DocEditor({
                             onAnnotationsChange={(annotations) =>
                               onStepAnnotationsChange(step.id, annotations)
                             }
+                            onUrlChange={(url) => onStepUrlChange(step.id, url)}
                             onDelete={() => onDeleteStep(step.id)}
                             onRemoveImage={() => onRemoveStepImage(step.id)}
                             onSetImage={(source) => onSetStepImage(step.id, source)}

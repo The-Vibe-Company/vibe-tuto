@@ -140,6 +140,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
       step_type: step.step_type || 'text',
       annotations,
       created_at: step.created_at,
+      url: step.url || null,
       // From joined source
       signedScreenshotUrl: source?.signedScreenshotUrl || null,
       source: source || null,

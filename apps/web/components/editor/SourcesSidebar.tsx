@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, memo } from 'react';
 import Image from 'next/image';
 import {
   ChevronRight,
@@ -8,12 +8,13 @@ import {
   Activity,
   MousePointer2,
   Globe,
+  Layers,
   ExternalLink,
   Plus,
   Copy,
   Check,
 } from 'lucide-react';
-import type { SourceWithSignedUrl } from '@/lib/types/editor';
+import type { SourceWithSignedUrl, SourceActionType } from '@/lib/types/editor';
 import { getSourceActionType, formatSourceUrl } from '@/lib/types/editor';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -36,24 +37,62 @@ interface ElementInfo {
   text?: string;
   id?: string;
   className?: string;
+  tabTitle?: string;
 }
 
-function TimelineItem({
-  source,
-  index,
-  isClick,
-  isCopied,
-  onCopy,
-  onCreateStep,
-}: {
+interface TimelineItemProps {
   source: SourceWithSignedUrl;
   index: number;
-  isClick: boolean;
+  actionType: SourceActionType;
   isCopied: boolean;
   onCopy: (e: React.MouseEvent) => void;
   onCreateStep: (e: React.MouseEvent) => void;
-}) {
+}
+
+function TimelineItemComponent({
+  source,
+  index,
+  actionType,
+  isCopied,
+  onCopy,
+  onCreateStep,
+}: TimelineItemProps) {
   const elementInfo = source.element_info as ElementInfo | null;
+
+  // Determine styling based on action type
+  const getIconAndColor = () => {
+    switch (actionType) {
+      case 'click':
+        return {
+          icon: <MousePointer2 className="h-3 w-3 text-primary-foreground" />,
+          bgColor: 'bg-primary',
+          borderColor: 'border-primary/20 bg-primary/5 hover:border-primary/30',
+          badgeColor: 'bg-primary/10 text-primary hover:bg-primary/15',
+          buttonColor: 'bg-primary hover:bg-primary/90',
+          label: 'Click',
+        };
+      case 'navigation':
+        return {
+          icon: <Globe className="h-3 w-3 text-white" />,
+          bgColor: 'bg-blue-500',
+          borderColor: 'border-blue-200 bg-blue-50/50 hover:border-blue-300 dark:border-blue-900 dark:bg-blue-950/30',
+          badgeColor: 'bg-blue-100 text-blue-600 hover:bg-blue-150 dark:bg-blue-900/50 dark:text-blue-400',
+          buttonColor: 'bg-blue-500 hover:bg-blue-600',
+          label: 'Navigation',
+        };
+      case 'tab_change':
+        return {
+          icon: <Layers className="h-3 w-3 text-white" />,
+          bgColor: 'bg-amber-500',
+          borderColor: 'border-amber-200 bg-amber-50/50 hover:border-amber-300 dark:border-amber-900 dark:bg-amber-950/30',
+          badgeColor: 'bg-amber-100 text-amber-600 hover:bg-amber-150 dark:bg-amber-900/50 dark:text-amber-400',
+          buttonColor: 'bg-amber-500 hover:bg-amber-600',
+          label: 'Tab Change',
+        };
+    }
+  };
+
+  const { icon, bgColor, borderColor, badgeColor, buttonColor, label } = getIconAndColor();
 
   return (
     <div className="group relative pl-8">
@@ -61,22 +100,16 @@ function TimelineItem({
       <div
         className={cn(
           'absolute left-0 flex h-6 w-6 items-center justify-center rounded-full ring-4 ring-background transition-transform group-hover:scale-110',
-          isClick ? 'bg-primary' : 'bg-blue-500'
+          bgColor
         )}
       >
-        {isClick ? (
-          <MousePointer2 className="h-3 w-3 text-primary-foreground" />
-        ) : (
-          <Globe className="h-3 w-3 text-white" />
-        )}
+        {icon}
       </div>
 
       <Card
         className={cn(
           'overflow-hidden transition-all duration-200 group-hover:shadow-md',
-          isClick
-            ? 'border-primary/20 bg-primary/5 hover:border-primary/30'
-            : 'border-blue-200 bg-blue-50/50 hover:border-blue-300 dark:border-blue-900 dark:bg-blue-950/30'
+          borderColor
         )}
       >
         <CardContent className="p-2">
@@ -84,14 +117,9 @@ function TimelineItem({
           <div className="mb-1.5 flex items-center justify-between">
             <Badge
               variant="secondary"
-              className={cn(
-                'text-[10px] font-medium',
-                isClick
-                  ? 'bg-primary/10 text-primary hover:bg-primary/15'
-                  : 'bg-blue-100 text-blue-600 hover:bg-blue-150 dark:bg-blue-900/50 dark:text-blue-400'
-              )}
+              className={cn('text-[10px] font-medium', badgeColor)}
             >
-              {isClick ? 'Click' : 'Navigation'}
+              {label}
             </Badge>
             <span className="text-[10px] tabular-nums text-muted-foreground">
               #{index + 1}
@@ -107,10 +135,12 @@ function TimelineItem({
                 fill
                 className="object-cover object-top transition-transform group-hover:scale-105"
                 sizes="250px"
+                loading="lazy"
+                decoding="async"
               />
 
-              {/* Click indicator on screenshot */}
-              {isClick &&
+              {/* Click indicator on screenshot (only for clicks) */}
+              {actionType === 'click' &&
                 source.click_x != null &&
                 source.click_y != null &&
                 source.viewport_width &&
@@ -132,14 +162,21 @@ function TimelineItem({
           {/* Info section */}
           <div className="space-y-1">
             {/* Element info for clicks */}
-            {isClick && elementInfo?.text && (
+            {actionType === 'click' && elementInfo?.text && (
               <p className="truncate text-xs text-muted-foreground">
                 {elementInfo.text}
               </p>
             )}
 
-            {/* URL for navigation */}
-            {!isClick && source.url && (
+            {/* Tab title for tab changes */}
+            {actionType === 'tab_change' && elementInfo?.tabTitle && (
+              <p className="truncate text-xs font-medium text-muted-foreground">
+                {elementInfo.tabTitle}
+              </p>
+            )}
+
+            {/* URL for navigation and tab_change */}
+            {(actionType === 'navigation' || actionType === 'tab_change') && source.url && (
               <div className="flex items-center gap-1 text-xs text-muted-foreground">
                 <ExternalLink className="h-3 w-3 flex-shrink-0" />
                 <span className="truncate">{formatSourceUrl(source.url)}</span>
@@ -178,12 +215,7 @@ function TimelineItem({
                 <Button
                   size="icon"
                   onClick={onCreateStep}
-                  className={cn(
-                    'h-7 w-7',
-                    isClick
-                      ? 'bg-primary hover:bg-primary/90'
-                      : 'bg-blue-500 hover:bg-blue-600'
-                  )}
+                  className={cn('h-7 w-7', buttonColor)}
                 >
                   <Plus className="h-3 w-3" />
                 </Button>
@@ -198,6 +230,8 @@ function TimelineItem({
     </div>
   );
 }
+
+const TimelineItem = memo(TimelineItemComponent);
 
 export function SourcesSidebar({
   sources,
@@ -294,14 +328,13 @@ export function SourcesSidebar({
                 <div className="space-y-3">
                   {allSources.map((source, index) => {
                     const actionType = getSourceActionType(source);
-                    const isClick = actionType === 'click';
 
                     return (
                       <TimelineItem
                         key={source.id}
                         source={source}
                         index={index}
-                        isClick={isClick}
+                        actionType={actionType}
                         isCopied={copiedId === source.id}
                         onCopy={(e) => handleCopyImage(source, e)}
                         onCreateStep={(e) => handleCreateStep(source, e)}
@@ -320,7 +353,31 @@ export function SourcesSidebar({
             <div className="flex flex-col gap-1">
               {allSources.slice(0, 8).map((source, index) => {
                 const actionType = getSourceActionType(source);
-                const isClick = actionType === 'click';
+
+                const getCollapsedIcon = () => {
+                  switch (actionType) {
+                    case 'click':
+                      return {
+                        icon: <MousePointer2 className="h-4 w-4" />,
+                        className: 'text-primary hover:bg-primary/10 hover:text-primary',
+                        label: 'le click',
+                      };
+                    case 'navigation':
+                      return {
+                        icon: <Globe className="h-4 w-4" />,
+                        className: 'text-blue-500 hover:bg-blue-50 hover:text-blue-600',
+                        label: 'la navigation',
+                      };
+                    case 'tab_change':
+                      return {
+                        icon: <Layers className="h-4 w-4" />,
+                        className: 'text-amber-500 hover:bg-amber-50 hover:text-amber-600',
+                        label: "le changement d'onglet",
+                      };
+                  }
+                };
+
+                const { icon, className, label } = getCollapsedIcon();
 
                 return (
                   <Tooltip key={source.id}>
@@ -329,22 +386,13 @@ export function SourcesSidebar({
                         variant="ghost"
                         size="icon"
                         onClick={(e) => handleCreateStep(source, e)}
-                        className={cn(
-                          'h-8 w-8 transition-colors',
-                          isClick
-                            ? 'text-primary hover:bg-primary/10 hover:text-primary'
-                            : 'text-blue-500 hover:bg-blue-50 hover:text-blue-600'
-                        )}
+                        className={cn('h-8 w-8 transition-colors', className)}
                       >
-                        {isClick ? (
-                          <MousePointer2 className="h-4 w-4" />
-                        ) : (
-                          <Globe className="h-4 w-4" />
-                        )}
+                        {icon}
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="left" className="text-xs">
-                      Ajouter {isClick ? 'le click' : 'la navigation'} #{index + 1}
+                      Ajouter {label} #{index + 1}
                     </TooltipContent>
                   </Tooltip>
                 );

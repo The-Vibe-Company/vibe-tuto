@@ -26,12 +26,13 @@ export function EditorClient({
   );
   const [pendingChanges, setPendingChanges] = useState<Record<string, string>>({});
   const [pendingAnnotations, setPendingAnnotations] = useState<Record<string, Annotation[]>>({});
+  const [pendingUrls, setPendingUrls] = useState<Record<string, string>>({});
   const [isSaving, setIsSaving] = useState(false);
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [isReordering, setIsReordering] = useState(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  const hasChanges = Object.keys(pendingChanges).length > 0 || Object.keys(pendingAnnotations).length > 0;
+  const hasChanges = Object.keys(pendingChanges).length > 0 || Object.keys(pendingAnnotations).length > 0 || Object.keys(pendingUrls).length > 0;
 
   const handleSelectStep = useCallback((stepId: string) => {
     setSelectedStepId(stepId);
@@ -93,6 +94,22 @@ export function EditorClient({
     setSaveStatus('unsaved');
   }, []);
 
+  // Handle URL change for any step
+  const handleStepUrlChange = useCallback((stepId: string, url: string) => {
+    setSteps((prev) =>
+      prev.map((step) =>
+        step.id === stepId ? { ...step, url } : step
+      )
+    );
+
+    setPendingUrls((prev) => ({
+      ...prev,
+      [stepId]: url,
+    }));
+
+    setSaveStatus('unsaved');
+  }, []);
+
   const handleSave = useCallback(async () => {
     if (!hasChanges) return;
 
@@ -103,10 +120,11 @@ export function EditorClient({
       const stepIdsToSave = new Set([
         ...Object.keys(pendingChanges),
         ...Object.keys(pendingAnnotations),
+        ...Object.keys(pendingUrls),
       ]);
 
       const savePromises = Array.from(stepIdsToSave).map(async (stepId) => {
-        const payload: { text_content?: string; annotations?: Annotation[] } = {};
+        const payload: { text_content?: string; annotations?: Annotation[]; url?: string } = {};
 
         if (pendingChanges[stepId] !== undefined) {
           payload.text_content = pendingChanges[stepId];
@@ -114,6 +132,10 @@ export function EditorClient({
 
         if (pendingAnnotations[stepId] !== undefined) {
           payload.annotations = pendingAnnotations[stepId];
+        }
+
+        if (pendingUrls[stepId] !== undefined) {
+          payload.url = pendingUrls[stepId];
         }
 
         const response = await fetch(`/api/steps/${stepId}`, {
@@ -136,6 +158,7 @@ export function EditorClient({
 
       setPendingChanges({});
       setPendingAnnotations({});
+      setPendingUrls({});
       setSaveStatus('saved');
     } catch (error) {
       console.error('Failed to save:', error);
@@ -143,7 +166,7 @@ export function EditorClient({
     } finally {
       setIsSaving(false);
     }
-  }, [pendingChanges, pendingAnnotations, hasChanges]);
+  }, [pendingChanges, pendingAnnotations, pendingUrls, hasChanges]);
 
   // Handle step reordering via drag & drop
   const handleReorderSteps = useCallback(async (newSteps: StepWithSignedUrl[]) => {
@@ -191,6 +214,11 @@ export function EditorClient({
     });
 
     setPendingAnnotations((prev) => {
+      const { [stepId]: _, ...rest } = prev;
+      return rest;
+    });
+
+    setPendingUrls((prev) => {
       const { [stepId]: _, ...rest } = prev;
       return rest;
     });
@@ -457,7 +485,7 @@ export function EditorClient({
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [pendingChanges, pendingAnnotations, hasChanges, handleSave]);
+  }, [pendingChanges, pendingAnnotations, pendingUrls, hasChanges, handleSave]);
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -482,6 +510,7 @@ export function EditorClient({
       onTitleChange={handleTitleChange}
       onStepCaptionChange={handleStepCaptionChange}
       onStepAnnotationsChange={handleStepAnnotationsChange}
+      onStepUrlChange={handleStepUrlChange}
       onDeleteStep={handleDeleteStep}
       onReorderSteps={handleReorderSteps}
       onAddStep={handleAddStep}

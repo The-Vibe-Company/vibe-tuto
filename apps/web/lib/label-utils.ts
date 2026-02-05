@@ -87,6 +87,7 @@ export interface ElementInfo {
   className?: string;
   role?: string;
   actionableTag?: string;
+  tabTitle?: string;
 }
 
 /**
@@ -188,4 +189,31 @@ export function generateNavigationDescription(url: string): string | null {
     // If URL parsing fails, use the raw URL
     return `Navigate to <strong>${escapeHtml(url)}</strong>`;
   }
+}
+
+/**
+ * Generate tab change description from tab title and URL
+ */
+export function generateTabChangeDescription(
+  tabTitle: string | null | undefined,
+  url: string | null | undefined
+): string | null {
+  if (tabTitle) {
+    const cleanTitle = cleanLabel(tabTitle);
+    if (cleanTitle) {
+      return `Switch to <strong>${escapeHtml(cleanTitle)}</strong>`;
+    }
+  }
+
+  // Fallback to URL hostname if no title
+  if (url) {
+    try {
+      const parsed = new URL(url);
+      return `Switch to <strong>${escapeHtml(parsed.hostname)}</strong>`;
+    } catch {
+      return `Switch to <strong>${escapeHtml(url)}</strong>`;
+    }
+  }
+
+  return null;
 }

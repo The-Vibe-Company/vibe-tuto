@@ -3,6 +3,7 @@ import { NextResponse } from 'next/server';
 import {
   generateStepDescription,
   generateNavigationDescription,
+  generateTabChangeDescription,
   type ElementInfo,
 } from '@/lib/label-utils';
 
@@ -138,8 +139,26 @@ export async function POST(request: Request) {
 
     // Generate auto-caption from source if no text_content provided
     if (!text_content && source) {
+      // Check if it's a tab_change event
+      if (source.click_type === 'tab_change') {
+        let tabTitle: string | null = null;
+        if (source.element_info) {
+          try {
+            const info = typeof source.element_info === 'string'
+              ? JSON.parse(source.element_info)
+              : source.element_info;
+            tabTitle = info?.tabTitle || null;
+          } catch {
+            // Invalid JSON, skip
+          }
+        }
+        const tabChangeDescription = generateTabChangeDescription(tabTitle, source.url);
+        if (tabChangeDescription) {
+          insertData.text_content = tabChangeDescription;
+        }
+      }
       // Check if it's a navigation event
-      if (source.click_type === 'navigation' && source.url) {
+      else if (source.click_type === 'navigation' && source.url) {
         const navDescription = generateNavigationDescription(source.url);
         if (navDescription) {
           insertData.text_content = navDescription;
@@ -170,6 +189,11 @@ export async function POST(request: Request) {
           }
         }
       }
+    }
+
+    // Copy URL from source for navigation/tab_change events
+    if (source && (source.click_type === 'navigation' || source.click_type === 'tab_change')) {
+      insertData.url = source.url;
     }
 
     // Create the new step

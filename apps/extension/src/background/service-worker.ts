@@ -10,7 +10,7 @@ interface RecordingState {
 
 interface CapturedStep {
   timestamp: number;
-  type: 'click' | 'navigation';
+  type: 'click' | 'navigation' | 'tab_change';
   screenshot?: string;
   x?: number;
   y?: number;
@@ -21,6 +21,7 @@ interface CapturedStep {
     tag: string;
     text: string;
   };
+  tabTitle?: string;
 }
 
 const state: RecordingState = {
@@ -280,6 +281,37 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
     if (!tab.url || tab.url.startsWith('chrome://')) return;
 
     console.log('[Service Worker] Tab activated during recording:', activeInfo.tabId);
+
+    // Capture tab change as an event
+    const timestamp = Date.now() - (state.startTime || 0);
+
+    try {
+      // Wait briefly for tab to be fully visible before screenshot
+      await new Promise((resolve) => setTimeout(resolve, 200));
+
+      const screenshot = await chrome.tabs.captureVisibleTab(undefined, {
+        format: 'png',
+      });
+
+      state.steps.push({
+        timestamp,
+        type: 'tab_change',
+        url: tab.url,
+        screenshot,
+        tabTitle: tab.title || undefined,
+      });
+
+      console.log('[Service Worker] Tab change captured:', tab.url, 'Title:', tab.title);
+    } catch (screenshotError) {
+      console.error('[Service Worker] Failed to capture tab change screenshot:', screenshotError);
+      // Still record the tab change without screenshot
+      state.steps.push({
+        timestamp,
+        type: 'tab_change',
+        url: tab.url,
+        tabTitle: tab.title || undefined,
+      });
+    }
 
     try {
       // Try to send START_CAPTURE to the new active tab with the original startTime

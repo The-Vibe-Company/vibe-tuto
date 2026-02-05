@@ -4,8 +4,9 @@ import { useState, useCallback } from 'react';
 import Image from 'next/image';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2, Heading, Minus, ImageOff, ImagePlus } from 'lucide-react';
+import { GripVertical, Trash2, Heading, Minus, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X } from 'lucide-react';
 import type { StepWithSignedUrl, SourceWithSignedUrl, Annotation } from '@/lib/types/editor';
+import { formatSourceUrl } from '@/lib/types/editor';
 import { InlineCaption } from './InlineCaption';
 import { StepScreenshot } from './StepScreenshot';
 import { Card, CardContent } from '@/components/ui/card';
@@ -31,6 +32,7 @@ interface DocStepCardProps {
   stepNumber: number;
   sources?: SourceWithSignedUrl[];
   onCaptionChange?: (caption: string) => void;
+  onUrlChange?: (url: string) => void;
   onAnnotationsChange?: (annotations: Annotation[]) => void;
   onDelete?: () => void;
   onRemoveImage?: () => void;
@@ -38,11 +40,14 @@ interface DocStepCardProps {
   readOnly?: boolean;
 }
 
-export function DocStepCard({
+import { memo } from 'react';
+
+function DocStepCardComponent({
   step,
   stepNumber,
   sources = [],
   onCaptionChange,
+  onUrlChange,
   onAnnotationsChange,
   onDelete,
   onRemoveImage,
@@ -51,6 +56,8 @@ export function DocStepCard({
 }: DocStepCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
+  const [isEditingUrl, setIsEditingUrl] = useState(false);
+  const [editedUrl, setEditedUrl] = useState(step.url || '');
   const annotations = step.annotations || [];
 
   // Filter sources that have screenshots
@@ -320,6 +327,80 @@ export function DocStepCard({
             )}
           </div>
 
+          {/* URL for navigation/tab_change steps */}
+          {step.url && (
+            <div className="px-4 pt-2">
+              {isEditingUrl && !readOnly ? (
+                <div className="flex items-center gap-2">
+                  <ExternalLink className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                  <input
+                    type="url"
+                    value={editedUrl}
+                    onChange={(e) => setEditedUrl(e.target.value)}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') {
+                        onUrlChange?.(editedUrl);
+                        setIsEditingUrl(false);
+                      } else if (e.key === 'Escape') {
+                        setEditedUrl(step.url || '');
+                        setIsEditingUrl(false);
+                      }
+                    }}
+                    className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                    autoFocus
+                  />
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      onUrlChange?.(editedUrl);
+                      setIsEditingUrl(false);
+                    }}
+                    className="h-7 w-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                  >
+                    <Check className="h-4 w-4" />
+                  </Button>
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    onClick={() => {
+                      setEditedUrl(step.url || '');
+                      setIsEditingUrl(false);
+                    }}
+                    className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                  >
+                    <X className="h-4 w-4" />
+                  </Button>
+                </div>
+              ) : (
+                <div className="group/url flex items-center gap-2">
+                  <ExternalLink className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
+                  <a
+                    href={step.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-sm text-muted-foreground hover:text-primary hover:underline truncate"
+                  >
+                    {formatSourceUrl(step.url)}
+                  </a>
+                  {!readOnly && (
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => {
+                        setEditedUrl(step.url || '');
+                        setIsEditingUrl(true);
+                      }}
+                      className="h-6 w-6 opacity-0 group-hover/url:opacity-100 text-muted-foreground hover:text-primary transition-opacity"
+                    >
+                      <Pencil className="h-3 w-3" />
+                    </Button>
+                  )}
+                </div>
+              )}
+            </div>
+          )}
+
           {/* Screenshot (if exists) */}
           {hasScreenshot ? (
             <div className="p-4 pt-3">
@@ -380,6 +461,7 @@ export function DocStepCard({
                       fill
                       className="object-cover transition-transform group-hover:scale-105"
                       sizes="150px"
+                      loading="lazy"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
                   </button>
@@ -398,3 +480,19 @@ export function DocStepCard({
     </>
   );
 }
+
+// Memoize to prevent unnecessary re-renders when parent updates
+export const DocStepCard = memo(DocStepCardComponent, (prev, next) => {
+  // Custom comparison to only re-render when necessary
+  return (
+    prev.step.id === next.step.id &&
+    prev.step.text_content === next.step.text_content &&
+    prev.step.signedScreenshotUrl === next.step.signedScreenshotUrl &&
+    prev.step.step_type === next.step.step_type &&
+    prev.step.url === next.step.url &&
+    prev.stepNumber === next.stepNumber &&
+    prev.readOnly === next.readOnly &&
+    JSON.stringify(prev.step.annotations) === JSON.stringify(next.step.annotations) &&
+    (prev.sources?.length ?? 0) === (next.sources?.length ?? 0)
+  );
+});
