@@ -20,19 +20,24 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const { tutorial } = data;
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
 
+  const pageUrl = `${baseUrl}/tutorial/${slug}`;
+
   return {
     title: tutorial.title,
     description: tutorial.description || `Tutorial: ${tutorial.title}`,
     robots: 'index, follow',
     alternates: {
-      canonical: `${baseUrl}/tutorial/${slug}`,
+      canonical: pageUrl,
+      types: {
+        'application/json+oembed': `${baseUrl}/api/oembed?url=${encodeURIComponent(pageUrl)}&format=json`,
+      },
     },
     openGraph: {
       title: tutorial.title,
       description: tutorial.description || `Tutorial: ${tutorial.title}`,
       type: 'article',
       publishedTime: tutorial.publishedAt ?? undefined,
-      url: `${baseUrl}/tutorial/${slug}`,
+      url: pageUrl,
     },
     twitter: {
       card: 'summary_large_image',

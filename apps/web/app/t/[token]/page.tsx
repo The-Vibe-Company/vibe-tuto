@@ -19,6 +19,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const { tutorial } = data;
   const isLinkOnly = tutorial.visibility === 'link_only';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
+  const pageUrl = `${baseUrl}/t/${token}`;
 
   return {
     title: tutorial.title,
@@ -30,6 +32,11 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       description: tutorial.description || `Tutorial: ${tutorial.title}`,
       type: 'article',
       publishedTime: tutorial.publishedAt ?? undefined,
+    },
+    alternates: {
+      types: {
+        'application/json+oembed': `${baseUrl}/api/oembed?url=${encodeURIComponent(pageUrl)}&format=json`,
+      },
     },
   };
 }
