@@ -27,7 +27,7 @@ export default function Home() {
               <Play className="h-4 w-4 fill-white text-white" />
             </div>
             <span className="text-lg font-semibold tracking-tight text-stone-900">
-              Vibe Tuto
+              CapTuto
             </span>
             <span className="ml-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-600">
               Beta
@@ -134,7 +134,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mx-auto mb-10 max-w-xl text-lg text-stone-500 leading-relaxed"
             >
-              Vibe Tuto est une extension Chrome qui enregistre vos clics et
+              CapTuto est une extension Chrome qui enregistre vos clics et
               utilise l&apos;IA pour générer des instructions étape par étape.
               C&apos;est tout.
             </motion.p>
@@ -176,7 +176,7 @@ export default function Home() {
                   </div>
                   <div className="ml-4 flex-1 rounded-md bg-stone-100 px-3 py-1.5">
                     <span className="text-xs text-stone-400">
-                      app.vibetuto.com/editor
+                      app.captuto.com/editor
                     </span>
                   </div>
                 </div>
@@ -248,7 +248,7 @@ export default function Home() {
                 icon: Monitor,
                 title: "1. Installez l'extension",
                 description:
-                  "Ajoutez l'extension Vibe Tuto à Chrome. Connectez-vous avec votre compte.",
+                  "Ajoutez l'extension CapTuto à Chrome. Connectez-vous avec votre compte.",
               },
               {
                 icon: MousePointer2,
@@ -379,7 +379,7 @@ export default function Home() {
                 <Play className="h-4 w-4 fill-white text-white" />
               </div>
               <span className="text-lg font-semibold text-stone-900">
-                Vibe Tuto
+                CapTuto
               </span>
             </div>
             <p className="text-sm text-stone-500">

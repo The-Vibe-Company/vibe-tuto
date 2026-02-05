@@ -1,5 +1,5 @@
 {
-  "name": "vibe-tuto",
+  "name": "captuto",
   "private": true,
   "scripts": {
     "dev": "turbo dev",

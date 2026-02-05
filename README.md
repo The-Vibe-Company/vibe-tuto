@@ -1,6 +1,6 @@
-# Vibe Tuto
+# CapTuto
 
-Create professional tutorials in seconds. Record your screen while talking, and Vibe Tuto automatically generates a step-by-step guide with screenshots and text.
+Create professional tutorials in seconds. Record your screen while talking, and CapTuto automatically generates a step-by-step guide with screenshots and text.
 
 ## Tech Stack
 
@@ -16,7 +16,7 @@ Create professional tutorials in seconds. Record your screen while talking, and 
 ## Project Structure
 
 ```
-vibe-tuto/
+captuto/
 ├── apps/
 │   ├── web/              # Next.js app
 │   └── extension/        # Chrome extension

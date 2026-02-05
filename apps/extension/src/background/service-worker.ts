@@ -339,4 +339,4 @@ chrome.tabs.onActivated.addListener(async (activeInfo) => {
   }
 });
 
-console.log('[Service Worker] Vibe Tuto extension loaded');
+console.log('[Service Worker] CapTuto extension loaded');

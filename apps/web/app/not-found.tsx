@@ -12,7 +12,7 @@ export default function NotFound() {
             <Play className="h-5 w-5 fill-white text-white" />
           </div>
           <span className="text-xl font-semibold tracking-tight text-stone-900">
-            Vibe Tuto
+            CapTuto
           </span>
         </div>
 

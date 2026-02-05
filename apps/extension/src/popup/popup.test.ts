@@ -204,21 +204,21 @@ describe('getApiUrl', () => {
 
   it('returns custom URL when set in storage', async () => {
     mockChrome.storage.local.get.mockResolvedValue({
-      [API_URL_STORAGE_KEY]: 'https://vibetuto.com',
+      [API_URL_STORAGE_KEY]: 'https://captuto.com',
     });
 
     const url = await getApiUrl();
 
-    expect(url).toBe('https://vibetuto.com');
+    expect(url).toBe('https://captuto.com');
   });
 
   it('returns custom URL for production environment', async () => {
     mockChrome.storage.local.get.mockResolvedValue({
-      [API_URL_STORAGE_KEY]: 'https://app.vibetuto.com',
+      [API_URL_STORAGE_KEY]: 'https://app.captuto.com',
     });
 
     const url = await getApiUrl();
 
-    expect(url).toBe('https://app.vibetuto.com');
+    expect(url).toBe('https://app.captuto.com');
   });
 });

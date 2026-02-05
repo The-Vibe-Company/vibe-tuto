@@ -1,6 +1,6 @@
 # Supabase Configuration
 
-This folder contains SQL migrations for the Vibe Tuto database.
+This folder contains SQL migrations for the CapTuto database.
 
 ## Running Migrations
 

@@ -1,6 +1,6 @@
 {
   "manifest_version": 3,
-  "name": "Vibe Tuto",
+  "name": "CapTuto",
   "version": "0.1.0",
   "description": "Create professional tutorials in seconds by recording your screen while talking.",
   "icons": {

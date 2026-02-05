@@ -131,7 +131,7 @@ export default function DashboardPage() {
               Utilisez l&apos;extension Chrome pour creer votre premier tutoriel.
             </p>
             <p className="mt-4 text-sm text-stone-400">
-              Cliquez sur l&apos;icone Vibe Tuto dans Chrome pour commencer
+              Cliquez sur l&apos;icone CapTuto dans Chrome pour commencer
               l&apos;enregistrement.
             </p>
           </CardContent>

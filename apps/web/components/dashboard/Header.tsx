@@ -27,7 +27,7 @@ export function Header({ userEmail }: HeaderProps) {
     // Clear extension auth
     if (typeof window !== 'undefined') {
       window.postMessage(
-        { type: 'VIBE_TUTO_AUTH', authToken: null, userEmail: null },
+        { type: 'CAPTUTO_AUTH', authToken: null, userEmail: null },
         '*'
       );
     }
@@ -50,7 +50,7 @@ export function Header({ userEmail }: HeaderProps) {
           <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 shadow-sm">
             <Play className="h-4 w-4 fill-white text-white" />
           </div>
-          <span className="text-lg font-semibold tracking-tight text-stone-900">Vibe Tuto</span>
+          <span className="text-lg font-semibold tracking-tight text-stone-900">CapTuto</span>
           <span className="ml-1 rounded-full bg-violet-100 px-2 py-0.5 text-xs font-medium text-violet-600">
             Beta
           </span>

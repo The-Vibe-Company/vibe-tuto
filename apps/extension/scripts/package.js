@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
 /**
- * Package script for Vibe Tuto Chrome Extension
+ * Package script for CapTuto Chrome Extension
  *
  * This script:
- * 1. Updates the default API URL to production (tuto.thevibecompany.co)
+ * 1. Updates the default API URL to production (captuto.com)
  * 2. Builds the extension
  * 3. Creates a zip file for distribution
  *
@@ -18,7 +18,7 @@ const path = require('path');
 const { execSync } = require('child_process');
 
 // Configuration
-const PRODUCTION_URL = process.env.API_URL || 'https://tuto.thevibecompany.co';
+const PRODUCTION_URL = process.env.API_URL || 'https://captuto.com';
 const EXTENSION_DIR = path.join(__dirname, '..');
 const DIST_DIR = path.join(EXTENSION_DIR, 'dist');
 const SRC_DIR = path.join(EXTENSION_DIR, 'src');
@@ -85,7 +85,7 @@ function updateContentOrigins(content) {
 function createZip() {
   const packageJson = JSON.parse(fs.readFileSync(path.join(EXTENSION_DIR, 'package.json'), 'utf8'));
   const version = packageJson.version || '0.1.0';
-  const zipName = `vibe-tuto-extension-v${version}.zip`;
+  const zipName = `captuto-extension-v${version}.zip`;
   const zipPath = path.join(EXTENSION_DIR, zipName);
 
   // Remove existing zip if present
@@ -106,7 +106,7 @@ function createZip() {
 
 async function main() {
   console.log('');
-  console.log('📦 Packaging Vibe Tuto Chrome Extension');
+  console.log('📦 Packaging CapTuto Chrome Extension');
   console.log(`   Production URL: ${PRODUCTION_URL}`);
   console.log('');
 

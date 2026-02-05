@@ -7,8 +7,8 @@ import "./globals.css";
 const inter = Inter({ subsets: ["latin"], display: "swap" });
 
 export const metadata: Metadata = {
-  title: "Vibe Tuto",
-  description: "Monorepo Vibe Tuto"
+  title: "CapTuto",
+  description: "Créez des tutoriels professionnels en quelques clics"
 };
 
 export default function RootLayout({

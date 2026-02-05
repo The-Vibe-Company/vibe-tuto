@@ -120,6 +120,7 @@ const ALLOWED_ORIGINS = [
   'http://localhost:3000',
   'https://localhost:3000',
   'https://vibe-tuto.vercel.app',
+  'https://captuto.com',
 ];
 
 // Listen for auth messages from the web app
@@ -127,24 +128,24 @@ window.addEventListener('message', async (event) => {
   // Strict origin validation - only accept exact matches
   if (!ALLOWED_ORIGINS.includes(event.origin)) return;
 
-  if (event.data?.type === 'VIBE_TUTO_AUTH') {
+  if (event.data?.type === 'CAPTUTO_AUTH') {
     const { authToken, userEmail } = event.data;
 
     // Handle logout: clear storage when tokens are null/undefined
     if (authToken === null || authToken === undefined) {
       await chrome.storage.local.remove(['authToken', 'userEmail']);
-      console.log('[Vibe Tuto] Auth cleared (logout)');
-      window.postMessage({ type: 'VIBE_TUTO_AUTH_SYNCED' }, '*');
+      console.log('[CapTuto] Auth cleared (logout)');
+      window.postMessage({ type: 'CAPTUTO_AUTH_SYNCED' }, '*');
       return;
     }
 
     // Handle login: store auth when both values are present
     if (authToken && userEmail) {
       await chrome.storage.local.set({ authToken, userEmail });
-      console.log('[Vibe Tuto] Auth synced from web app');
-      window.postMessage({ type: 'VIBE_TUTO_AUTH_SYNCED' }, '*');
+      console.log('[CapTuto] Auth synced from web app');
+      window.postMessage({ type: 'CAPTUTO_AUTH_SYNCED' }, '*');
     }
   }
 });
 
-console.log('[Vibe Tuto] Content script loaded');
+console.log('[CapTuto] Content script loaded');

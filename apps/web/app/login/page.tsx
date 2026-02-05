@@ -33,7 +33,7 @@ export default function LoginPage() {
   const syncToExtension = (userEmail: string, accessToken: string) => {
     // Send auth data to extension via postMessage
     window.postMessage(
-      { type: 'VIBE_TUTO_AUTH', authToken: accessToken, userEmail },
+      { type: 'CAPTUTO_AUTH', authToken: accessToken, userEmail },
       window.location.origin
     );
   };
@@ -92,7 +92,7 @@ export default function LoginPage() {
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-gray-50 to-gray-100">
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-xl">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-gray-900">Vibe Tuto</h1>
+          <h1 className="text-3xl font-bold text-gray-900">CapTuto</h1>
           <h2 className="mt-2 text-lg text-gray-600">Connexion</h2>
         </div>
 

@@ -127,7 +127,7 @@ export function PublicTutorialViewer({
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 text-sm text-stone-600 hover:text-violet-600"
               >
-                <span>Voir le tutoriel complet sur Vibe Tuto</span>
+                <span>Voir le tutoriel complet sur CapTuto</span>
               </a>
             </footer>
           )}
@@ -157,7 +157,7 @@ export function PublicTutorialViewer({
               <span className={`text-lg font-semibold tracking-tight transition-colors ${
                 scrolled ? 'text-stone-900' : 'text-stone-800'
               }`}>
-                Vibe Tuto
+                CapTuto
               </span>
             </Link>
 
@@ -360,7 +360,7 @@ export function PublicTutorialViewer({
               className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-sm text-violet-600 mb-6"
             >
               <Sparkles className="h-4 w-4" />
-              <span>Créé avec Vibe Tuto</span>
+              <span>Créé avec CapTuto</span>
             </motion.div>
 
             <motion.h2

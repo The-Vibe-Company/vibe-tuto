@@ -88,7 +88,7 @@ export default function SupportPage() {
               <Play className="h-4 w-4 fill-white text-white" />
             </div>
             <span className="text-lg font-semibold tracking-tight text-stone-900">
-              Vibe Tuto
+              CapTuto
             </span>
           </Link>
 
@@ -253,7 +253,7 @@ export default function SupportPage() {
                 <Play className="h-4 w-4 fill-white text-white" />
               </div>
               <span className="text-lg font-semibold text-stone-900">
-                Vibe Tuto
+                CapTuto
               </span>
             </div>
             <p className="text-sm text-stone-500">
