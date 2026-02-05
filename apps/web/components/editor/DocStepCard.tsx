@@ -1,17 +1,17 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, memo } from 'react';
 import Image from 'next/image';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2, Heading, Minus, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X, FileText } from 'lucide-react';
+import { GripVertical, Trash2, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X, FileText, Globe, ArrowRightLeft } from 'lucide-react';
 import type { StepWithSignedUrl, SourceWithSignedUrl, Annotation } from '@/lib/types/editor';
 import { formatSourceUrl, getSourceActionType } from '@/lib/types/editor';
 import { InlineCaption } from './InlineCaption';
 import { StepScreenshot } from './StepScreenshot';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import { Separator } from '@/components/ui/separator';
+import { Badge } from '@/components/ui/badge';
 import {
   Tooltip,
   TooltipContent,
@@ -41,8 +41,6 @@ interface DocStepCardProps {
   readOnly?: boolean;
 }
 
-import { memo } from 'react';
-
 function DocStepCardComponent({
   step,
   stepNumber,
@@ -59,17 +57,13 @@ function DocStepCardComponent({
   const [isHovered, setIsHovered] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
   const [isEditingUrl, setIsEditingUrl] = useState(false);
-  // Compute URL with fallback to source URL for existing steps
   const displayUrl = step.url || step.source?.url || null;
-  // Detect if this is a tab_change step for visual differentiation
   const isTabChange = step.source ? getSourceActionType(step.source) === 'tab_change' : false;
   const [editedUrl, setEditedUrl] = useState(displayUrl || '');
   const annotations = step.annotations || [];
 
-  // Filter sources that have screenshots
   const availableSources = sources.filter((s) => s.signedScreenshotUrl);
 
-  // Handler to update a single annotation
   const handleUpdateAnnotation = useCallback(
     (id: string, updates: Partial<Annotation>) => {
       if (readOnly) return;
@@ -81,7 +75,6 @@ function DocStepCardComponent({
     [annotations, onAnnotationsChange, readOnly]
   );
 
-  // Handler to delete a single annotation
   const handleDeleteAnnotation = useCallback(
     (id: string) => {
       if (readOnly) return;
@@ -109,42 +102,35 @@ function DocStepCardComponent({
   const isHeading = step.step_type === 'heading';
   const isDivider = step.step_type === 'divider';
 
-  // Divider step
+  // Divider step - gradient line
   if (isDivider) {
     return (
       <div
         ref={readOnly ? undefined : setNodeRef}
         style={readOnly ? undefined : style}
         className={cn(
-          'group relative py-4',
+          'group relative py-3',
           !readOnly && isDragging && 'z-50 opacity-50'
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        <div className="flex items-center gap-4">
-          {/* Drag handle (hidden in readOnly) */}
+        <div className="flex items-center gap-3">
           {!readOnly && (
             <button
               {...attributes}
               {...listeners}
               className={cn(
-                'cursor-grab touch-none text-muted-foreground/50 transition-all hover:text-muted-foreground',
+                'cursor-grab touch-none text-muted-foreground/40 transition-all hover:text-muted-foreground',
                 isHovered ? 'opacity-100' : 'opacity-0'
               )}
             >
-              <GripVertical className="h-5 w-5" />
+              <GripVertical className="h-4 w-4" />
             </button>
           )}
 
-          {/* Divider line */}
-          <div className="flex flex-1 items-center gap-3">
-            <Separator className="flex-1" />
-            <Minus className="h-4 w-4 text-muted-foreground/30" />
-            <Separator className="flex-1" />
-          </div>
+          <div className="h-px flex-1 bg-gradient-to-r from-transparent via-border to-transparent" />
 
-          {/* Delete (hidden in readOnly) */}
           {!readOnly && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -153,11 +139,11 @@ function DocStepCardComponent({
                   size="icon"
                   onClick={onDelete}
                   className={cn(
-                    'h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all',
+                    'h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all',
                     isHovered ? 'opacity-100' : 'opacity-0'
                   )}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
@@ -170,41 +156,34 @@ function DocStepCardComponent({
     );
   }
 
-  // Heading step
+  // Heading step - bold with left accent border
   if (isHeading) {
     return (
       <div
         ref={readOnly ? undefined : setNodeRef}
         style={readOnly ? undefined : style}
         className={cn(
-          'group relative py-3',
+          'group relative py-2',
           !readOnly && isDragging && 'z-50 opacity-50'
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <div className="flex items-start gap-3">
-          {/* Drag handle (hidden in readOnly) */}
           {!readOnly && (
             <button
               {...attributes}
               {...listeners}
               className={cn(
-                'mt-1.5 cursor-grab touch-none text-muted-foreground/50 transition-all hover:text-muted-foreground',
+                'mt-2 cursor-grab touch-none text-muted-foreground/40 transition-all hover:text-muted-foreground',
                 isHovered ? 'opacity-100' : 'opacity-0'
               )}
             >
-              <GripVertical className="h-5 w-5" />
+              <GripVertical className="h-4 w-4" />
             </button>
           )}
 
-          {/* Icon */}
-          <div className="mt-0.5 flex h-7 w-7 items-center justify-center rounded-md bg-primary/10">
-            <Heading className="h-4 w-4 text-primary" />
-          </div>
-
-          {/* Editable heading */}
-          <div className="min-w-0 flex-1">
+          <div className="min-w-0 flex-1 border-l-[3px] border-primary/60 pl-4 py-1">
             <InlineCaption
               content={step.text_content || ''}
               onChange={onCaptionChange}
@@ -214,7 +193,6 @@ function DocStepCardComponent({
             />
           </div>
 
-          {/* Delete (hidden in readOnly) */}
           {!readOnly && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -223,11 +201,11 @@ function DocStepCardComponent({
                   size="icon"
                   onClick={onDelete}
                   className={cn(
-                    'h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all',
+                    'mt-1 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all',
                     isHovered ? 'opacity-100' : 'opacity-0'
                   )}
                 >
-                  <Trash2 className="h-4 w-4" />
+                  <Trash2 className="h-3.5 w-3.5" />
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
@@ -240,68 +218,154 @@ function DocStepCardComponent({
     );
   }
 
-  // Regular step (with or without screenshot)
+  // Regular step card
   return (
     <>
       <Card
         ref={readOnly ? undefined : setNodeRef}
         style={readOnly ? undefined : style}
         className={cn(
-          'group relative transition-all duration-200',
-          !readOnly && isDragging && 'z-50 opacity-50 shadow-lg ring-2 ring-primary/20',
+          'group relative rounded-xl border transition-all duration-200',
+          !readOnly && isDragging && 'z-50 opacity-50 shadow-xl ring-2 ring-primary/20',
           !isDragging && 'hover:shadow-md hover:border-border/80'
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
         <CardContent className="p-0">
-          {/* Header: badge + caption + actions */}
-          <div className="flex items-start gap-3 p-4 pb-0">
-            {/* Drag handle + badge */}
-            <div className="flex items-center gap-2">
+          <div className="flex items-start gap-4 p-4 pb-0">
+            {/* Drag handle + step number */}
+            <div className="flex flex-col items-center gap-1 pt-0.5">
               {!readOnly && (
                 <button
                   {...attributes}
                   {...listeners}
                   className={cn(
-                    'cursor-grab touch-none text-muted-foreground/50 transition-all hover:text-muted-foreground',
+                    'cursor-grab touch-none text-muted-foreground/40 transition-all hover:text-muted-foreground',
                     isHovered ? 'opacity-100' : 'opacity-0'
                   )}
                 >
-                  <GripVertical className="h-5 w-5" />
+                  <GripVertical className="h-4 w-4" />
                 </button>
               )}
 
-              <div className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold shadow-sm",
-                isTabChange
-                  ? "bg-amber-500 text-white"
-                  : "bg-primary text-primary-foreground"
-              )}>
+              <div
+                className={cn(
+                  'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold shadow-sm',
+                  isTabChange
+                    ? 'bg-amber-500/15 text-amber-600 ring-1 ring-amber-500/30'
+                    : 'bg-primary text-primary-foreground'
+                )}
+              >
                 {stepNumber}
               </div>
             </div>
 
-            {/* Caption */}
-            <div className="min-w-0 flex-1 pt-0.5">
-              <InlineCaption
-                content={step.text_content || ''}
-                onChange={onCaptionChange}
-                placeholder={
-                  hasScreenshot
-                    ? 'Click on "..."'
-                    : 'Describe this step...'
-                }
-                readOnly={readOnly}
-              />
+            {/* Content area */}
+            <div className="min-w-0 flex-1 space-y-2">
+              {/* Caption */}
+              <div className="pt-1">
+                <InlineCaption
+                  content={step.text_content || ''}
+                  onChange={onCaptionChange}
+                  placeholder={
+                    hasScreenshot
+                      ? 'Click on "..."'
+                      : 'Describe this step...'
+                  }
+                  readOnly={readOnly}
+                />
+              </div>
+
+              {/* URL chip */}
+              {displayUrl && (
+                <div className="pb-1">
+                  {isEditingUrl && !readOnly ? (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="url"
+                        value={editedUrl}
+                        onChange={(e) => setEditedUrl(e.target.value)}
+                        onKeyDown={(e) => {
+                          if (e.key === 'Enter') {
+                            onUrlChange?.(editedUrl);
+                            setIsEditingUrl(false);
+                          } else if (e.key === 'Escape') {
+                            setEditedUrl(displayUrl || '');
+                            setIsEditingUrl(false);
+                          }
+                        }}
+                        className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        autoFocus
+                      />
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          onUrlChange?.(editedUrl);
+                          setIsEditingUrl(false);
+                        }}
+                        className="h-7 w-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
+                      >
+                        <Check className="h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => {
+                          setEditedUrl(displayUrl || '');
+                          setIsEditingUrl(false);
+                        }}
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      >
+                        <X className="h-3.5 w-3.5" />
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="group/url flex items-center gap-1.5">
+                      {isTabChange ? (
+                        <Badge variant="outline" className="gap-1.5 font-normal text-amber-600 border-amber-200 bg-amber-50 dark:bg-amber-500/10 dark:border-amber-500/30">
+                          <ArrowRightLeft className="h-3 w-3" />
+                          <span className="text-xs">Tab switch</span>
+                        </Badge>
+                      ) : null}
+                      <a
+                        href={displayUrl}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1.5 rounded-full bg-muted/70 px-2.5 py-1 text-xs text-muted-foreground hover:text-primary hover:bg-muted transition-colors max-w-[300px]"
+                      >
+                        <Globe className="h-3 w-3 flex-shrink-0" />
+                        <span className="truncate">{formatSourceUrl(displayUrl)}</span>
+                        <ExternalLink className="h-2.5 w-2.5 flex-shrink-0 opacity-50" />
+                      </a>
+                      {!readOnly && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => {
+                            setEditedUrl(displayUrl || '');
+                            setIsEditingUrl(true);
+                          }}
+                          className="h-6 w-6 opacity-0 group-hover/url:opacity-100 text-muted-foreground hover:text-primary transition-opacity"
+                        >
+                          <Pencil className="h-3 w-3" />
+                        </Button>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
-            {/* Action buttons (hidden in readOnly) */}
+            {/* Action buttons */}
             {!readOnly && (
-              <div className={cn(
-                'flex items-center gap-1 transition-all',
-                isHovered ? 'opacity-100' : 'opacity-0'
-              )}>
+              <div
+                className={cn(
+                  'flex items-center gap-1 transition-all',
+                  isHovered ? 'opacity-100' : 'opacity-0'
+                )}
+              >
                 {hasScreenshot && (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -309,9 +373,9 @@ function DocStepCardComponent({
                         variant="ghost"
                         size="icon"
                         onClick={onRemoveImage}
-                        className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                       >
-                        <ImageOff className="h-4 w-4" />
+                        <ImageOff className="h-3.5 w-3.5" />
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="text-xs">
@@ -325,9 +389,9 @@ function DocStepCardComponent({
                       variant="ghost"
                       size="icon"
                       onClick={onDelete}
-                      className="h-8 w-8 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
                     >
-                      <Trash2 className="h-4 w-4" />
+                      <Trash2 className="h-3.5 w-3.5" />
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
@@ -338,81 +402,7 @@ function DocStepCardComponent({
             )}
           </div>
 
-          {/* URL for navigation/tab_change steps */}
-          {displayUrl && (
-            <div className="px-4 pt-2">
-              {isEditingUrl && !readOnly ? (
-                <div className="flex items-center gap-2">
-                  <ExternalLink className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                  <input
-                    type="url"
-                    value={editedUrl}
-                    onChange={(e) => setEditedUrl(e.target.value)}
-                    onKeyDown={(e) => {
-                      if (e.key === 'Enter') {
-                        onUrlChange?.(editedUrl);
-                        setIsEditingUrl(false);
-                      } else if (e.key === 'Escape') {
-                        setEditedUrl(displayUrl || '');
-                        setIsEditingUrl(false);
-                      }
-                    }}
-                    className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-                    autoFocus
-                  />
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      onUrlChange?.(editedUrl);
-                      setIsEditingUrl(false);
-                    }}
-                    className="h-7 w-7 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-50"
-                  >
-                    <Check className="h-4 w-4" />
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={() => {
-                      setEditedUrl(displayUrl || '');
-                      setIsEditingUrl(false);
-                    }}
-                    className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
-                  >
-                    <X className="h-4 w-4" />
-                  </Button>
-                </div>
-              ) : (
-                <div className="group/url flex items-center gap-2">
-                  <ExternalLink className="h-4 w-4 flex-shrink-0 text-muted-foreground" />
-                  <a
-                    href={displayUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-sm text-muted-foreground hover:text-primary hover:underline truncate"
-                  >
-                    {formatSourceUrl(displayUrl)}
-                  </a>
-                  {!readOnly && (
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setEditedUrl(displayUrl || '');
-                        setIsEditingUrl(true);
-                      }}
-                      className="h-6 w-6 opacity-0 group-hover/url:opacity-100 text-muted-foreground hover:text-primary transition-opacity"
-                    >
-                      <Pencil className="h-3 w-3" />
-                    </Button>
-                  )}
-                </div>
-              )}
-            </div>
-          )}
-
-          {/* Screenshot (if exists) */}
+          {/* Screenshot */}
           {hasScreenshot ? (
             <div className="p-4 pt-3">
               <StepScreenshot
@@ -426,7 +416,6 @@ function DocStepCardComponent({
               />
             </div>
           ) : !readOnly ? (
-            /* Text-only step - show option to add image (only in edit mode) */
             <div className="px-4 pb-4 pt-2">
               <Button
                 variant="outline"
@@ -438,14 +427,13 @@ function DocStepCardComponent({
               </Button>
             </div>
           ) : (
-            /* Text-only step in readOnly - just add padding */
             <div className="pb-4" />
           )}
 
-          {/* Description (optional long text below step content) */}
+          {/* Description */}
           {step.description != null ? (
             <div className="px-4 pb-4">
-              <div className="rounded-lg bg-muted/50 border p-3">
+              <div className="rounded-lg bg-muted/40 border border-border/50 p-3">
                 <InlineCaption
                   content={step.description}
                   onChange={onDescriptionChange}
@@ -518,9 +506,7 @@ function DocStepCardComponent({
   );
 }
 
-// Memoize to prevent unnecessary re-renders when parent updates
 export const DocStepCard = memo(DocStepCardComponent, (prev, next) => {
-  // Custom comparison to only re-render when necessary
   return (
     prev.step.id === next.step.id &&
     prev.step.text_content === next.step.text_content &&

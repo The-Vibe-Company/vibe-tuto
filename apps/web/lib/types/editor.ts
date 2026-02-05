@@ -92,7 +92,7 @@ export interface StepWithSignedUrl {
 }
 
 // Annotation types for screenshot markup
-export type AnnotationType = 'circle' | 'arrow' | 'text' | 'blur' | 'highlight' | 'click-indicator';
+export type AnnotationType = 'circle' | 'arrow' | 'text' | 'blur' | 'highlight' | 'click-indicator' | 'numbered-callout';
 
 export interface Annotation {
   id: string;
@@ -110,4 +110,9 @@ export interface Annotation {
   content?: string;
   // Style options
   color?: string;
+  strokeWidth?: number;      // 1=thin(2px), 2=medium(3px), 3=thick(5px)
+  fontSize?: number;         // 14, 16, 20, 24
+  opacity?: number;          // 0-1, for highlights
+  textBackground?: 'pill' | 'rectangle' | 'none';
+  calloutNumber?: number;    // For numbered-callout type
 }

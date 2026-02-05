@@ -2,19 +2,13 @@
 
 import { useState, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { ZoomIn, ZoomOut } from 'lucide-react';
 import { AnnotationCanvas } from './AnnotationCanvas';
-import { AnnotationToolbar } from './AnnotationToolbar';
+import { AnnotationToolbar, type AnnotationStyle } from './AnnotationToolbar';
 import { QuickAnnotationBar } from './QuickAnnotationBar';
 import type { Annotation, AnnotationType } from '@/lib/types/editor';
-import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from '@/components/ui/tooltip';
 import { cn } from '@/lib/utils';
+import { DEFAULT_ANNOTATION_STYLE } from '@/lib/constants/annotation-styles';
 
 interface StepScreenshotProps {
   src: string;
@@ -41,6 +35,13 @@ export function StepScreenshot({
   const [isAnnotating, setIsAnnotating] = useState(false);
   const [activeTool, setActiveTool] = useState<AnnotationType | null>(null);
   const [isHovering, setIsHovering] = useState(false);
+  const [annotationStyle, setAnnotationStyle] = useState<AnnotationStyle>({
+    color: DEFAULT_ANNOTATION_STYLE.color,
+    strokeWidth: DEFAULT_ANNOTATION_STYLE.strokeWidth,
+    fontSize: DEFAULT_ANNOTATION_STYLE.fontSize,
+    opacity: DEFAULT_ANNOTATION_STYLE.opacity,
+    textBackground: DEFAULT_ANNOTATION_STYLE.textBackground,
+  });
   const containerRef = useRef<HTMLDivElement>(null);
 
   const zoom = ZOOM_LEVELS[zoomIndex];
@@ -85,7 +86,7 @@ export function StepScreenshot({
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Annotation toolbar (shown when annotating, hidden in readOnly) */}
+      {/* Annotation toolbar */}
       {!readOnly && isAnnotating && (
         <div className="absolute -top-14 left-1/2 z-20 -translate-x-1/2 animate-in fade-in slide-in-from-bottom-2 duration-200">
           <AnnotationToolbar
@@ -94,6 +95,8 @@ export function StepScreenshot({
             onClearAll={handleClearAnnotations}
             onDone={handleDone}
             hasAnnotations={annotations.length > 0}
+            annotationStyle={annotationStyle}
+            onStyleChange={setAnnotationStyle}
           />
         </div>
       )}
@@ -101,7 +104,7 @@ export function StepScreenshot({
       {/* Screenshot container */}
       <div
         className={cn(
-          'relative overflow-hidden rounded-lg border bg-muted transition-all duration-200',
+          'relative overflow-hidden rounded-lg border shadow-sm transition-all duration-200',
           isAnnotating
             ? 'border-primary ring-2 ring-primary/20'
             : 'border-border'
@@ -121,7 +124,6 @@ export function StepScreenshot({
               width: zoom > 1 ? `${100 / zoom}%` : '100%',
             }}
           >
-            {/* Image */}
             <div className="relative aspect-video w-full">
               <Image
                 src={src}
@@ -133,7 +135,6 @@ export function StepScreenshot({
                 decoding="async"
               />
 
-              {/* Annotation canvas (always visible, editable when annotating) */}
               <AnnotationCanvas
                 annotations={annotations}
                 activeTool={isAnnotating ? activeTool : null}
@@ -142,70 +143,48 @@ export function StepScreenshot({
                 onDeleteAnnotation={onDeleteAnnotation}
                 containerRef={containerRef}
                 readOnly={readOnly}
+                annotationStyle={annotationStyle}
               />
             </div>
           </div>
         </div>
 
-        {/* Quick annotation bar (bottom-left, shown on hover, hidden in readOnly) */}
+        {/* Quick annotation bar */}
         {!readOnly && isHovering && !isAnnotating && (
           <div className="absolute bottom-3 left-3 z-10 animate-in fade-in slide-in-from-left-2 duration-150">
             <QuickAnnotationBar onToolSelect={handleQuickToolSelect} />
           </div>
         )}
 
-        {/* Controls overlay (bottom-right) */}
+        {/* Controls overlay */}
         <div className="absolute bottom-3 right-3 z-10 flex items-center gap-2">
           {/* Annotation count badge */}
           {annotations.length > 0 && !isAnnotating && (
             <Badge
               variant="secondary"
-              className="h-7 gap-1 bg-background/90 backdrop-blur-sm"
+              className="h-6 gap-1 bg-background/90 backdrop-blur-sm text-xs shadow-sm"
             >
-              <span className="text-xs tabular-nums">{annotations.length}</span>
-              <span className="text-xs text-muted-foreground">annotations</span>
+              <span className="tabular-nums">{annotations.length}</span>
+              <span className="text-muted-foreground">annotations</span>
             </Badge>
           )}
 
-          {/* Zoom controls */}
-          <div className="flex items-center gap-1 rounded-lg border border-border bg-background/90 p-1 shadow-sm backdrop-blur-sm">
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleZoomOut}
-                  disabled={zoomIndex === 0}
-                  className="h-7 w-7"
-                >
-                  <ZoomOut className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                Zoom out
-              </TooltipContent>
-            </Tooltip>
-
-            <span className="min-w-[3rem] text-center text-xs font-medium tabular-nums text-muted-foreground">
-              {zoom}x
-            </span>
-
-            <Tooltip>
-              <TooltipTrigger asChild>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={handleZoomIn}
-                  disabled={zoomIndex === ZOOM_LEVELS.length - 1}
-                  className="h-7 w-7"
-                >
-                  <ZoomIn className="h-4 w-4" />
-                </Button>
-              </TooltipTrigger>
-              <TooltipContent side="top" className="text-xs">
-                Zoom in
-              </TooltipContent>
-            </Tooltip>
+          {/* Zoom controls - button group */}
+          <div className="flex items-center rounded-lg border border-border bg-background/90 shadow-sm backdrop-blur-sm overflow-hidden">
+            {ZOOM_LEVELS.map((level, i) => (
+              <button
+                key={level}
+                onClick={() => setZoomIndex(i)}
+                className={cn(
+                  'px-2.5 py-1 text-xs font-medium transition-colors',
+                  i === zoomIndex
+                    ? 'bg-primary text-primary-foreground'
+                    : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                )}
+              >
+                {level}x
+              </button>
+            ))}
           </div>
         </div>
       </div>

@@ -20,6 +20,8 @@ export function hitTestAnnotation(
       return hitTestRect(annotation, point);
     case 'click-indicator':
       return hitTestClickIndicator(annotation, point);
+    case 'numbered-callout':
+      return hitTestClickIndicator(annotation, point);
     default:
       return false;
   }
@@ -71,6 +73,15 @@ export function getAnnotationBounds(annotation: Annotation): {
     case 'click-indicator': {
       // Small bounding box around cursor
       const size = 0.04;
+      return {
+        minX: annotation.x - size / 2,
+        minY: annotation.y - size / 2,
+        maxX: annotation.x + size / 2,
+        maxY: annotation.y + size / 2,
+      };
+    }
+    case 'numbered-callout': {
+      const size = 0.05;
       return {
         minX: annotation.x - size / 2,
         minY: annotation.y - size / 2,

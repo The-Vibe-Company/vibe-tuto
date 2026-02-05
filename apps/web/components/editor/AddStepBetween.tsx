@@ -28,17 +28,21 @@ export function AddStepBetween({ onAddStep }: AddStepBetweenProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [isOpen, setIsOpen] = useState(false);
 
+  const visible = isHovered || isOpen;
+
   return (
     <div
-      className="group relative flex h-8 items-center justify-center"
+      className="group relative flex h-6 items-center justify-center"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
-      {/* Dashed line that becomes visible on hover */}
+      {/* Thin line that appears on hover */}
       <div
         className={cn(
-          'absolute inset-x-0 h-px border-t border-dashed transition-all duration-200',
-          isHovered || isOpen ? 'border-primary/40' : 'border-transparent'
+          'absolute inset-x-8 h-px transition-all duration-200',
+          visible
+            ? 'bg-gradient-to-r from-transparent via-border to-transparent'
+            : 'bg-transparent'
         )}
       />
 
@@ -49,13 +53,13 @@ export function AddStepBetween({ onAddStep }: AddStepBetweenProps) {
             variant="outline"
             size="icon"
             className={cn(
-              'relative z-10 h-7 w-7 rounded-full border-dashed transition-all duration-200',
-              isHovered || isOpen
-                ? 'scale-100 border-primary bg-primary/5 text-primary opacity-100 hover:bg-primary/10'
-                : 'scale-75 border-border text-muted-foreground opacity-0'
+              'relative z-10 h-6 w-6 rounded-full border transition-all duration-200',
+              visible
+                ? 'scale-100 border-primary/40 bg-primary/5 text-primary opacity-100 hover:bg-primary/10 hover:border-primary'
+                : 'scale-75 border-transparent text-muted-foreground opacity-0'
             )}
           >
-            <Plus className="h-3.5 w-3.5" />
+            <Plus className="h-3 w-3" />
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="center" side="bottom" className="min-w-[180px]">
