@@ -63,7 +63,7 @@ export function StepScreenshot({
 
   const handleClearAnnotations = useCallback(() => {
     if (readOnly) return;
-    if (confirm('Supprimer toutes les annotations ?')) {
+    if (confirm('Delete all annotations?')) {
       onAnnotationsChange?.([]);
     }
   }, [onAnnotationsChange, readOnly]);
@@ -182,7 +182,7 @@ export function StepScreenshot({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
-                Zoom arrière
+                Zoom out
               </TooltipContent>
             </Tooltip>
 
@@ -203,7 +203,7 @@ export function StepScreenshot({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
-                Zoom avant
+                Zoom in
               </TooltipContent>
             </Tooltip>
           </div>

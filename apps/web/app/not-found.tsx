@@ -19,10 +19,10 @@ export default function NotFound() {
         {/* 404 Message */}
         <h1 className="text-8xl font-bold text-violet-600 mb-4">404</h1>
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
-          Page introuvable
+          Page not found
         </h2>
         <p className="text-gray-600 mb-8">
-          Oups ! La page que vous cherchez n'existe pas ou a ete deplacee.
+          Oops! The page you are looking for does not exist or has been moved.
         </p>
 
         {/* Actions */}
@@ -30,22 +30,22 @@ export default function NotFound() {
           <Button asChild>
             <Link href="/">
               <Home className="h-4 w-4 mr-2" />
-              Accueil
+              Home
             </Link>
           </Button>
           <Button variant="outline" asChild>
             <Link href="/dashboard">
               <ArrowLeft className="h-4 w-4 mr-2" />
-              Mes tutoriels
+              My tutorials
             </Link>
           </Button>
         </div>
 
         {/* Help text */}
         <p className="mt-8 text-sm text-gray-500">
-          Besoin d'aide ?{' '}
+          Need help?{' '}
           <Link href="/#faq" className="text-violet-600 hover:underline">
-            Consultez notre FAQ
+            Check our FAQ
           </Link>
         </p>
       </div>

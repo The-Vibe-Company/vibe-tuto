@@ -159,7 +159,7 @@ function DocStepCardComponent({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
-                Supprimer le séparateur
+                Delete divider
               </TooltipContent>
             </Tooltip>
           )}
@@ -206,7 +206,7 @@ function DocStepCardComponent({
             <InlineCaption
               content={step.text_content || ''}
               onChange={onCaptionChange}
-              placeholder="Titre de section..."
+              placeholder="Section title..."
               isHeading
               readOnly={readOnly}
             />
@@ -229,7 +229,7 @@ function DocStepCardComponent({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="top" className="text-xs">
-                Supprimer le titre
+                Delete heading
               </TooltipContent>
             </Tooltip>
           )}
@@ -287,8 +287,8 @@ function DocStepCardComponent({
                 onChange={onCaptionChange}
                 placeholder={
                   hasScreenshot
-                    ? 'Cliquez sur "..."'
-                    : 'Décrivez cette étape...'
+                    ? 'Click on "..."'
+                    : 'Describe this step...'
                 }
                 readOnly={readOnly}
               />
@@ -313,7 +313,7 @@ function DocStepCardComponent({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="top" className="text-xs">
-                      Retirer l&apos;image
+                      Remove image
                     </TooltipContent>
                   </Tooltip>
                 )}
@@ -329,7 +329,7 @@ function DocStepCardComponent({
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent side="top" className="text-xs">
-                    Supprimer l&apos;étape
+                    Delete step
                   </TooltipContent>
                 </Tooltip>
               </div>
@@ -432,7 +432,7 @@ function DocStepCardComponent({
                 className="w-full border-dashed hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors"
               >
                 <ImagePlus className="h-4 w-4 mr-2" />
-                <span>Ajouter une image</span>
+                <span>Add an image</span>
               </Button>
             </div>
           ) : (
@@ -446,9 +446,9 @@ function DocStepCardComponent({
       <Dialog open={showImagePicker} onOpenChange={setShowImagePicker}>
         <DialogContent className="sm:max-w-lg">
           <DialogHeader>
-            <DialogTitle>Choisir une image</DialogTitle>
+            <DialogTitle>Choose an image</DialogTitle>
             <DialogDescription>
-              Sélectionnez une capture d&apos;écran depuis la timeline
+              Select a screenshot from the timeline
             </DialogDescription>
           </DialogHeader>
           {availableSources.length > 0 ? (
@@ -480,7 +480,7 @@ function DocStepCardComponent({
           ) : (
             <div className="py-8 text-center">
               <p className="text-sm text-muted-foreground">
-                Aucune image disponible dans la timeline
+                No images available in the timeline
               </p>
             </div>
           )}

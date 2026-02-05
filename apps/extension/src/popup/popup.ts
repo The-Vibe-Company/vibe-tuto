@@ -171,7 +171,7 @@ async function startRecording(): Promise<void> {
     console.log('[Popup] Microphone permission state:', permissionState);
 
     if (permissionState === 'denied') {
-      showError('Permission micro refusée. Allez dans les paramètres Chrome pour l\'autoriser.');
+      showError('Microphone permission denied. Go to Chrome settings to allow it.');
       showState('error');
       return;
     }
@@ -181,7 +181,7 @@ async function startRecording(): Promise<void> {
       console.log('[Popup] Requesting permission via iframe...');
       const granted = await requestMicrophonePermissionViaIframe();
       if (!granted) {
-        showError('Permission micro refusée ou timeout.');
+        showError('Microphone permission denied or timeout.');
         showState('error');
         return;
       }
@@ -235,7 +235,7 @@ async function uploadRecording(
 
   // Add metadata
   const metadata = {
-    title: `Tutoriel du ${new Date().toLocaleDateString('fr-FR')}`,
+    title: `Tutorial from ${new Date().toLocaleDateString('en-US')}`,
     duration: steps.length > 0 ? steps[steps.length - 1].timestamp : 0,
     startedAt: new Date().toISOString(),
     steps: steps.map((step) => ({
@@ -332,7 +332,7 @@ async function stopRecording(): Promise<void> {
 
     if (!recordingResult || !recordingResult.success || !recordingResult.steps || recordingResult.steps.length === 0) {
       console.log('[Popup] No steps - showing error');
-      showError('Aucune étape capturée');
+      showError('No steps captured');
       showState('error');
       return;
     }
@@ -352,7 +352,7 @@ async function stopRecording(): Promise<void> {
     showState('success');
   } catch (error) {
     console.error('Failed to stop recording:', error);
-    showError(error instanceof Error ? error.message : 'Une erreur est survenue');
+    showError(error instanceof Error ? error.message : 'An error occurred');
     showState('error');
     // Keep pendingUpload for retry
   }
@@ -360,7 +360,7 @@ async function stopRecording(): Promise<void> {
 
 async function retryUpload(): Promise<void> {
   if (!pendingUpload) {
-    showError('Aucune donnée à réessayer');
+    showError('No data to retry');
     showState('error');
     return;
   }
@@ -375,7 +375,7 @@ async function retryUpload(): Promise<void> {
     showState('success');
   } catch (error) {
     console.error('Failed to retry upload:', error);
-    showError(error instanceof Error ? error.message : 'Une erreur est survenue');
+    showError(error instanceof Error ? error.message : 'An error occurred');
     showState('error');
   }
 }

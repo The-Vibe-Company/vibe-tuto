@@ -19,9 +19,9 @@ interface AddStepBetweenProps {
 export type AddStepCallback = (type: NewStepType, afterStepId?: string | null) => void;
 
 const stepOptions: { type: NewStepType; icon: typeof FileText; label: string; description: string }[] = [
-  { type: 'text', icon: FileText, label: 'Texte', description: 'Ajouter une description' },
-  { type: 'heading', icon: Heading, label: 'Titre', description: 'Créer une section' },
-  { type: 'divider', icon: Minus, label: 'Séparateur', description: 'Séparer les étapes' },
+  { type: 'text', icon: FileText, label: 'Text', description: 'Add a description' },
+  { type: 'heading', icon: Heading, label: 'Heading', description: 'Create a section' },
+  { type: 'divider', icon: Minus, label: 'Divider', description: 'Separate steps' },
 ];
 
 export function AddStepBetween({ onAddStep }: AddStepBetweenProps) {

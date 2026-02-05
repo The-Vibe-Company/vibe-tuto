@@ -123,9 +123,9 @@ export function ShareDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="max-w-lg">
         <DialogHeader>
-          <DialogTitle>Partager le tutoriel</DialogTitle>
+          <DialogTitle>Share tutorial</DialogTitle>
           <DialogDescription>
-            Configurez les options de partage pour &quot;{tutorialTitle}&quot;
+            Configure sharing options for &quot;{tutorialTitle}&quot;
           </DialogDescription>
         </DialogHeader>
 
@@ -137,7 +137,7 @@ export function ShareDialog({
           <div className="space-y-6">
             {/* Visibility Options */}
             <div className="space-y-3">
-              <Label>Visibilite</Label>
+              <Label>Visibility</Label>
               <RadioGroup
                 value={visibility}
                 onValueChange={(value) => updateVisibility(value as Visibility)}
@@ -157,9 +157,9 @@ export function ShareDialog({
                   <RadioGroupItem value="private" id="visibility-private" />
                   <Lock className="h-4 w-4 text-stone-500" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium">Prive</p>
+                    <p className="text-sm font-medium">Private</p>
                     <p className="text-xs text-stone-500">
-                      Seul vous pouvez voir ce tutoriel
+                      Only you can see this tutorial
                     </p>
                   </div>
                 </label>
@@ -177,9 +177,9 @@ export function ShareDialog({
                   <RadioGroupItem value="link_only" id="visibility-link" />
                   <Link2 className="h-4 w-4 text-stone-500" />
                   <div className="flex-1">
-                    <p className="text-sm font-medium">Lien uniquement</p>
+                    <p className="text-sm font-medium">Link only</p>
                     <p className="text-xs text-stone-500">
-                      Toute personne ayant le lien peut voir
+                      Anyone with the link can view
                     </p>
                   </div>
                 </label>
@@ -205,8 +205,8 @@ export function ShareDialog({
                     <p className="text-sm font-medium">Public</p>
                     <p className="text-xs text-stone-500">
                       {tutorialSlug
-                        ? 'Accessible via une URL personnalisee'
-                        : 'Necessice un slug pour etre public'}
+                        ? 'Accessible via custom URL'
+                        : 'Requires a slug to be public'}
                     </p>
                   </div>
                 </label>
@@ -216,11 +216,11 @@ export function ShareDialog({
             {/* Share Links (only show if not private) */}
             {visibility !== 'private' && settings?.tokenUrl && (
               <div className="space-y-3">
-                <Label>Liens de partage</Label>
+                <Label>Share links</Label>
 
                 {/* Token URL */}
                 <div className="space-y-1.5">
-                  <p className="text-xs text-stone-500">Lien de partage</p>
+                  <p className="text-xs text-stone-500">Share link</p>
                   <div className="flex items-center gap-2">
                     <div className="flex-1 truncate rounded-md border border-stone-200 bg-stone-50 px-3 py-2 text-sm">
                       {settings.tokenUrl}
@@ -251,7 +251,7 @@ export function ShareDialog({
                 {/* Slug URL (if public) */}
                 {visibility === 'public' && settings.slugUrl && (
                   <div className="space-y-1.5">
-                    <p className="text-xs text-stone-500">URL publique (SEO)</p>
+                    <p className="text-xs text-stone-500">Public URL (SEO)</p>
                     <div className="flex items-center gap-2">
                       <div className="flex-1 truncate rounded-md border border-stone-200 bg-stone-50 px-3 py-2 text-sm">
                         {settings.slugUrl}
@@ -288,7 +288,7 @@ export function ShareDialog({
                 <div className="flex items-center justify-between">
                   <Label className="flex items-center gap-2">
                     <Code className="h-4 w-4" />
-                    Code d'integration
+                    Embed code
                   </Label>
                   <Button
                     variant="ghost"
@@ -299,12 +299,12 @@ export function ShareDialog({
                     {copiedField === 'embed' ? (
                       <>
                         <Check className="h-3 w-3 text-green-500" />
-                        Copie !
+                        Copied!
                       </>
                     ) : (
                       <>
                         <Copy className="h-3 w-3" />
-                        Copier
+                        Copy
                       </>
                     )}
                   </Button>
@@ -319,7 +319,7 @@ export function ShareDialog({
             {saving && (
               <div className="flex items-center justify-center gap-2 text-sm text-stone-500">
                 <Loader2 className="h-4 w-4 animate-spin" />
-                Enregistrement...
+                Saving...
               </div>
             )}
           </div>

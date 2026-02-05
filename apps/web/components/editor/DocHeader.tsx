@@ -29,8 +29,8 @@ export function DocHeader({ saveStatus, tutorialId, tutorialTitle, tutorialSlug 
       <PageHeader
         breadcrumbs={[
           { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Tutoriels', href: '/dashboard' },
-          { label: tutorialTitle || 'Éditeur' },
+          { label: 'Tutorials', href: '/dashboard' },
+          { label: tutorialTitle || 'Editor' },
         ]}
         actions={
           <>
@@ -41,7 +41,7 @@ export function DocHeader({ saveStatus, tutorialId, tutorialTitle, tutorialSlug 
               className="gap-2"
             >
               <Share2 className="h-4 w-4" />
-              Partager
+              Share
             </Button>
             <SaveStatusIndicator status={saveStatus} />
           </>
@@ -52,7 +52,7 @@ export function DocHeader({ saveStatus, tutorialId, tutorialTitle, tutorialSlug 
         open={shareDialogOpen}
         onOpenChange={setShareDialogOpen}
         tutorialId={tutorialId}
-        tutorialTitle={tutorialTitle || 'Sans titre'}
+        tutorialTitle={tutorialTitle || 'Untitled'}
         tutorialSlug={tutorialSlug || null}
       />
     </>
@@ -76,34 +76,34 @@ function SaveStatusIndicator({ status }: { status: SaveStatus }) {
             {status === 'saving' && (
               <>
                 <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                <span>Sauvegarde...</span>
+                <span>Saving...</span>
               </>
             )}
             {status === 'saved' && (
               <>
                 <Cloud className="h-3.5 w-3.5" />
-                <span>Sauvegardé</span>
+                <span>Saved</span>
               </>
             )}
             {status === 'error' && (
               <>
                 <AlertCircle className="h-3.5 w-3.5" />
-                <span>Erreur</span>
+                <span>Error</span>
               </>
             )}
             {status === 'unsaved' && (
               <>
                 <CloudOff className="h-3.5 w-3.5" />
-                <span>Non sauvegardé</span>
+                <span>Unsaved</span>
               </>
             )}
           </div>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs">
-          {status === 'saving' && 'Sauvegarde en cours...'}
-          {status === 'saved' && 'Toutes les modifications sont sauvegardées'}
-          {status === 'error' && 'Erreur lors de la sauvegarde. Réessayez.'}
-          {status === 'unsaved' && 'Modifications non sauvegardées'}
+          {status === 'saving' && 'Saving in progress...'}
+          {status === 'saved' && 'All changes are saved'}
+          {status === 'error' && 'Error saving. Please try again.'}
+          {status === 'unsaved' && 'Unsaved changes'}
         </TooltipContent>
       </Tooltip>
     </TooltipProvider>

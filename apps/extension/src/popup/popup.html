@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="fr">
+<html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -21,8 +21,8 @@
             <circle cx="12" cy="7" r="4"></circle>
           </svg>
         </div>
-        <p class="message">Connectez-vous pour commencer</p>
-        <button id="login-btn" class="btn btn-primary">Se connecter</button>
+        <p class="message">Log in to get started</p>
+        <button id="login-btn" class="btn btn-primary">Sign in</button>
       </div>
 
       <div id="idle" class="state hidden">
@@ -32,10 +32,10 @@
             <polygon points="10 8 16 12 10 16 10 8" fill="currentColor"></polygon>
           </svg>
         </div>
-        <p class="message">Prêt à enregistrer votre tutoriel</p>
+        <p class="message">Ready to record your tutorial</p>
         <button id="start-btn" class="btn btn-primary btn-record">
           <span class="record-dot"></span>
-          Démarrer l'enregistrement
+          Start recording
         </button>
       </div>
 
@@ -43,14 +43,14 @@
         <div class="recording-status">
           <div class="recording-indicator">
             <span class="pulse"></span>
-            <span>Enregistrement</span>
+            <span>Recording</span>
           </div>
           <div id="timer" class="timer">00:00</div>
         </div>
-        <p class="message recording-message">Cliquez sur les éléments à capturer</p>
+        <p class="message recording-message">Click on the elements to capture</p>
         <button id="stop-btn" class="btn btn-danger">
           <span class="stop-icon"></span>
-          Arrêter l'enregistrement
+          Stop recording
         </button>
       </div>
 
@@ -58,7 +58,7 @@
         <div class="state-icon">
           <div class="spinner"></div>
         </div>
-        <p class="message">Envoi en cours...</p>
+        <p class="message">Uploading...</p>
       </div>
 
       <div id="success" class="state hidden">
@@ -68,9 +68,9 @@
             <polyline points="22 4 12 14.01 9 11.01"></polyline>
           </svg>
         </div>
-        <p class="message">Tutoriel créé avec succès !</p>
-        <a id="editor-link" href="#" class="btn btn-primary">Voir le tutoriel</a>
-        <button id="new-recording-btn" class="btn btn-secondary">Nouvel enregistrement</button>
+        <p class="message">Tutorial created successfully!</p>
+        <a id="editor-link" href="#" class="btn btn-primary">View tutorial</a>
+        <button id="new-recording-btn" class="btn btn-secondary">New recording</button>
       </div>
 
       <div id="error" class="state hidden">
@@ -81,15 +81,15 @@
             <line x1="9" y1="9" x2="15" y2="15"></line>
           </svg>
         </div>
-        <p id="error-message" class="message error-message">Une erreur est survenue</p>
-        <button id="retry-btn" class="btn btn-primary">Réessayer</button>
+        <p id="error-message" class="message error-message">An error occurred</p>
+        <button id="retry-btn" class="btn btn-primary">Retry</button>
       </div>
     </main>
 
     <footer class="footer">
-      <a href="#" id="dashboard-link" class="link">Ouvrir le dashboard</a>
+      <a href="#" id="dashboard-link" class="link">Open dashboard</a>
       <div class="settings-toggle">
-        <button id="settings-btn" class="btn-icon" title="Paramètres">
+        <button id="settings-btn" class="btn-icon" title="Settings">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path>
@@ -102,19 +102,19 @@
     <div id="settings-modal" class="modal hidden">
       <div class="modal-content">
         <div class="modal-header">
-          <h3>Paramètres</h3>
+          <h3>Settings</h3>
           <button id="close-settings" class="btn-close">&times;</button>
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="api-url">URL de l'API</label>
+            <label for="api-url">API URL</label>
             <input type="text" id="api-url-input" placeholder="http://localhost:3000" />
-            <small class="help-text">Ex: http://localhost:3000 (local) ou https://captuto.com (prod)</small>
+            <small class="help-text">Ex: http://localhost:3000 (local) or https://captuto.com (prod)</small>
           </div>
         </div>
         <div class="modal-footer">
-          <button id="save-settings" class="btn btn-primary btn-sm">Sauvegarder</button>
-          <button id="reset-settings" class="btn btn-secondary btn-sm">Réinitialiser</button>
+          <button id="save-settings" class="btn btn-primary btn-sm">Save</button>
+          <button id="reset-settings" class="btn btn-secondary btn-sm">Reset</button>
         </div>
       </div>
     </div>

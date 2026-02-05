@@ -19,13 +19,13 @@ export default function SignupPage() {
 
     // Validate passwords match
     if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
+      setError('Passwords do not match');
       return;
     }
 
     // Validate password strength
     if (password.length < 6) {
-      setError('Le mot de passe doit contenir au moins 6 caractères');
+      setError('Password must be at least 6 characters');
       return;
     }
 
@@ -43,7 +43,7 @@ export default function SignupPage() {
 
       if (error) {
         if (error.message.includes('already registered')) {
-          setError('Cet email est déjà utilisé');
+          setError('This email is already in use');
         } else {
           setError(error.message);
         }
@@ -52,7 +52,7 @@ export default function SignupPage() {
 
       setSuccess(true);
     } catch (err) {
-      setError('Une erreur est survenue. Veuillez réessayer.');
+      setError('An error occurred. Please try again.');
       console.error('Signup error:', err);
     } finally {
       setLoading(false);
@@ -68,16 +68,16 @@ export default function SignupPage() {
               <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
             </svg>
           </div>
-          <h2 className="text-2xl font-bold text-gray-900">Vérifiez votre email</h2>
+          <h2 className="text-2xl font-bold text-gray-900">Check your email</h2>
           <p className="text-gray-600">
-            Un email de confirmation a été envoyé à <strong>{email}</strong>.
-            Cliquez sur le lien pour activer votre compte.
+            A confirmation email has been sent to <strong>{email}</strong>.
+            Click the link to activate your account.
           </p>
           <Link
             href="/login"
             className="inline-block mt-4 text-indigo-600 hover:text-indigo-500 font-medium"
           >
-            Retour à la connexion
+            Back to sign in
           </Link>
         </div>
       </div>
@@ -89,7 +89,7 @@ export default function SignupPage() {
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-xl">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">CapTuto</h1>
-          <h2 className="mt-2 text-lg text-gray-600">Créer un compte</h2>
+          <h2 className="mt-2 text-lg text-gray-600">Create account</h2>
         </div>
 
         {error && (
@@ -113,13 +113,13 @@ export default function SignupPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="vous@example.com"
+                placeholder="you@example.com"
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Mot de passe
+                Password
               </label>
               <div className="relative mt-1">
                 <input
@@ -150,12 +150,12 @@ export default function SignupPage() {
                   )}
                 </button>
               </div>
-              <p className="mt-1 text-xs text-gray-500">Minimum 6 caractères</p>
+              <p className="mt-1 text-xs text-gray-500">Minimum 6 characters</p>
             </div>
 
             <div>
               <label htmlFor="confirmPassword" className="block text-sm font-medium text-gray-700">
-                Confirmer le mot de passe
+                Confirm password
               </label>
               <input
                 id="confirmPassword"
@@ -182,15 +182,15 @@ export default function SignupPage() {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              "S'inscrire"
+              'Sign up'
             )}
           </button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-gray-600">Déjà un compte ?</span>{' '}
+          <span className="text-gray-600">Already have an account?</span>{' '}
           <Link href="/login" className="font-medium text-indigo-600 hover:text-indigo-500">
-            Se connecter
+            Sign in
           </Link>
         </div>
       </div>

@@ -17,61 +17,61 @@ import {
 
 const faqs = [
   {
-    question: "L'extension ne s'installe pas, que faire ?",
+    question: "The extension won't install, what should I do?",
     answer:
-      "Vérifiez que vous utilisez Google Chrome (version 100+). L'extension n'est pas compatible avec d'autres navigateurs pour le moment. Si le problème persiste, essayez de désactiver vos autres extensions temporairement.",
+      "Make sure you are using Google Chrome (version 100+). The extension is not compatible with other browsers at the moment. If the problem persists, try temporarily disabling your other extensions.",
   },
   {
-    question: "Je n'arrive pas à me connecter à mon compte",
+    question: "I can't log in to my account",
     answer:
-      "Assurez-vous d'utiliser les mêmes identifiants que sur le site web. Si vous avez oublié votre mot de passe, utilisez la fonction 'Mot de passe oublié' sur la page de connexion. Vérifiez aussi que les cookies sont activés dans Chrome.",
+      "Make sure you are using the same credentials as on the website. If you forgot your password, use the 'Forgot password' feature on the login page. Also check that cookies are enabled in Chrome.",
   },
   {
-    question: "L'enregistrement ne démarre pas",
+    question: "Recording doesn't start",
     answer:
-      "L'extension a besoin de l'autorisation d'accéder au microphone. Cliquez sur l'icône de cadenas dans la barre d'adresse et autorisez l'accès au micro. Si le problème persiste, rechargez la page et réessayez.",
+      "The extension needs permission to access your microphone. Click on the lock icon in the address bar and allow microphone access. If the problem persists, reload the page and try again.",
   },
   {
-    question: "Mes captures d'écran sont noires ou vides",
+    question: "My screenshots are black or empty",
     answer:
-      "Certains sites (comme Netflix ou des applications bancaires) bloquent les captures d'écran pour des raisons de sécurité. C'est une limitation technique que nous ne pouvons pas contourner.",
+      "Some sites (like Netflix or banking apps) block screenshots for security reasons. This is a technical limitation that we cannot bypass.",
   },
   {
-    question: "Comment supprimer mon compte et mes données ?",
+    question: "How do I delete my account and data?",
     answer:
-      "Connectez-vous à votre tableau de bord, allez dans Paramètres, puis cliquez sur 'Supprimer mon compte'. Toutes vos données seront supprimées définitivement sous 24h.",
+      "Log in to your dashboard, go to Settings, then click 'Delete my account'. All your data will be permanently deleted within 24 hours.",
   },
   {
-    question: "L'IA génère du texte incorrect",
+    question: "The AI generates incorrect text",
     answer:
-      "L'IA fait de son mieux mais peut parfois se tromper. Vous pouvez modifier le texte généré directement dans l'éditeur. Plus vos explications vocales sont claires, meilleur sera le résultat.",
+      "AI does its best but can sometimes make mistakes. You can edit the generated text directly in the editor. The clearer your voice explanations, the better the result will be.",
   },
 ];
 
 const troubleshooting = [
   {
     icon: Chrome,
-    title: "Réinstaller l'extension",
+    title: "Reinstall the extension",
     description:
-      "Supprimez l'extension depuis chrome://extensions, puis réinstallez-la depuis le Chrome Web Store.",
+      "Remove the extension from chrome://extensions, then reinstall it from the Chrome Web Store.",
   },
   {
     icon: Mic,
-    title: "Problèmes de micro",
+    title: "Microphone issues",
     description:
-      "Vérifiez les permissions dans Paramètres Chrome > Confidentialité > Paramètres de site > Microphone.",
+      "Check permissions in Chrome Settings > Privacy > Site Settings > Microphone.",
   },
   {
     icon: Upload,
-    title: "Upload qui échoue",
+    title: "Upload fails",
     description:
-      "Vérifiez votre connexion internet. Les fichiers volumineux peuvent prendre du temps à uploader.",
+      "Check your internet connection. Large files may take time to upload.",
   },
   {
     icon: RefreshCw,
-    title: "Actualiser l'extension",
+    title: "Update the extension",
     description:
-      "Allez sur chrome://extensions, activez le mode développeur, puis cliquez sur 'Mettre à jour'.",
+      "Go to chrome://extensions, enable developer mode, then click 'Update'.",
   },
 ];
 
@@ -95,7 +95,7 @@ export default function SupportPage() {
           <Link href="/">
             <Button variant="ghost" className="text-stone-600 hover:text-stone-900">
               <ArrowLeft className="mr-2 h-4 w-4" />
-              Retour à l&apos;accueil
+              Back to home
             </Button>
           </Link>
         </div>
@@ -109,7 +109,7 @@ export default function SupportPage() {
             animate={{ opacity: 1, y: 0 }}
             className="mb-4 text-4xl font-semibold tracking-tight text-stone-900"
           >
-            Centre d&apos;aide
+            Help Center
           </motion.h1>
           <motion.p
             initial={{ opacity: 0, y: 20 }}
@@ -117,7 +117,7 @@ export default function SupportPage() {
             transition={{ delay: 0.1 }}
             className="text-lg text-stone-500"
           >
-            Trouvez des réponses à vos questions ou contactez notre équipe.
+            Find answers to your questions or contact our team.
           </motion.p>
         </div>
       </section>
@@ -135,10 +135,10 @@ export default function SupportPage() {
               <Mail className="h-7 w-7 text-violet-600" />
             </div>
             <h2 className="text-xl font-semibold text-stone-900">
-              Besoin d&apos;aide ?
+              Need help?
             </h2>
             <p className="text-stone-500">
-              Notre équipe vous répond sous 24h en semaine.
+              Our team responds within 24 hours on weekdays.
             </p>
             <a
               href="mailto:support@thevibecompany.co"
@@ -164,7 +164,7 @@ export default function SupportPage() {
               FAQ
             </p>
             <h2 className="text-2xl font-semibold tracking-tight text-stone-900 sm:text-3xl">
-              Questions fréquentes
+              Frequently Asked Questions
             </h2>
           </motion.div>
 
@@ -214,10 +214,10 @@ export default function SupportPage() {
             className="mb-10 text-center"
           >
             <h2 className="text-2xl font-semibold tracking-tight text-stone-900 sm:text-3xl">
-              Dépannage rapide
+              Quick Troubleshooting
             </h2>
             <p className="mt-2 text-stone-500">
-              Solutions aux problèmes les plus courants
+              Solutions to the most common problems
             </p>
           </motion.div>
 

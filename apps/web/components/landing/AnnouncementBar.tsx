@@ -28,17 +28,17 @@ export function AnnouncementBar() {
       <div className="flex items-center justify-center gap-2">
         <Sparkles className="h-4 w-4 animate-pulse" />
         <span className="font-medium">
-          Offre de lancement : Les 100 premiers utilisateurs bénéficient de{" "}
-          <span className="font-bold">50% à vie</span>
+          Launch offer: First 100 users get{" "}
+          <span className="font-bold">50% off for life</span>
         </span>
         <span className="hidden sm:inline-flex items-center gap-1 ml-2 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold">
-          Plus que {spotsLeft} places
+          Only {spotsLeft} spots left
         </span>
       </div>
       <button
         onClick={handleDismiss}
         className="absolute right-3 top-1/2 -translate-y-1/2 rounded-full p-1 hover:bg-white/20 transition-colors"
-        aria-label="Fermer"
+        aria-label="Close"
       >
         <X className="h-4 w-4" />
       </button>

@@ -38,12 +38,12 @@ export interface TutorialCardProps {
 
 const publishedConfig = {
   published: {
-    label: 'Publié',
+    label: 'Published',
     className: 'bg-emerald-100 text-emerald-700 border-emerald-200',
     icon: Globe,
   },
   notPublished: {
-    label: 'Non publié',
+    label: 'Unpublished',
     className: 'bg-stone-100 text-stone-600 border-stone-200',
     icon: GlobeLock,
   },
@@ -70,7 +70,7 @@ function TutorialCardComponent({
   const publishInfo = isPublished ? publishedConfig.published : publishedConfig.notPublished;
   const PublishIcon = publishInfo.icon;
 
-  const formattedDate = new Date(createdAt).toLocaleDateString('fr-FR', {
+  const formattedDate = new Date(createdAt).toLocaleDateString('en-US', {
     day: 'numeric',
     month: 'short',
     year: 'numeric',
@@ -106,7 +106,7 @@ function TutorialCardComponent({
               <div className="rounded-xl bg-stone-200/50 p-4">
                 <ImageIcon className="h-10 w-10" />
               </div>
-              <span className="mt-2 text-xs text-stone-400">Aucun aperçu</span>
+              <span className="mt-2 text-xs text-stone-400">No preview</span>
             </div>
           )}
 
@@ -130,7 +130,7 @@ function TutorialCardComponent({
               size="sm"
             >
               <Pencil className="h-4 w-4" />
-              Modifier
+              Edit
             </Button>
             <Button
               onClick={() => setShareDialogOpen(true)}
@@ -138,7 +138,7 @@ function TutorialCardComponent({
               size="sm"
             >
               <Share2 className="h-4 w-4" />
-              Publier
+              Publish
             </Button>
           </div>
 
@@ -163,7 +163,7 @@ function TutorialCardComponent({
                   className="text-red-600 focus:text-red-600"
                 >
                   <Trash2 className="mr-2 h-4 w-4" />
-                  Supprimer
+                  Delete
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
@@ -174,7 +174,7 @@ function TutorialCardComponent({
         <CardContent className="p-4">
           <h3 className="truncate font-medium text-stone-900">{title}</h3>
           <div className="mt-2 flex items-center justify-between text-sm text-stone-500">
-            <span>{stepsCount} etape{stepsCount !== 1 ? 's' : ''}</span>
+            <span>{stepsCount} step{stepsCount !== 1 ? 's' : ''}</span>
             <span>{formattedDate}</span>
           </div>
         </CardContent>
@@ -184,10 +184,10 @@ function TutorialCardComponent({
       <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
         <DialogContent>
           <DialogHeader>
-            <DialogTitle>Supprimer le tutoriel</DialogTitle>
+            <DialogTitle>Delete tutorial</DialogTitle>
             <DialogDescription>
-              Êtes-vous sûr de vouloir supprimer &quot;{title}&quot; ? Cette
-              action est irréversible.
+              Are you sure you want to delete &quot;{title}&quot;? This
+              action cannot be undone.
             </DialogDescription>
           </DialogHeader>
           <DialogFooter>
@@ -196,7 +196,7 @@ function TutorialCardComponent({
               onClick={() => setDeleteDialogOpen(false)}
               disabled={isDeleting}
             >
-              Annuler
+              Cancel
             </Button>
             <Button
               variant="destructive"
@@ -206,10 +206,10 @@ function TutorialCardComponent({
               {isDeleting ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Suppression...
+                  Deleting...
                 </>
               ) : (
-                'Supprimer'
+                'Delete'
               )}
             </Button>
           </DialogFooter>

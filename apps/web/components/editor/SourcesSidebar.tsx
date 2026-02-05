@@ -206,7 +206,7 @@ function TimelineItemComponent({
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent side="bottom" className="text-xs">
-                  {isCopied ? 'Copié !' : 'Copier l\'URL'}
+                  {isCopied ? 'Copied!' : 'Copy URL'}
                 </TooltipContent>
               </Tooltip>
             )}
@@ -221,7 +221,7 @@ function TimelineItemComponent({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="bottom" className="text-xs">
-                Ajouter au tutoriel
+                Add to tutorial
               </TooltipContent>
             </Tooltip>
           </div>
@@ -311,7 +311,7 @@ export function SourcesSidebar({
                 </Button>
               </TooltipTrigger>
               <TooltipContent side="left" className="text-xs">
-                {isCollapsed ? 'Développer' : 'Réduire'}
+                {isCollapsed ? 'Expand' : 'Collapse'}
               </TooltipContent>
             </Tooltip>
           </div>
@@ -360,19 +360,19 @@ export function SourcesSidebar({
                       return {
                         icon: <MousePointer2 className="h-4 w-4" />,
                         className: 'text-primary hover:bg-primary/10 hover:text-primary',
-                        label: 'le click',
+                        label: 'click',
                       };
                     case 'navigation':
                       return {
                         icon: <Globe className="h-4 w-4" />,
                         className: 'text-blue-500 hover:bg-blue-50 hover:text-blue-600',
-                        label: 'la navigation',
+                        label: 'navigation',
                       };
                     case 'tab_change':
                       return {
                         icon: <Layers className="h-4 w-4" />,
                         className: 'text-amber-500 hover:bg-amber-50 hover:text-amber-600',
-                        label: "le changement d'onglet",
+                        label: 'tab change',
                       };
                   }
                 };
@@ -392,7 +392,7 @@ export function SourcesSidebar({
                       </Button>
                     </TooltipTrigger>
                     <TooltipContent side="left" className="text-xs">
-                      Ajouter {label} #{index + 1}
+                      Add {label} #{index + 1}
                     </TooltipContent>
                   </Tooltip>
                 );

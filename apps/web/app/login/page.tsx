@@ -52,9 +52,9 @@ export default function LoginPage() {
 
       if (error) {
         if (error.message.includes('Invalid login credentials')) {
-          setError('Email ou mot de passe incorrect');
+          setError('Invalid email or password');
         } else if (error.message.includes('Email not confirmed')) {
-          setError('Veuillez confirmer votre email avant de vous connecter');
+          setError('Please confirm your email before signing in');
         } else {
           setError(error.message);
         }
@@ -69,7 +69,7 @@ export default function LoginPage() {
         router.push('/dashboard');
       }
     } catch (err) {
-      setError('Une erreur est survenue. Veuillez réessayer.');
+      setError('An error occurred. Please try again.');
       console.error('Login error:', err);
     } finally {
       setLoading(false);
@@ -93,7 +93,7 @@ export default function LoginPage() {
       <div className="max-w-md w-full space-y-8 p-8 bg-white rounded-2xl shadow-xl">
         <div className="text-center">
           <h1 className="text-3xl font-bold text-gray-900">CapTuto</h1>
-          <h2 className="mt-2 text-lg text-gray-600">Connexion</h2>
+          <h2 className="mt-2 text-lg text-gray-600">Sign in</h2>
         </div>
 
         {error && (
@@ -117,13 +117,13 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 className="mt-1 block w-full px-4 py-3 border border-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition"
-                placeholder="vous@example.com"
+                placeholder="you@example.com"
               />
             </div>
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-gray-700">
-                Mot de passe
+                Password
               </label>
               <div className="relative mt-1">
                 <input
@@ -168,15 +168,15 @@ export default function LoginPage() {
                 <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
               </svg>
             ) : (
-              'Se connecter'
+              'Sign in'
             )}
           </button>
         </form>
 
         <div className="text-center text-sm">
-          <span className="text-gray-600">Pas encore de compte ?</span>{' '}
+          <span className="text-gray-600">Don&apos;t have an account?</span>{' '}
           <Link href="/signup" className="font-medium text-indigo-600 hover:text-indigo-500">
-            S'inscrire
+            Sign up
           </Link>
         </div>
       </div>

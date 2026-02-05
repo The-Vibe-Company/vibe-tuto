@@ -118,7 +118,7 @@ export function DocEditor({
                     <EditableTitle
                       value={tutorial.title || ''}
                       onChange={onTitleChange}
-                      placeholder="Sans titre"
+                      placeholder="Untitled"
                     />
                     {tutorial.description && (
                       <p className="text-sm text-muted-foreground max-w-2xl">
@@ -128,7 +128,7 @@ export function DocEditor({
                   </div>
                   <div className="flex items-center gap-2 text-xs text-muted-foreground">
                     <span className="tabular-nums">{steps.length}</span>
-                    <span>étapes</span>
+                    <span>steps</span>
                   </div>
                 </div>
                 <Separator className="mt-6" />
@@ -196,20 +196,20 @@ export function DocEditor({
                         <Sparkles className="h-6 w-6 text-muted-foreground" />
                       </div>
                       <h3 className="font-medium text-foreground mb-1">
-                        Aucune étape pour le moment
+                        No steps yet
                       </h3>
                       <p className="text-sm text-muted-foreground mb-6 max-w-sm">
-                        Commencez à créer votre tutoriel en ajoutant des étapes depuis la timeline ou en créant des étapes manuellement.
+                        Start creating your tutorial by adding steps from the timeline or by creating steps manually.
                       </p>
                       <div className="flex items-center gap-2">
                         <AddStepButton
                           icon={FileText}
-                          label="Texte"
+                          label="Text"
                           onClick={() => onAddStep('text', null)}
                         />
                         <AddStepButton
                           icon={Heading}
-                          label="Titre"
+                          label="Heading"
                           onClick={() => onAddStep('heading', null)}
                         />
                       </div>
@@ -222,17 +222,17 @@ export function DocEditor({
                   <div className="flex items-center justify-center gap-2 pt-6">
                     <AddStepButton
                       icon={FileText}
-                      label="Texte"
+                      label="Text"
                       onClick={() => onAddStep('text', steps[steps.length - 1]?.id)}
                     />
                     <AddStepButton
                       icon={Heading}
-                      label="Titre"
+                      label="Heading"
                       onClick={() => onAddStep('heading', steps[steps.length - 1]?.id)}
                     />
                     <AddStepButton
                       icon={Minus}
-                      label="Séparateur"
+                      label="Divider"
                       onClick={() => onAddStep('divider', steps[steps.length - 1]?.id)}
                     />
                   </div>
@@ -277,7 +277,7 @@ function AddStepButton({
         </Button>
       </TooltipTrigger>
       <TooltipContent side="bottom" className="text-xs">
-        Ajouter une étape {label.toLowerCase()}
+        Add a {label.toLowerCase()} step
       </TooltipContent>
     </Tooltip>
   );

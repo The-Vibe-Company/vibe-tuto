@@ -36,7 +36,7 @@ export default function Home() {
 
           <div className="hidden md:flex items-center gap-6 text-sm text-stone-600">
             <a href="#how-it-works" className="hover:text-stone-900 transition-colors">
-              Comment ça marche
+              How it works
             </a>
           </div>
 
@@ -47,12 +47,12 @@ export default function Home() {
                 variant="ghost"
                 className="text-stone-600 hover:text-stone-900"
               >
-                Se connecter
+                Sign in
               </Button>
             </Link>
             <Link href="/login">
               <Button className="bg-violet-600 text-white hover:bg-violet-700 shadow-sm">
-                Essayer
+                Try it
               </Button>
             </Link>
           </div>
@@ -61,7 +61,7 @@ export default function Home() {
           <button
             className="md:hidden p-2 text-stone-600 hover:text-stone-900"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            aria-label={mobileMenuOpen ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
           >
             {mobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
           </button>
@@ -83,7 +83,7 @@ export default function Home() {
                     className="py-2 text-stone-600 hover:text-stone-900 transition-colors"
                     onClick={() => setMobileMenuOpen(false)}
                   >
-                    Comment ça marche
+                    How it works
                   </a>
                 </div>
                 <div className="flex flex-col gap-2 pt-2 border-t border-stone-100">
@@ -92,12 +92,12 @@ export default function Home() {
                       variant="outline"
                       className="w-full justify-center"
                     >
-                      Se connecter
+                      Sign in
                     </Button>
                   </Link>
                   <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
                     <Button className="w-full justify-center bg-violet-600 text-white hover:bg-violet-700">
-                      Essayer
+                      Try it
                     </Button>
                   </Link>
                 </div>
@@ -123,8 +123,8 @@ export default function Home() {
               transition={{ duration: 0.5 }}
               className="mb-6 text-4xl font-semibold leading-tight tracking-tight text-stone-900 sm:text-5xl"
             >
-              Créez des tutoriels<br />
-              <span className="text-violet-600">à partir de votre écran</span>
+              Create tutorials<br />
+              <span className="text-violet-600">from your screen</span>
             </motion.h1>
 
             {/* Subheadline - honest description */}
@@ -134,9 +134,9 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.1 }}
               className="mx-auto mb-10 max-w-xl text-lg text-stone-500 leading-relaxed"
             >
-              CapTuto est une extension Chrome qui enregistre vos clics et
-              utilise l&apos;IA pour générer des instructions étape par étape.
-              C&apos;est tout.
+              CapTuto is a Chrome extension that records your clicks and
+              uses AI to generate step-by-step instructions.
+              That&apos;s it.
             </motion.p>
 
             {/* CTA Button */}
@@ -150,7 +150,7 @@ export default function Home() {
                   size="lg"
                   className="group h-12 bg-violet-600 px-8 text-base font-medium text-white shadow-lg shadow-violet-200 hover:bg-violet-700"
                 >
-                  Essayer
+                  Try it
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
@@ -238,7 +238,7 @@ export default function Home() {
             className="mb-16 text-center"
           >
             <h2 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-              Comment ça marche
+              How it works
             </h2>
           </motion.div>
 
@@ -246,21 +246,21 @@ export default function Home() {
             {[
               {
                 icon: Monitor,
-                title: "1. Installez l'extension",
+                title: "1. Install the extension",
                 description:
-                  "Ajoutez l'extension CapTuto à Chrome. Connectez-vous avec votre compte.",
+                  "Add the CapTuto extension to Chrome. Sign in with your account.",
               },
               {
                 icon: MousePointer2,
-                title: "2. Enregistrez vos actions",
+                title: "2. Record your actions",
                 description:
-                  "Cliquez sur « Enregistrer » puis faites ce que vous voulez documenter. On capture chaque clic et screenshot.",
+                  "Click \"Record\" then do what you want to document. We capture every click and screenshot.",
               },
               {
                 icon: Wand2,
-                title: "3. L'IA génère le tutoriel",
+                title: "3. AI generates the tutorial",
                 description:
-                  "L'IA analyse vos actions et écrit les instructions correspondantes. Vous pouvez les modifier ensuite.",
+                  "AI analyzes your actions and writes the corresponding instructions. You can edit them afterwards.",
               },
             ].map((item, i) => (
               <motion.div
@@ -296,31 +296,31 @@ export default function Home() {
             className="mb-16 text-center"
           >
             <h2 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-              Ce que vous obtenez
+              What you get
             </h2>
           </motion.div>
 
           <div className="grid gap-8 md:grid-cols-2">
             {[
               {
-                title: "Instructions générées par IA",
+                title: "AI-generated instructions",
                 description:
-                  "L'IA écrit les étapes à suivre basées sur vos clics. La qualité dépend de la complexité de ce que vous documentez.",
+                  "AI writes the steps based on your clicks. Quality depends on the complexity of what you're documenting.",
               },
               {
-                title: "Screenshots automatiques",
+                title: "Automatic screenshots",
                 description:
-                  "Un screenshot est capturé à chaque clic important. Ils sont intégrés dans le tutoriel.",
+                  "A screenshot is captured with each important click. They're integrated into the tutorial.",
               },
               {
-                title: "Éditeur pour modifier",
+                title: "Editor for modifications",
                 description:
-                  "Vous pouvez modifier le texte généré, réorganiser les étapes, supprimer ce qui ne vous convient pas.",
+                  "You can edit the generated text, reorganize steps, delete what doesn't work for you.",
               },
               {
-                title: "Partage par lien",
+                title: "Share by link",
                 description:
-                  "Chaque tutoriel a un lien unique que vous pouvez partager avec qui vous voulez.",
+                  "Each tutorial has a unique link you can share with anyone.",
               },
             ].map((item, i) => (
               <motion.div
@@ -352,17 +352,17 @@ export default function Home() {
             viewport={{ once: true }}
           >
             <h2 className="mb-6 text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-              Envie d&apos;essayer ?
+              Want to try?
             </h2>
             <p className="mx-auto mb-8 max-w-md text-lg text-stone-500">
-              C&apos;est gratuit pendant la beta. On verra pour la suite.
+              It&apos;s free during the beta. We&apos;ll see what happens next.
             </p>
             <Link href="/login">
               <Button
                 size="lg"
                 className="h-12 bg-violet-600 px-8 text-base font-medium text-white hover:bg-violet-700"
               >
-                Créer un compte
+                Create account
                 <ArrowRight className="ml-2 h-4 w-4" />
               </Button>
             </Link>

@@ -13,29 +13,29 @@ export default function SettingsPage() {
     {
       id: 'profile',
       icon: User,
-      title: 'Profil',
-      description: 'Gerez vos informations personnelles',
+      title: 'Profile',
+      description: 'Manage your personal information',
       comingSoon: true,
     },
     {
       id: 'notifications',
       icon: Bell,
       title: 'Notifications',
-      description: 'Configurez vos preferences de notification',
+      description: 'Configure your notification preferences',
       comingSoon: true,
     },
     {
       id: 'security',
       icon: Shield,
-      title: 'Securite',
-      description: 'Mot de passe et authentification',
+      title: 'Security',
+      description: 'Password and authentication',
       comingSoon: true,
     },
     {
       id: 'appearance',
       icon: Palette,
-      title: 'Apparence',
-      description: 'Theme et personnalisation',
+      title: 'Appearance',
+      description: 'Theme and customization',
       comingSoon: true,
     },
   ];
@@ -48,14 +48,14 @@ export default function SettingsPage() {
         className="mb-6 inline-flex items-center text-sm text-stone-500 hover:text-stone-900"
       >
         <ArrowLeft className="mr-2 h-4 w-4" />
-        Retour au dashboard
+        Back to dashboard
       </Link>
 
       {/* Page Header */}
       <div className="mb-8">
-        <h1 className="text-2xl font-bold text-stone-900">Parametres</h1>
+        <h1 className="text-2xl font-bold text-stone-900">Settings</h1>
         <p className="mt-1 text-sm text-stone-500">
-          Gerez vos preferences et parametres de compte
+          Manage your preferences and account settings
         </p>
       </div>
 
@@ -73,7 +73,7 @@ export default function SettingsPage() {
               {section.comingSoon && (
                 <div className="absolute right-2 top-2">
                   <span className="rounded-full bg-violet-100 px-2 py-1 text-xs font-medium text-violet-600">
-                    Bientot disponible
+                    Coming soon
                   </span>
                 </div>
               )}
@@ -101,11 +101,11 @@ export default function SettingsPage() {
           </div>
           <div>
             <h3 className="font-medium text-violet-900">
-              Les parametres arrivent bientot !
+              Settings are coming soon!
             </h3>
             <p className="mt-1 text-sm text-violet-700">
-              Nous travaillons activement sur la page de parametres pour vous offrir
-              une experience personnalisee. Restez a l'ecoute pour les mises a jour.
+              We are actively working on the settings page to offer you
+              a personalized experience. Stay tuned for updates.
             </p>
           </div>
         </CardContent>

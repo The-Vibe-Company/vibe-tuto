@@ -77,7 +77,7 @@ export function PublicTutorialViewer({
 
   const formatDate = (dateString: string | null) => {
     if (!dateString) return null;
-    return new Date(dateString).toLocaleDateString('fr-FR', {
+    return new Date(dateString).toLocaleDateString('en-US', {
       year: 'numeric',
       month: 'long',
       day: 'numeric',
@@ -115,7 +115,7 @@ export function PublicTutorialViewer({
             </div>
             {visibleSteps.length === 0 && (
               <div className="rounded-lg border border-stone-200 bg-white p-12 text-center">
-                <p className="text-stone-500">Ce tutoriel n'a pas encore de contenu.</p>
+                <p className="text-stone-500">This tutorial has no content yet.</p>
               </div>
             )}
           </main>
@@ -127,7 +127,7 @@ export function PublicTutorialViewer({
                 rel="noopener noreferrer"
                 className="flex items-center justify-center gap-2 text-sm text-stone-600 hover:text-violet-600"
               >
-                <span>Voir le tutoriel complet sur CapTuto</span>
+                <span>View the full tutorial on CapTuto</span>
               </a>
             </footer>
           )}
@@ -181,7 +181,7 @@ export function PublicTutorialViewer({
                     className="flex items-center gap-1.5 text-emerald-600"
                   >
                     <Check className="h-4 w-4" />
-                    Copié !
+                    Copied!
                   </motion.span>
                 ) : (
                   <motion.span
@@ -192,7 +192,7 @@ export function PublicTutorialViewer({
                     className="flex items-center gap-1.5"
                   >
                     <Share2 className="h-4 w-4" />
-                    Partager
+                    Share
                   </motion.span>
                 )}
               </AnimatePresence>
@@ -228,7 +228,7 @@ export function PublicTutorialViewer({
               >
                 <div className="flex items-center gap-1.5">
                   <Clock className="h-3.5 w-3.5 text-violet-500" />
-                  <span>{totalSteps} étape{totalSteps > 1 ? 's' : ''}</span>
+                  <span>{totalSteps} step{totalSteps !== 1 ? 's' : ''}</span>
                 </div>
                 {tutorial.publishedAt && (
                   <>
@@ -275,7 +275,7 @@ export function PublicTutorialViewer({
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                   className="inline-flex flex-col items-center gap-2 text-stone-400"
                 >
-                  <span className="text-xs uppercase tracking-wider">Découvrir</span>
+                  <span className="text-xs uppercase tracking-wider">Discover</span>
                   <ChevronDown className="h-5 w-5" />
                 </motion.div>
               </motion.div>
@@ -338,7 +338,7 @@ export function PublicTutorialViewer({
                 <div className="inline-flex h-16 w-16 items-center justify-center rounded-full bg-stone-100 mb-4">
                   <Play className="h-8 w-8 text-stone-400" />
                 </div>
-                <p className="text-stone-500 text-lg">Ce tutoriel n'a pas encore de contenu.</p>
+                <p className="text-stone-500 text-lg">This tutorial has no content yet.</p>
               </motion.div>
             )}
           </div>
@@ -360,7 +360,7 @@ export function PublicTutorialViewer({
               className="inline-flex items-center gap-2 rounded-full bg-violet-50 px-4 py-2 text-sm text-violet-600 mb-6"
             >
               <Sparkles className="h-4 w-4" />
-              <span>Créé avec CapTuto</span>
+              <span>Created with CapTuto</span>
             </motion.div>
 
             <motion.h2
@@ -370,7 +370,7 @@ export function PublicTutorialViewer({
               transition={{ delay: 0.2 }}
               className="text-2xl sm:text-3xl font-bold text-stone-900 mb-4"
             >
-              Créez vos propres tutoriels
+              Create your own tutorials
             </motion.h2>
 
             <motion.p
@@ -380,7 +380,7 @@ export function PublicTutorialViewer({
               transition={{ delay: 0.3 }}
               className="text-stone-500 mb-8 max-w-md mx-auto"
             >
-              Enregistrez votre écran, l'IA génère les instructions. C'est aussi simple que ça.
+              Record your screen, AI generates the instructions. It&apos;s that simple.
             </motion.p>
 
             <motion.div
@@ -394,7 +394,7 @@ export function PublicTutorialViewer({
                   size="lg"
                   className="h-12 bg-violet-600 px-8 text-base font-medium text-white shadow-lg shadow-violet-200 hover:bg-violet-700 hover:shadow-xl hover:shadow-violet-200 transition-all"
                 >
-                  Essayer gratuitement
+                  Try for free
                 </Button>
               </Link>
             </motion.div>

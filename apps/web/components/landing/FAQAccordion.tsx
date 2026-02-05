@@ -6,29 +6,29 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    question: "Est-ce vraiment gratuit ?",
+    question: "Is it really free?",
     answer:
-      "Oui, pendant toute la durée de la beta. Les 100 premiers utilisateurs garderont un tarif réduit de 50% à vie, même après le lancement officiel.",
+      "Yes, for the entire duration of the beta. The first 100 users will keep a 50% reduced rate for life, even after the official launch.",
   },
   {
-    question: "Faut-il installer quelque chose ?",
+    question: "Do I need to install anything?",
     answer:
-      "Juste une extension Chrome légère (moins de 2 Mo). Aucun logiciel à télécharger, tout se passe dans votre navigateur. L'installation prend 30 secondes.",
+      "Just a lightweight Chrome extension (less than 2 MB). No software to download, everything happens in your browser. Installation takes 30 seconds.",
   },
   {
-    question: "Mes données sont-elles sécurisées ?",
+    question: "Is my data secure?",
     answer:
-      "Absolument. Vos captures sont chiffrées de bout en bout et stockées sur des serveurs en Europe (France). Vous pouvez supprimer vos données à tout moment.",
+      "Absolutely. Your captures are end-to-end encrypted and stored on servers in Europe (France). You can delete your data at any time.",
   },
   {
-    question: "Ça marche avec quels outils ?",
+    question: "What tools does it work with?",
     answer:
-      "Tous ! Si ça s'affiche dans Chrome, on peut le capturer. Notion, Figma, votre CRM, votre ERP, n'importe quelle application web. Aucune intégration à configurer.",
+      "All of them! If it displays in Chrome, we can capture it. Notion, Figma, your CRM, your ERP, any web application. No integration to configure.",
   },
   {
-    question: "Je peux annuler à tout moment ?",
+    question: "Can I cancel at any time?",
     answer:
-      "Bien sûr. Aucun engagement, aucune carte bancaire requise pour commencer. Vous pouvez supprimer votre compte et toutes vos données en un clic.",
+      "Of course. No commitment, no credit card required to get started. You can delete your account and all your data in one click.",
   },
 ];
 
@@ -48,7 +48,7 @@ export function FAQAccordion() {
             FAQ
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-            Questions fréquentes
+            Frequently Asked Questions
           </h2>
         </motion.div>
 
