@@ -263,6 +263,11 @@ export function AnnotationCanvas({
     return () => resizeObserver.disconnect();
   }, [containerRef, drawAnnotations]);
 
+  // Redraw when annotations or state changes
+  useEffect(() => {
+    drawAnnotations();
+  }, [drawAnnotations]);
+
   // Handle keyboard events for deletion
   useEffect(() => {
     if (readOnly) return;
