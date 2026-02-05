@@ -37,14 +37,12 @@ interface PublicTutorialViewerProps {
   tutorial: PublicTutorial;
   steps: StepWithSignedUrl[];
   shareUrl?: string;
-  isEmbed?: boolean;
 }
 
 export function PublicTutorialViewer({
   tutorial,
   steps,
   shareUrl,
-  isEmbed = false,
 }: PublicTutorialViewerProps) {
   const [copied, setCopied] = useState(false);
   const [showFloatingHeader, setShowFloatingHeader] = useState(false);
@@ -100,67 +98,6 @@ export function PublicTutorialViewer({
   const totalSteps = steps.filter(
     (s) => s.step_type === 'image' || s.step_type === 'text'
   ).length;
-
-  // Embed mode - clean minimal version
-  if (isEmbed) {
-    let embedStepCounter = 0;
-    return (
-      <TooltipProvider delayDuration={100}>
-        <div className="min-h-screen bg-white">
-          {/* Minimal embed header */}
-          <div className="border-b border-stone-100 bg-white px-5 py-4">
-            <h1 className="text-lg font-semibold text-stone-900 leading-tight">
-              {tutorial.title}
-            </h1>
-            {tutorial.description && (
-              <p className="mt-1.5 text-sm text-stone-500 leading-relaxed">
-                {tutorial.description}
-              </p>
-            )}
-          </div>
-
-          <main className="p-5">
-            <div className="space-y-4">
-              {visibleSteps.map((step) => {
-                const isCountedStep =
-                  step.step_type === 'image' || step.step_type === 'text';
-                if (isCountedStep) embedStepCounter++;
-                return (
-                  <DocStepCard
-                    key={step.id}
-                    step={step}
-                    stepNumber={isCountedStep ? embedStepCounter : 0}
-                    readOnly
-                  />
-                );
-              })}
-            </div>
-            {visibleSteps.length === 0 && (
-              <div className="rounded-xl border border-stone-200 bg-white p-12 text-center">
-                <p className="text-stone-500">
-                  This tutorial has no content yet.
-                </p>
-              </div>
-            )}
-          </main>
-
-          {shareUrl && (
-            <footer className="border-t border-stone-100 bg-stone-50/50 px-5 py-3">
-              <a
-                href={shareUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 text-sm text-stone-500 transition-colors hover:text-violet-600"
-              >
-                <Play className="h-3.5 w-3.5" />
-                <span>View full tutorial on CapTuto</span>
-              </a>
-            </footer>
-          )}
-        </div>
-      </TooltipProvider>
-    );
-  }
 
   return (
     <TooltipProvider delayDuration={100}>

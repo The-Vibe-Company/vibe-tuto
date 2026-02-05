@@ -1,6 +1,6 @@
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
-import { PublicTutorialViewer } from '@/components/public/PublicTutorialViewer';
+import { EmbedTutorialViewer } from '@/components/public/EmbedTutorialViewer';
 import { getPublicTutorialByToken } from '@/lib/queries/public-tutorials';
 
 interface PageProps {
@@ -46,11 +46,10 @@ export default async function EmbedTutorialPage({ params, searchParams }: PagePr
 
   return (
     <div className={themeClass}>
-      <PublicTutorialViewer
+      <EmbedTutorialViewer
         tutorial={tutorial}
         steps={steps}
         shareUrl={fullTutorialUrl}
-        isEmbed
       />
     </div>
   );
