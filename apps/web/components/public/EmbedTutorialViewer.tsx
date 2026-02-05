@@ -29,7 +29,7 @@ export function EmbedTutorialViewer({
 
   return (
     <TooltipProvider delayDuration={100}>
-      <div className="bg-white px-4 py-4">
+      <div className="bg-transparent px-4 py-4">
         {steps.length > 0 ? (
           <div className="space-y-4">
             {steps.map((step) => {
@@ -59,10 +59,10 @@ export function EmbedTutorialViewer({
             href="https://captuto.com"
             target="_blank"
             rel="noopener noreferrer"
-            className="text-xs text-stone-400 transition-colors hover:text-stone-500"
+            className="text-xs text-muted-foreground/60 transition-colors hover:text-muted-foreground"
           >
             Powered by{' '}
-            <span className="font-medium text-stone-500">CapTuto</span>
+            <span className="font-medium text-muted-foreground">CapTuto</span>
           </a>
         </div>
       </div>

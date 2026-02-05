@@ -2,6 +2,7 @@ import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { EmbedTutorialViewer } from '@/components/public/EmbedTutorialViewer';
 import { getPublicTutorialByToken } from '@/lib/queries/public-tutorials';
+import { EmbedThemeScript } from '@/components/public/EmbedThemeScript';
 
 interface PageProps {
   params: Promise<{ token: string }>;
@@ -41,16 +42,14 @@ export default async function EmbedTutorialPage({ params, searchParams }: PagePr
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
   const fullTutorialUrl = `${baseUrl}/t/${token}`;
 
-  // Apply theme class if specified
-  const themeClass = theme === 'dark' ? 'dark' : '';
-
   return (
-    <div className={themeClass}>
+    <>
+      <EmbedThemeScript theme={theme} />
       <EmbedTutorialViewer
         tutorial={tutorial}
         steps={steps}
         shareUrl={fullTutorialUrl}
       />
-    </div>
+    </>
   );
 }
