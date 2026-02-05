@@ -43,7 +43,7 @@ export default async function PublicTutorialPage({ params }: PageProps) {
   }
 
   const { tutorial, steps } = data;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
   const shareUrl = `${baseUrl}/t/${token}`;
 
   return (

@@ -117,7 +117,7 @@ chrome.runtime.sendMessage({ type: 'CONTENT_SCRIPT_READY' });
 
 // Allowed origins for auth sync messages
 const ALLOWED_ORIGINS = [
-  'http://localhost:3000',
+  'http://localhost:3678',
   'http://localhost:3678',
   'https://localhost:3000',
   'https://localhost:3678',

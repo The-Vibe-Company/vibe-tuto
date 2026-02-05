@@ -53,7 +53,7 @@ export async function GET(
     return NextResponse.json({ error: 'Access denied' }, { status: 403 });
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
   const visibility = (tutorial.visibility || 'private') as TutorialVisibility;
 
   const response: ShareResponse = {
@@ -169,7 +169,7 @@ export async function POST(
     );
   }
 
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
 
   const response: ShareResponse = {
     success: true,

@@ -38,7 +38,7 @@ export default async function EmbedTutorialPage({ params, searchParams }: PagePr
   }
 
   const { tutorial, steps } = data;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
   const fullTutorialUrl = `${baseUrl}/t/${token}`;
 
   // Apply theme class if specified

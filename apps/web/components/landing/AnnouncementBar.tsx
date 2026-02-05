@@ -39,9 +39,6 @@ export function AnnouncementBar() {
           </span>
           . Unlimited usage.
         </span>
-        <span className="hidden sm:inline-flex items-center gap-1 ml-2 rounded-full bg-white/20 px-2.5 py-0.5 text-xs font-semibold">
-          Only {SPOTS_LEFT} spots left
-        </span>
       </Link>
       <button
         onClick={handleDismiss}

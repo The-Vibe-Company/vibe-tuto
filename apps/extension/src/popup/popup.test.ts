@@ -182,7 +182,7 @@ describe('Pending upload for retry', () => {
 });
 
 describe('getApiUrl', () => {
-  const DEFAULT_API_URL = 'http://localhost:3000';
+  const DEFAULT_API_URL = 'http://localhost:3678';
   const API_URL_STORAGE_KEY = 'apiUrl';
 
   async function getApiUrl(): Promise<string> {

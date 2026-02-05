@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const { tutorial } = data;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
 
   return {
     title: tutorial.title,
@@ -51,7 +51,7 @@ export default async function PublicTutorialBySlugPage({ params }: PageProps) {
   }
 
   const { tutorial, steps } = data;
-  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
+  const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
   const shareUrl = `${baseUrl}/tutorial/${slug}`;
 
   return (

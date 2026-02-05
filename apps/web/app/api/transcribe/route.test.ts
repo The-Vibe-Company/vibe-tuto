@@ -26,7 +26,7 @@ const mockGetDeepgramClient = vi.mocked(getDeepgramClient);
 
 // Helper to create a mock Request with JSON body
 function createMockRequest(body: object): Request {
-  return new Request('http://localhost:3000/api/transcribe', {
+  return new Request('http://localhost:3678/api/transcribe', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(body),
@@ -66,7 +66,7 @@ describe('POST /api/transcribe', () => {
       },
     } as any);
 
-    const request = new Request('http://localhost:3000/api/transcribe', {
+    const request = new Request('http://localhost:3678/api/transcribe', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: 'not valid json{',

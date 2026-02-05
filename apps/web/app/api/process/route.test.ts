@@ -16,7 +16,7 @@ const mockCreateClient = vi.mocked(createClient);
 
 // Helper to create a mock Request with JSON body
 function createMockRequest(body: object): Request {
-  return new Request('http://localhost:3000/api/process', {
+  return new Request('http://localhost:3678/api/process', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -127,7 +127,7 @@ describe('POST /api/process', () => {
       }) as any
     );
 
-    const request = new Request('http://localhost:3000/api/process', {
+    const request = new Request('http://localhost:3678/api/process', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: 'not valid json{',

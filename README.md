@@ -57,7 +57,7 @@ cp apps/web/.env.example apps/web/.env.local
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (public) | Same as above |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (secret) | Same as above |
 | `DEEPGRAM_API_KEY` | Deepgram API key | [Deepgram Console](https://console.deepgram.com) |
-| `NEXT_PUBLIC_APP_URL` | App URL | `http://localhost:3000` for dev |
+| `NEXT_PUBLIC_APP_URL` | App URL | `http://localhost:3678` for dev |
 
 ### 3. Run the development server
 
@@ -65,7 +65,7 @@ cp apps/web/.env.example apps/web/.env.local
 pnpm dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+Open [http://localhost:3678](http://localhost:3678) in your browser.
 
 ## Development
 

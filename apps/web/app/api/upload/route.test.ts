@@ -12,7 +12,7 @@ const mockCreateClient = vi.mocked(createClient);
 
 // Helper to create a mock Request with FormData
 function createMockRequest(formData: FormData): Request {
-  return new Request('http://localhost:3000/api/upload', {
+  return new Request('http://localhost:3678/api/upload', {
     method: 'POST',
     body: formData,
   });
