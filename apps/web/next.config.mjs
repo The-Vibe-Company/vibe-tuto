@@ -26,7 +26,8 @@ const nextConfig = {
   async headers() {
     return [
       {
-        source: '/(.*)',
+        // Security headers for all routes except embed pages
+        source: '/((?!t/[^/]+/embed).*)',
         headers: [
           {
             key: 'X-Content-Type-Options',
@@ -39,6 +40,24 @@ const nextConfig = {
           {
             key: 'X-XSS-Protection',
             value: '1; mode=block',
+          },
+        ],
+      },
+      {
+        // Embed pages: allow iframing, keep other security headers
+        source: '/t/:token/embed',
+        headers: [
+          {
+            key: 'X-Content-Type-Options',
+            value: 'nosniff',
+          },
+          {
+            key: 'X-XSS-Protection',
+            value: '1; mode=block',
+          },
+          {
+            key: 'Content-Security-Policy',
+            value: 'frame-ancestors *',
           },
         ],
       },

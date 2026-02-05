@@ -32,5 +32,6 @@ export const config = {
     '/editor/:path*',
     '/settings/:path*',
     '/api/:path*',
+    '/t/:path*/embed',
   ],
 };
