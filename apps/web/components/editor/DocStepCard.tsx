@@ -6,7 +6,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { GripVertical, Trash2, Heading, Minus, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X } from 'lucide-react';
 import type { StepWithSignedUrl, SourceWithSignedUrl, Annotation } from '@/lib/types/editor';
-import { formatSourceUrl } from '@/lib/types/editor';
+import { formatSourceUrl, getSourceActionType } from '@/lib/types/editor';
 import { InlineCaption } from './InlineCaption';
 import { StepScreenshot } from './StepScreenshot';
 import { Card, CardContent } from '@/components/ui/card';
@@ -59,6 +59,8 @@ function DocStepCardComponent({
   const [isEditingUrl, setIsEditingUrl] = useState(false);
   // Compute URL with fallback to source URL for existing steps
   const displayUrl = step.url || step.source?.url || null;
+  // Detect if this is a tab_change step for visual differentiation
+  const isTabChange = step.source ? getSourceActionType(step.source) === 'tab_change' : false;
   const [editedUrl, setEditedUrl] = useState(displayUrl || '');
   const annotations = step.annotations || [];
 
@@ -268,7 +270,12 @@ function DocStepCardComponent({
                 </button>
               )}
 
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground shadow-sm">
+              <div className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold shadow-sm",
+                isTabChange
+                  ? "bg-amber-500 text-white"
+                  : "bg-primary text-primary-foreground"
+              )}>
                 {stepNumber}
               </div>
             </div>
