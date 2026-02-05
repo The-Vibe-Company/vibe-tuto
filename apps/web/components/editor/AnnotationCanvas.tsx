@@ -160,9 +160,13 @@ export function AnnotationCanvas({
         }
         case 'click-indicator': {
           const size = 28;
+          const scale = size / 24;
+          // The cursor tip is at (3, 3) in the 24x24 SVG coordinate space
+          // To place the tip at (x, y), we need to offset by: scale * 3
+          const tipOffset = scale * 3;
           ctx.save();
-          ctx.translate(x - 4, y - 4);
-          ctx.scale(size / 24, size / 24);
+          ctx.translate(x - tipOffset, y - tipOffset);
+          ctx.scale(scale, scale);
           ctx.fillStyle = ann.color || '#8b5cf6';
           ctx.strokeStyle = 'white';
           ctx.lineWidth = 1.5 / (size / 24);
