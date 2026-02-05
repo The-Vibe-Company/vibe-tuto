@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import Image from 'next/image';
-import { MoreVertical, Pencil, Share2, Trash2, Loader2, Play, ImageIcon, Globe, GlobeLock } from 'lucide-react';
+import { MoreVertical, Pencil, Share2, Trash2, Loader2, ImageIcon, Globe, GlobeLock } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -10,7 +10,6 @@ import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import {
@@ -35,7 +34,6 @@ export interface TutorialCardProps {
   onEdit: () => void;
   onDelete: () => void;
   onShare?: () => void;
-  onProcess?: () => Promise<void>;
 }
 
 const publishedConfig = {
@@ -63,26 +61,14 @@ export function TutorialCard({
   onEdit,
   onDelete,
   onShare,
-  onProcess,
 }: TutorialCardProps) {
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
   const [shareDialogOpen, setShareDialogOpen] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [isProcessing, setIsProcessing] = useState(false);
 
   const isPublished = visibility === 'link_only' || visibility === 'public';
   const publishInfo = isPublished ? publishedConfig.published : publishedConfig.notPublished;
   const PublishIcon = publishInfo.icon;
-
-  const handleProcess = async () => {
-    if (!onProcess) return;
-    setIsProcessing(true);
-    try {
-      await onProcess();
-    } finally {
-      setIsProcessing(false);
-    }
-  };
 
   const formattedDate = new Date(createdAt).toLocaleDateString('fr-FR', {
     day: 'numeric',
@@ -131,36 +117,32 @@ export function TutorialCard({
             {publishInfo.label}
           </Badge>
 
-          {/* Process Button - Only show for processing status */}
-          {status === 'processing' && onProcess && (
-            <div
-              className="absolute inset-0 flex items-center justify-center bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
-              onClick={(e) => e.stopPropagation()}
+          {/* Action buttons - Show on hover */}
+          <div
+            className="absolute inset-0 z-10 flex items-center justify-center gap-3 bg-black/40 opacity-0 transition-opacity group-hover:opacity-100"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <Button
+              onClick={onEdit}
+              className="gap-2 bg-white text-stone-900 hover:bg-stone-100"
+              size="sm"
             >
-              <Button
-                onClick={handleProcess}
-                disabled={isProcessing}
-                className="gap-2 bg-white text-stone-900 hover:bg-stone-100"
-                size="sm"
-              >
-                {isProcessing ? (
-                  <>
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    Traitement...
-                  </>
-                ) : (
-                  <>
-                    <Play className="h-4 w-4" />
-                    Finaliser
-                  </>
-                )}
-              </Button>
-            </div>
-          )}
+              <Pencil className="h-4 w-4" />
+              Modifier
+            </Button>
+            <Button
+              onClick={() => setShareDialogOpen(true)}
+              className="gap-2 bg-white text-stone-900 hover:bg-stone-100"
+              size="sm"
+            >
+              <Share2 className="h-4 w-4" />
+              Publier
+            </Button>
+          </div>
 
           {/* Actions Menu */}
           <div
-            className="absolute right-2 top-2 opacity-0 transition-opacity group-hover:opacity-100"
+            className="absolute right-2 top-2 z-20 opacity-0 transition-opacity group-hover:opacity-100"
             onClick={(e) => e.stopPropagation()}
           >
             <DropdownMenu>
@@ -174,15 +156,6 @@ export function TutorialCard({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={onEdit}>
-                  <Pencil className="mr-2 h-4 w-4" />
-                  Modifier
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setShareDialogOpen(true)}>
-                  <Share2 className="mr-2 h-4 w-4" />
-                  Partager
-                </DropdownMenuItem>
-                <DropdownMenuSeparator />
                 <DropdownMenuItem
                   onClick={() => setDeleteDialogOpen(true)}
                   className="text-red-600 focus:text-red-600"

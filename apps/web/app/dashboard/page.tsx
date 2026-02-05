@@ -10,7 +10,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { PageHeader } from '@/components/shared/PageHeader';
 
-type Tutorial = Omit<TutorialCardProps, 'onEdit' | 'onDelete' | 'onShare' | 'onProcess'>;
+type Tutorial = Omit<TutorialCardProps, 'onEdit' | 'onDelete' | 'onShare'>;
 
 async function fetchTutorials(): Promise<Tutorial[]> {
   const response = await fetch('/api/tutorials');
@@ -59,42 +59,12 @@ export default function DashboardPage() {
     },
   });
 
-  const processMutation = useMutation({
-    mutationFn: async (tutorialId: string) => {
-      const response = await fetch('/api/process', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ tutorialId }),
-      });
-      if (!response.ok) {
-        throw new Error('Failed to process tutorial');
-      }
-      const data = await response.json();
-      return { tutorialId, status: data.status || 'ready' };
-    },
-    onSuccess: ({ tutorialId, status }) => {
-      // Optimistically update the cache
-      queryClient.setQueryData<Tutorial[]>(['tutorials'], (old) =>
-        old?.map((t) => (t.id === tutorialId ? { ...t, status } : t)) ?? []
-      );
-    },
-    onError: (err) => {
-      console.error('Process error:', err);
-    },
-  });
-
   const handleEdit = (tutorialId: string) => {
     router.push(`/editor/${tutorialId}`);
   };
 
   const handleDelete = (tutorialId: string) => {
     deleteMutation.mutate(tutorialId);
-  };
-
-  const handleProcess = async (tutorialId: string) => {
-    await processMutation.mutateAsync(tutorialId);
   };
 
   // Redirect to login on unauthorized error
@@ -174,7 +144,6 @@ export default function DashboardPage() {
               {...tutorial}
               onEdit={() => handleEdit(tutorial.id)}
               onDelete={() => handleDelete(tutorial.id)}
-              onProcess={() => handleProcess(tutorial.id)}
             />
           ))}
         </div>
