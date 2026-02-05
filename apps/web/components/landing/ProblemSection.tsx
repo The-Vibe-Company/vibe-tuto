@@ -6,22 +6,22 @@ import { Clock, RefreshCw, Users } from "lucide-react";
 const problems = [
   {
     icon: Clock,
-    title: "Des heures perdues",
-    description: "Vous passez 3h à créer un tutoriel que personne ne lit vraiment.",
+    title: "Hours wasted",
+    description: "You spend 3 hours creating a tutorial that no one really reads.",
     color: "text-red-500",
     bgColor: "bg-red-50",
   },
   {
     icon: RefreshCw,
-    title: "Toujours à refaire",
-    description: "Chaque mise à jour de votre outil = tutoriel entier à recréer.",
+    title: "Always redoing",
+    description: "Every update to your tool = entire tutorial to recreate.",
     color: "text-orange-500",
     bgColor: "bg-orange-50",
   },
   {
     icon: Users,
-    title: "Équipes perdues",
-    description: "Vos collègues posent toujours les mêmes questions. Encore et encore.",
+    title: "Lost teams",
+    description: "Your colleagues always ask the same questions. Over and over.",
     color: "text-amber-500",
     bgColor: "bg-amber-50",
   },
@@ -38,11 +38,11 @@ export function ProblemSection() {
           className="mb-16 text-center"
         >
           <p className="mb-3 text-sm font-medium uppercase tracking-widest text-stone-400">
-            Le problème
+            The problem
           </p>
           <h2 className="text-3xl font-semibold tracking-tight text-white sm:text-4xl">
-            Documenter vos processus,<br />
-            <span className="text-stone-400">c&apos;est un cauchemar</span>
+            Documenting your processes<br />
+            <span className="text-stone-400">is a nightmare</span>
           </h2>
         </motion.div>
 
@@ -72,8 +72,8 @@ export function ProblemSection() {
           transition={{ delay: 0.4 }}
           className="mt-12 text-center text-lg text-stone-400"
         >
-          Résultat ? Vous arrêtez de documenter.{" "}
-          <span className="text-white">La connaissance reste dans les têtes.</span>
+          Result? You stop documenting.{" "}
+          <span className="text-white">Knowledge stays in people&apos;s heads.</span>
         </motion.p>
       </div>
     </section>

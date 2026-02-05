@@ -96,7 +96,7 @@ export function InlineCaption({
           />
         ) : (
           <span className="text-muted-foreground italic">
-            {placeholder || 'Cliquez pour ajouter une description...'}
+            {placeholder || 'Click to add a description...'}
           </span>
         )}
       </div>

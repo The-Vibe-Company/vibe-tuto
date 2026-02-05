@@ -13,7 +13,7 @@ export function SocialProofStrip() {
     >
       <div className="flex items-center gap-1.5">
         <span className="font-semibold text-stone-900">+500</span>
-        <span>tutoriels créés</span>
+        <span>tutorials created</span>
       </div>
 
       <div className="hidden sm:block h-4 w-px bg-stone-200" />
@@ -33,7 +33,7 @@ export function SocialProofStrip() {
 
       <div className="flex items-center gap-1.5">
         <span className="font-semibold text-stone-900">50+</span>
-        <span>équipes actives</span>
+        <span>active teams</span>
       </div>
     </motion.div>
   );

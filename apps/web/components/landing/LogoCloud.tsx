@@ -21,7 +21,7 @@ export function LogoCloud() {
           viewport={{ once: true }}
           className="mb-8 text-center text-sm font-medium text-stone-400"
         >
-          Compatible avec vos outils préférés
+          Compatible with your favorite tools
         </motion.p>
         <motion.div
           initial={{ opacity: 0 }}

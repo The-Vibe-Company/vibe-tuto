@@ -255,7 +255,7 @@ export function EditorClient({
         tutorial_id: initialTutorial.id,
         source_id: null,
         order_index: afterIndex + 1,
-        text_content: type === 'heading' ? '<strong>Nouvelle section</strong>' : type === 'divider' ? '' : 'Nouvelle étape texte',
+        text_content: type === 'heading' ? '<strong>New section</strong>' : type === 'divider' ? '' : 'New text step',
         step_type: type,
         annotations: null,
         created_at: new Date().toISOString(),
@@ -283,7 +283,7 @@ export function EditorClient({
           tutorial_id: initialTutorial.id,
           order_index: afterIndex + 1,
           step_type: type,
-          text_content: type === 'heading' ? '<strong>Nouvelle section</strong>' : type === 'divider' ? '' : 'Nouvelle étape texte',
+          text_content: type === 'heading' ? '<strong>New section</strong>' : type === 'divider' ? '' : 'New text step',
         }),
       });
 

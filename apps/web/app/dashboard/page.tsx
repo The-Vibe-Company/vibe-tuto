@@ -106,7 +106,7 @@ export default function DashboardPage() {
       <PageHeader
         breadcrumbs={[
           { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Mes tutoriels' },
+          { label: 'My tutorials' },
         ]}
       />
 
@@ -125,14 +125,14 @@ export default function DashboardPage() {
               <Plus className="h-6 w-6 text-violet-600" />
             </div>
             <h2 className="text-xl font-semibold text-stone-900">
-              Aucun tutoriel
+              No tutorials
             </h2>
             <p className="mt-2 text-stone-500">
-              Utilisez l&apos;extension Chrome pour creer votre premier tutoriel.
+              Use the Chrome extension to create your first tutorial.
             </p>
             <p className="mt-4 text-sm text-stone-400">
-              Cliquez sur l&apos;icone CapTuto dans Chrome pour commencer
-              l&apos;enregistrement.
+              Click on the CapTuto icon in Chrome to start
+              recording.
             </p>
           </CardContent>
         </Card>

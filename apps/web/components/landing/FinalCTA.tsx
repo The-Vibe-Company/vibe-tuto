@@ -6,15 +6,15 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
 const benefits = [
-  { icon: Zap, text: "10x plus rapide" },
-  { icon: Check, text: "Instructions parfaites" },
-  { icon: Clock, text: "Partage instantané" },
+  { icon: Zap, text: "10x faster" },
+  { icon: Check, text: "Perfect instructions" },
+  { icon: Clock, text: "Instant sharing" },
 ];
 
 const badges = [
-  "Aucune CB requise",
-  "Setup en 30 sec",
-  "Annulation libre",
+  "No credit card required",
+  "30 sec setup",
+  "Cancel anytime",
 ];
 
 export function FinalCTA() {
@@ -33,7 +33,7 @@ export function FinalCTA() {
           viewport={{ once: true }}
         >
           <h2 className="mb-6 text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
-            Prêt à révolutionner<br />votre documentation ?
+            Ready to revolutionize<br />your documentation?
           </h2>
 
           {/* Benefits */}
@@ -67,7 +67,7 @@ export function FinalCTA() {
                 size="lg"
                 className="group h-14 bg-white px-10 text-lg font-semibold text-violet-600 shadow-2xl hover:bg-stone-50"
               >
-                Commencer gratuitement
+                Start for free
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
@@ -81,7 +81,7 @@ export function FinalCTA() {
             transition={{ delay: 0.3 }}
             className="mt-4 text-sm text-white/80"
           >
-            Offre limitée aux 100 premiers utilisateurs
+            Limited offer for the first 100 users
           </motion.p>
 
           {/* Trust badges */}
