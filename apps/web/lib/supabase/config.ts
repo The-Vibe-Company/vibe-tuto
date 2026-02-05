@@ -2,6 +2,12 @@ export function getSupabaseConfig() {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const anonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 
+  console.log('[v0] Environment check:', {
+    NEXT_PUBLIC_SUPABASE_URL: url ? `${url.substring(0, 20)}...` : 'MISSING',
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: anonKey ? `${anonKey.substring(0, 10)}...` : 'MISSING',
+    allEnvKeys: Object.keys(process.env).filter(k => k.includes('SUPABASE')),
+  });
+
   if (!url || !anonKey) {
     throw new Error(
       "Your project's URL and Key are required to create a Supabase client! " +
