@@ -77,3 +77,7 @@ Always run the frontend locally on port 3678.
 Always check if the frontend is running locally on port 3678 before doing anything.
 If the frontend is not running locally on port 3678, run it in the background.
 Don't hesitate to kill the process if it is not running well.
+
+## Supabase
+
+Migrations are launched automatically by supabase when a commit is made on main or PR is merged.
