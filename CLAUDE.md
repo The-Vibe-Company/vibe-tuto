@@ -41,9 +41,10 @@ https://raw.githubusercontent.com/The-Vibe-Company/vibe-tuto/<branch-name>/scree
 
 Always add the link to the issue in the PR description. 
 
-## Commits
+## Git
 
-Use conventional commits for the commits and PR
+- Always use `--base main` when creating PRs with `gh pr create`
+- Use conventional commits for the commits and PR
 
 ## PR Comment
 
