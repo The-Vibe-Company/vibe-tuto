@@ -58,7 +58,7 @@ jobs:
 
   build-desktop:
     name: Build Desktop (macOS)
-    runs-on: macos-14
+    runs-on: macos-15
     needs: lint-and-test
     steps:
       - uses: actions/checkout@v4

@@ -77,7 +77,7 @@ jobs:
 
   build-desktop:
     name: Build macOS Desktop App
-    runs-on: macos-14
+    runs-on: macos-15
     env:
       HAS_MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE != '' }}
     steps:
