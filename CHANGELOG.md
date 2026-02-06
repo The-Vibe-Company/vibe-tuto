@@ -1,5 +1,13 @@
 # Changelog
 
+## [0.1.3](https://github.com/The-Vibe-Company/CapTuto/compare/v0.1.2...v0.1.3) (2026-02-06)
+
+
+### Bug Fixes
+
+* **ci:** fix Vercel double path and desktop cert discovery in release ([#62](https://github.com/The-Vibe-Company/CapTuto/issues/62)) ([0578436](https://github.com/The-Vibe-Company/CapTuto/commit/05784360fba051c61befe94ac9009ad00ad0eb8c))
+* **ci:** use current branch for workflow_dispatch testing ([#64](https://github.com/The-Vibe-Company/CapTuto/issues/64)) ([1eee7da](https://github.com/The-Vibe-Company/CapTuto/commit/1eee7da9ce5ee5bd8fa41e4787917453ad77cbac))
+
 ## [0.1.2](https://github.com/The-Vibe-Company/CapTuto/compare/v0.1.1...v0.1.2) (2026-02-06)
 
 
