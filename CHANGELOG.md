@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.4](https://github.com/The-Vibe-Company/CapTuto/compare/v0.1.3...v0.1.4) (2026-02-06)
+
+
+### Features
+
+* **ci:** add Supabase migration validation and config.toml ([#65](https://github.com/The-Vibe-Company/CapTuto/issues/65)) ([6e64c91](https://github.com/The-Vibe-Company/CapTuto/commit/6e64c91b1a5e794243a2735ee13e6ce01e95b900))
+
 ## [0.1.3](https://github.com/The-Vibe-Company/CapTuto/compare/v0.1.2...v0.1.3) (2026-02-06)
 
 
