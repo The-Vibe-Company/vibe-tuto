@@ -96,7 +96,7 @@ export function Header({ userEmail }: HeaderProps) {
                 className="flex items-center"
               >
                 <HelpCircle className="mr-2 h-4 w-4" />
-                Centre d'aide
+                Centre d&apos;aide
                 <ExternalLink className="ml-auto h-3 w-3 text-stone-400" />
               </a>
             </DropdownMenuItem>
