@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.2](https://github.com/The-Vibe-Company/CapTuto/compare/v0.1.1...v0.1.2) (2026-02-06)
+
+
+### Bug Fixes
+
+* **ci:** fix release deployment issues ([#60](https://github.com/The-Vibe-Company/CapTuto/issues/60)) ([9c89f84](https://github.com/The-Vibe-Company/CapTuto/commit/9c89f84ba01129e3912dcf408650d644f28084b3))
+
 ## [0.1.1](https://github.com/The-Vibe-Company/CapTuto/compare/v0.1.0...v0.1.1) (2026-02-06)
 
 
