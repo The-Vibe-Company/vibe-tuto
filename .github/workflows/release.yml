@@ -94,8 +94,8 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
           upload_url: ${{ inputs.upload_url }}
-          asset_path: apps/desktop/VibeTuto/.build/release/VibeTuto-v${{ inputs.version }}.dmg
-          asset_name: VibeTuto-v${{ inputs.version }}.dmg
+          asset_path: apps/desktop/VibeTuto/.build/release/CapTuto-v${{ inputs.version }}.dmg
+          asset_name: CapTuto-v${{ inputs.version }}.dmg
           asset_content_type: application/x-apple-diskimage
 
       - name: Cleanup Keychain

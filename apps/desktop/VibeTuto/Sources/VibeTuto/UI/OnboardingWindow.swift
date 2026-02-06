@@ -10,7 +10,7 @@ final class OnboardingWindowController: NSWindowController {
             backing: .buffered,
             defer: false
         )
-        window.title = "Welcome to Vibe Tuto"
+        window.title = "Welcome to CapTuto"
         window.center()
         window.contentView = NSHostingView(rootView: OnboardingView())
 
@@ -56,7 +56,7 @@ struct OnboardingView: View {
                 .font(.system(size: 64))
                 .foregroundColor(.accentColor)
 
-            Text("Welcome to Vibe Tuto Recorder")
+            Text("Welcome to CapTuto Recorder")
                 .font(.title2)
                 .fontWeight(.semibold)
                 .multilineTextAlignment(.center)

@@ -22,7 +22,7 @@ final class MenuBarController: NSObject {
     private func setupStatusItem() {
         statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.squareLength)
         if let button = statusItem?.button {
-            button.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: "Vibe Tuto Recorder, idle")
+            button.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: "CapTuto Recorder, idle")
             button.action = #selector(togglePopover(_:))
             button.target = self
         }
@@ -72,24 +72,24 @@ final class MenuBarController: NSObject {
 
         switch state {
         case .idle:
-            button.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: "Vibe Tuto Recorder, idle")
+            button.image = NSImage(systemSymbolName: "record.circle", accessibilityDescription: "CapTuto Recorder, idle")
 
         case .recording:
             let config = NSImage.SymbolConfiguration(paletteColors: [.systemRed])
-            button.image = NSImage(systemSymbolName: "record.circle.fill", accessibilityDescription: "Vibe Tuto Recorder, recording")?
+            button.image = NSImage(systemSymbolName: "record.circle.fill", accessibilityDescription: "CapTuto Recorder, recording")?
                 .withSymbolConfiguration(config)
 
         case .paused:
             let config = NSImage.SymbolConfiguration(paletteColors: [.systemYellow])
-            button.image = NSImage(systemSymbolName: "pause.circle.fill", accessibilityDescription: "Vibe Tuto Recorder, paused")?
+            button.image = NSImage(systemSymbolName: "pause.circle.fill", accessibilityDescription: "CapTuto Recorder, paused")?
                 .withSymbolConfiguration(config)
 
         case .uploading:
-            button.image = NSImage(systemSymbolName: "arrow.up.circle", accessibilityDescription: "Vibe Tuto Recorder, uploading")
+            button.image = NSImage(systemSymbolName: "arrow.up.circle", accessibilityDescription: "CapTuto Recorder, uploading")
 
         case .completed:
             let config = NSImage.SymbolConfiguration(paletteColors: [.systemGreen])
-            button.image = NSImage(systemSymbolName: "checkmark.circle.fill", accessibilityDescription: "Vibe Tuto Recorder, upload complete")?
+            button.image = NSImage(systemSymbolName: "checkmark.circle.fill", accessibilityDescription: "CapTuto Recorder, upload complete")?
                 .withSymbolConfiguration(config)
             // Revert to idle icon after 5 seconds
             DispatchQueue.main.asyncAfter(deadline: .now() + 5) { [weak self] in
@@ -98,7 +98,7 @@ final class MenuBarController: NSObject {
 
         case .error:
             let config = NSImage.SymbolConfiguration(paletteColors: [.systemYellow])
-            button.image = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: "Vibe Tuto Recorder, error")?
+            button.image = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: "CapTuto Recorder, error")?
                 .withSymbolConfiguration(config)
 
         case .countdown, .stopping:

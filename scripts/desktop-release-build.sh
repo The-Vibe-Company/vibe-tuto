@@ -2,13 +2,13 @@
 set -euo pipefail
 
 # =============================================================================
-# desktop-release-build.sh — Build VibeTuto.app for release and create DMG
+# desktop-release-build.sh — Build CapTuto.app for release and create DMG
 #
 # Usage:
 #   ./scripts/desktop-release-build.sh [--version X.Y.Z] [--sign] [--notarize]
 #
 # Outputs:
-#   apps/desktop/VibeTuto/.build/release/VibeTuto-vX.Y.Z.dmg
+#   apps/desktop/VibeTuto/.build/release/CapTuto-vX.Y.Z.dmg
 # =============================================================================
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
@@ -110,7 +110,7 @@ if [ "$SIGN" = true ]; then
 fi
 
 # Step 5: Create DMG
-DMG_NAME="VibeTuto-v${VERSION}.dmg"
+DMG_NAME="CapTuto-v${VERSION}.dmg"
 DMG_PATH="$BUILD_DIR/$DMG_NAME"
 rm -f "$DMG_PATH"
 
@@ -118,7 +118,7 @@ echo "Creating DMG..."
 
 if command -v create-dmg &>/dev/null; then
   create-dmg \
-    --volname "$APP_NAME" \
+    --volname "CapTuto" \
     --window-pos 200 120 \
     --window-size 600 400 \
     --icon-size 100 \
@@ -128,13 +128,13 @@ if command -v create-dmg &>/dev/null; then
     "$DMG_PATH" \
     "$BUILD_DIR/$APP_NAME.app" || {
       echo "create-dmg failed, falling back to hdiutil..."
-      hdiutil create -volname "$APP_NAME" \
+      hdiutil create -volname "CapTuto" \
         -srcfolder "$BUILD_DIR/$APP_NAME.app" \
         -ov -format UDZO \
         "$DMG_PATH"
     }
 else
-  hdiutil create -volname "$APP_NAME" \
+  hdiutil create -volname "CapTuto" \
     -srcfolder "$BUILD_DIR/$APP_NAME.app" \
     -ov -format UDZO \
     "$DMG_PATH"

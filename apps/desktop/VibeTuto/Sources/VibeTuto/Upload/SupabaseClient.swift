@@ -3,7 +3,7 @@ import os
 
 private let logger = Logger(subsystem: "com.vibetuto.recorder", category: "SupabaseClient")
 
-/// Client for communicating with the Vibe Tuto web platform (Supabase REST + Storage).
+/// Client for communicating with the CapTuto web platform (Supabase REST + Storage).
 final class SupabaseClient: @unchecked Sendable {
     private let baseURL: URL
     private let apiKey: String
