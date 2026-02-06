@@ -1,0 +1,83 @@
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+
+concurrency:
+  group: ci-${{ github.head_ref }}
+  cancel-in-progress: true
+
+jobs:
+  lint-and-test:
+    name: Lint, Type-Check & Test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Lint
+        run: pnpm lint
+
+      - name: Type Check
+        run: pnpm type-check
+
+      - name: Test
+        run: pnpm test:run
+
+  build-extension:
+    name: Build Extension
+    runs-on: ubuntu-latest
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9.15.0
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      - name: Build Extension
+        run: pnpm turbo build --filter=@captuto/extension
+
+  build-desktop:
+    name: Build Desktop (macOS)
+    runs-on: macos-15
+    needs: lint-and-test
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Install xcodegen
+        run: brew install xcodegen
+
+      - name: Generate Xcode project
+        working-directory: apps/desktop/VibeTuto
+        run: xcodegen generate
+
+      - name: Build Desktop App
+        working-directory: apps/desktop/VibeTuto
+        run: |
+          xcodebuild \
+            -project VibeTuto.xcodeproj \
+            -scheme VibeTuto \
+            -configuration Debug \
+            -derivedDataPath .build/DerivedData \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            build

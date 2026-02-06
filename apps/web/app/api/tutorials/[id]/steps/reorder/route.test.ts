@@ -10,7 +10,7 @@ import { createClient } from '@/lib/supabase/server';
 const mockCreateClient = vi.mocked(createClient);
 
 function wrapParams(params: Record<string, string>) {
-  return { params: Promise.resolve(params) };
+  return { params: Promise.resolve(params) } as any;
 }
 
 function createJsonRequest(url: string, body: object): Request {

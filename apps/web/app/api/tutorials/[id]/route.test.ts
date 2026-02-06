@@ -10,6 +10,10 @@ import { createClient } from '@/lib/supabase/server';
 
 const mockCreateClient = createClient as ReturnType<typeof vi.fn>;
 
+function wrapParams(params: Record<string, string>) {
+  return { params: Promise.resolve(params) } as any;
+}
+
 describe('GET /api/tutorials/[id]', () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -26,7 +30,7 @@ describe('GET /api/tutorials/[id]', () => {
     });
 
     const request = new Request('http://localhost/api/tutorials/123');
-    const response = await GET(request, { params: Promise.resolve({ id: '123' }) });
+    const response = await GET(request as any, wrapParams({ id: '123' }));
     const data = await response.json();
 
     expect(response.status).toBe(401);
@@ -54,7 +58,7 @@ describe('GET /api/tutorials/[id]', () => {
     });
 
     const request = new Request('http://localhost/api/tutorials/123');
-    const response = await GET(request, { params: Promise.resolve({ id: '123' }) });
+    const response = await GET(request as any, wrapParams({ id: '123' }));
     const data = await response.json();
 
     expect(response.status).toBe(404);
@@ -82,7 +86,7 @@ describe('GET /api/tutorials/[id]', () => {
     });
 
     const request = new Request('http://localhost/api/tutorials/123');
-    const response = await GET(request, { params: Promise.resolve({ id: '123' }) });
+    const response = await GET(request as any, wrapParams({ id: '123' }));
     const data = await response.json();
 
     expect(response.status).toBe(403);
@@ -147,7 +151,7 @@ describe('GET /api/tutorials/[id]', () => {
     });
 
     const request = new Request('http://localhost/api/tutorials/123');
-    const response = await GET(request, { params: Promise.resolve({ id: '123' }) });
+    const response = await GET(request as any, wrapParams({ id: '123' }));
     const data = await response.json();
 
     expect(response.status).toBe(200);

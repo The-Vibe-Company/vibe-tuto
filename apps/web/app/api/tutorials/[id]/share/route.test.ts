@@ -57,7 +57,7 @@ function createMockSupabase(overrides: {
 }
 
 function wrapParams(params: Record<string, string>) {
-  return { params: Promise.resolve(params) };
+  return { params: Promise.resolve(params) } as any;
 }
 
 function createJsonRequest(url: string, body: object): Request {

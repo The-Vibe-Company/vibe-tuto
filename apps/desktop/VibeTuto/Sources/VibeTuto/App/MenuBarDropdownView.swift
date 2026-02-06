@@ -9,7 +9,7 @@ struct MenuBarDropdownView: View {
         VStack(spacing: 0) {
             // Header
             HStack {
-                Text("Vibe Tuto Recorder")
+                Text("CapTuto Recorder")
                     .font(.headline)
                 Spacer()
             }
