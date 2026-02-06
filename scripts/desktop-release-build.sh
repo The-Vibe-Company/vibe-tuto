@@ -56,15 +56,21 @@ echo "Building Release configuration..."
 mkdir -p "$BUILD_DIR"
 
 if [ "$SIGN" = true ]; then
+  # List available identities for debugging
+  echo "Available codesigning identities:"
+  security find-identity -v -p codesigning || true
+
   CERT_ID="${DEVELOPER_ID_APPLICATION:-}"
   if [ -z "$CERT_ID" ]; then
     # Try Developer ID Application first, then any codesigning identity
+    # Use || true to avoid pipefail exit when grep finds no match
     CERT_ID=$(security find-identity -v -p codesigning | \
-      grep "Developer ID Application" | head -1 | awk '{print $2}')
+      { grep "Developer ID Application" || true; } | head -1 | awk '{print $2}')
   fi
   if [ -z "$CERT_ID" ]; then
     CERT_ID=$(security find-identity -v -p codesigning | \
-      grep -v "CSSMERR" | head -1 | awk '{print $2}')
+      { grep -v "CSSMERR" || true; } | { grep -v "^$" || true; } | \
+      { grep -v "valid identities found" || true; } | head -1 | awk '{print $2}')
   fi
   if [ -z "$CERT_ID" ]; then
     echo "ERROR: No codesigning certificate found"
