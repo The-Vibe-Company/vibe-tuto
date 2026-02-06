@@ -13,7 +13,8 @@ export async function GET() {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const { data: tokens, error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data: tokens, error } = await (supabase as any)
     .from("api_tokens")
     .select("id, name, created_at, last_used_at")
     .eq("user_id", user.id)
@@ -52,7 +53,8 @@ export async function POST(request: Request) {
 
   const token = generateApiToken();
 
-  const { data, error } = await supabase.from("api_tokens").insert({
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { data, error } = await (supabase as any).from("api_tokens").insert({
     user_id: user.id,
     token,
     name,
@@ -95,7 +97,8 @@ export async function DELETE(request: Request) {
     );
   }
 
-  const { error } = await supabase
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const { error } = await (supabase as any)
     .from("api_tokens")
     .delete()
     .eq("id", tokenId)
