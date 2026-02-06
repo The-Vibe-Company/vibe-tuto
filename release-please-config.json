@@ -1,0 +1,22 @@
+{
+  "$schema": "https://raw.githubusercontent.com/googleapis/release-please/main/schemas/config.json",
+  "release-type": "node",
+  "bump-minor-pre-major": true,
+  "bump-patch-for-minor-pre-major": true,
+  "include-component-in-tag": false,
+  "packages": {
+    ".": {
+      "changelog-path": "CHANGELOG.md",
+      "release-type": "node",
+      "extra-files": [
+        "apps/extension/package.json",
+        "apps/extension/manifest.json",
+        {
+          "type": "generic",
+          "path": "apps/desktop/VibeTuto/Resources/Info.plist",
+          "regex": "<key>CFBundleShortVersionString<\\/key>\\s*<string>(?<version>[\\d.]+)<\\/string>"
+        }
+      ]
+    }
+  }
+}
