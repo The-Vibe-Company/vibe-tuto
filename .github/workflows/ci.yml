@@ -9,6 +9,26 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  validate-migrations:
+    name: Validate Supabase Migrations
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: supabase/setup-cli@v1
+        with:
+          version: latest
+
+      - name: Start local Supabase (applies all migrations)
+        run: supabase start -x realtime,imgproxy,edge-runtime,logflare,vector,supavisor,studio,mailpit
+
+      - name: Verify migrations applied
+        run: supabase migration list --local
+
+      - name: Stop Supabase
+        if: always()
+        run: supabase stop
+
   lint-and-test:
     name: Lint, Type-Check & Test
     runs-on: ubuntu-latest
