@@ -24,6 +24,7 @@ final class SessionManager: ObservableObject {
     private var screenshotFiles: [String: URL] = [:]
     private var appsUsed: Set<String> = []
     private var sessionID: UUID?
+    private var audioURL: URL?
 
     private let captureEngine = CaptureEngine()
     private let frameProcessor = FrameProcessor()
@@ -196,7 +197,7 @@ final class SessionManager: ObservableObject {
 
         // Stop all monitors
         eventMonitor.stop()
-        let audioURL = audioRecorder.stop()
+        self.audioURL = audioRecorder.stop()
 
         Task {
             do {
@@ -216,7 +217,7 @@ final class SessionManager: ObservableObject {
                     screenResolution: "\(Int(screenSize.width))x\(Int(screenSize.height))",
                     appsUsed: contextTracker.allAppsUsed,
                     steps: detectedSteps,
-                    audioKey: audioURL != nil ? "narration.m4a" : nil
+                    audioKey: self.audioURL != nil ? "narration.m4a" : nil
                 )
                 var screenshotData: [String: Data] = [:]
                 for (key, url) in screenshotFiles {
@@ -327,7 +328,7 @@ final class SessionManager: ObservableObject {
             let tutorialID = try await uploadManager.uploadSession(
                 steps: detectedSteps,
                 screenshotFiles: screenshotFiles,
-                audioFile: nil,
+                audioFile: self.audioURL,
                 metadata: metadata
             )
             lastTutorialID = tutorialID
@@ -377,6 +378,7 @@ final class SessionManager: ObservableObject {
         screenshotFiles = [:]
         appsUsed = []
         sessionID = nil
+        audioURL = nil
         lastTutorialID = nil
         eventMonitor.stop()
         _ = audioRecorder.stop()

@@ -194,12 +194,17 @@ export async function POST(request: Request) {
     // 7. If audio was uploaded, trigger transcription
     if (body.audio_key) {
       try {
+        const transcribeHeaders: Record<string, string> = {
+          'Content-Type': 'application/json',
+          Cookie: request.headers.get('cookie') || '',
+        };
+        const authHeader = request.headers.get('authorization');
+        if (authHeader) {
+          transcribeHeaders['Authorization'] = authHeader;
+        }
         const transcribeResponse = await fetch(new URL('/api/transcribe', request.url), {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-            Cookie: request.headers.get('cookie') || '',
-          },
+          headers: transcribeHeaders,
           body: JSON.stringify({ tutorialId: tutorial.id }),
         });
 

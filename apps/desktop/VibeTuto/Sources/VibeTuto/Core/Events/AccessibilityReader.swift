@@ -51,7 +51,7 @@ final class AccessibilityReader: @unchecked Sendable {
                 return nil
             }
 
-            // Verify it's actually an AXUIElement before using it
+            guard CFGetTypeID(windowObj) == AXUIElementGetTypeID() else { return nil }
             let windowElement = windowObj as! AXUIElement
             return stringAttribute(windowElement, kAXTitleAttribute)
         }
@@ -83,6 +83,7 @@ final class AccessibilityReader: @unchecked Sendable {
             var parentValue: AnyObject?
             let result = AXUIElementCopyAttributeValue(el, kAXParentAttribute as CFString, &parentValue)
             guard result == .success, let parentObj = parentValue else { break }
+            guard CFGetTypeID(parentObj) == AXUIElementGetTypeID() else { break }
             let parent = parentObj as! AXUIElement
 
             if let role = stringAttribute(parent, kAXRoleAttribute) {

@@ -40,11 +40,16 @@ final class UploadManager: @unchecked Sendable {
 
         onProgress?(0.3)
 
+        // If audio was recorded, read the file so we can set the key.
+        // The actual audio data is not embedded in JSON — it's uploaded separately
+        // or handled by the web API via the audio_key reference.
+        let audioKey: String? = audioFile != nil ? "narration.m4a" : nil
+
         // Single API call with everything embedded
         let payload = RecordingPayload(
             recording: metadata,
             steps: uploadSteps,
-            audioKey: nil
+            audioKey: audioKey
         )
 
         onProgress?(0.5)

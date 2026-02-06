@@ -4,13 +4,13 @@ import Foundation
 enum ActionType: String, Codable, Sendable {
     case click
     case type
-    case keyboardShortcut
-    case appSwitch
-    case urlNavigation
-    case menuSelection
+    case keyboardShortcut = "keyboard_shortcut"
+    case appSwitch = "app_switch"
+    case urlNavigation = "url_navigation"
+    case menuSelection = "menu_selection"
     case drag
     case scroll
-    case dialogInteraction
-    case manualMarker
+    case dialogInteraction = "dialog_interaction"
+    case manualMarker = "manual_marker"
     case unknown
 }

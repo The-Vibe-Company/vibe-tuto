@@ -1,6 +1,8 @@
 import { createClient } from '@/lib/supabase/server';
+import { createClient as createServiceClient } from '@supabase/supabase-js';
 import { getDeepgramClient, TRANSCRIPTION_OPTIONS } from '@/lib/deepgram';
 import { NextResponse } from 'next/server';
+import { validateApiToken } from '@/lib/auth/api-token';
 
 interface TranscribeRequest {
   tutorialId: string;
@@ -14,15 +16,29 @@ interface TranscriptionSegment {
 
 export async function POST(request: Request) {
   try {
-    const supabase = await createClient();
+    let supabase = await createClient();
 
-    // 1. Verify authentication
+    // 1. Verify authentication (Supabase session OR API token)
+    let userId: string | null = null;
+
     const {
       data: { user },
-      error: authError,
     } = await supabase.auth.getUser();
 
-    if (authError || !user) {
+    if (user) {
+      userId = user.id;
+    } else {
+      // Fall back to API token auth (desktop app)
+      userId = await validateApiToken(request);
+      if (userId) {
+        supabase = createServiceClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        );
+      }
+    }
+
+    if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -50,12 +66,12 @@ export async function POST(request: Request) {
     }
 
     // 4. Check ownership
-    if (tutorial.user_id !== user.id) {
+    if (tutorial.user_id !== userId) {
       return NextResponse.json({ error: 'Access denied' }, { status: 403 });
     }
 
     // 5. Generate signed URL for audio file
-    const audioPath = `${user.id}/${tutorial.id}.webm`;
+    const audioPath = `${userId}/${tutorial.id}.webm`;
     const { data: signedUrlData, error: signedUrlError } = await supabase.storage
       .from('recordings')
       .createSignedUrl(audioPath, 300); // 5 minutes validity
