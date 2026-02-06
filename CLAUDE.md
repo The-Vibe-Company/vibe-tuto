@@ -73,10 +73,17 @@ never deploy to vercel manually, let the CI/CD do it.
 
 ## Running the front
 
-Always run the frontend locally on port 3678.
-Always check if the frontend is running locally on port 3678 before doing anything.
-If the frontend is not running locally on port 3678, run it in the background.
-Don't hesitate to kill the process if it is not running well.
+**MANDATORY**: Use `./scripts/dev-start.sh` to start the dev server. This is the ONLY authorized way to start, check, or stop the frontend. Never run `pnpm dev`, `turbo dev`, or `next dev` directly.
+
+```bash
+./scripts/dev-start.sh          # Start (or do nothing if already running)
+./scripts/dev-start.sh --status # Check if running
+./scripts/dev-start.sh --stop   # Stop the server
+```
+
+The script is idempotent: run it as many times as needed, it only acts when necessary. It handles dependency installation, env validation, process management, and health checks automatically.
+
+Before any task, run `./scripts/dev-start.sh` to ensure the dev environment is ready.
 
 ## Supabase
 

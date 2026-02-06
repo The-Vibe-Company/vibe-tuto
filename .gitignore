@@ -47,3 +47,25 @@ next-env.d.ts
 *.swp
 *.swo
 supabase/.temp/
+
+# Swift / Xcode
+.build/
+.swiftpm/
+*.xcodeproj/xcuserdata/
+*.xcworkspace/xcuserdata/
+DerivedData/
+*.hmap
+*.ipa
+*.dSYM.zip
+*.dSYM
+xcuserdata/
+*.xccheckout
+*.moved-aside
+*.xcuserstate
+*.xcscmblueprint
+
+# Swift Package Manager
+Packages/
+Package.pins
+Package.resolved
+*.workspace
