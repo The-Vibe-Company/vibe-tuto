@@ -4,10 +4,27 @@ import Cocoa
 final class RecordingBorderController {
     private var window: NSWindow?
 
-    func show() {
-        if window == nil, let screen = NSScreen.main {
+    func show(region: CGRect? = nil) {
+        guard let screen = NSScreen.main else { return }
+
+        let windowFrame: NSRect
+        if let region = region {
+            // Convert from ScreenCaptureKit coordinates (top-left origin) to AppKit (bottom-left origin)
+            let flippedY = screen.frame.height - region.origin.y - region.height
+            let padding: CGFloat = 4
+            windowFrame = CGRect(
+                x: region.origin.x - padding,
+                y: flippedY - padding,
+                width: region.width + padding * 2,
+                height: region.height + padding * 2
+            )
+        } else {
+            windowFrame = screen.frame
+        }
+
+        if window == nil {
             let borderWindow = NSWindow(
-                contentRect: screen.frame,
+                contentRect: windowFrame,
                 styleMask: .borderless,
                 backing: .buffered,
                 defer: false
@@ -19,10 +36,16 @@ final class RecordingBorderController {
             borderWindow.hasShadow = false
             borderWindow.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
-            let borderView = RecordingBorderView(frame: screen.frame)
+            let borderView = RecordingBorderView(frame: NSRect(origin: .zero, size: windowFrame.size))
             borderWindow.contentView = borderView
 
             self.window = borderWindow
+        } else {
+            window?.setFrame(windowFrame, display: true)
+            if let contentView = window?.contentView {
+                contentView.frame = NSRect(origin: .zero, size: windowFrame.size)
+                contentView.needsDisplay = true
+            }
         }
         window?.orderFrontRegardless()
     }

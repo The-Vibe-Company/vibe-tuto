@@ -3,6 +3,7 @@ import Foundation
 /// Current state of the recording session.
 enum RecordingState: Sendable {
     case idle
+    case selectingRegion
     case countdown(remaining: Int)
     case recording
     case paused

@@ -11,6 +11,7 @@
 		0E665B17D736A26D33DA6882 /* OnboardingWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDFDD41FD69978B945959514 /* OnboardingWindow.swift */; };
 		0FB12DCAF4878F26B6D34A53 /* MenuBarDropdownView.swift in Sources */ = {isa = PBXBuildFile; fileRef = CC555A1D940B6D5AE00DE77F /* MenuBarDropdownView.swift */; };
 		13F880DB19CB80F2B0AEEEDF /* AppSwitchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA7A180234AC59814B1633D /* AppSwitchTracker.swift */; };
+		185D14C4BAC344DD68FC3D99 /* AppPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D84A2586D69E052BECA29C /* AppPickerView.swift */; };
 		214093E66CB254378F64955A /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56E7B267124BF67AD7E8749 /* EventMonitor.swift */; };
 		273B5BAC1872FA4FC011D4E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02579639E6EA731AEA0C34 /* AppDelegate.swift */; };
 		2BD6C98FDF17AC0DFFF248BF /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F070A063E4C97ADD612D0EF3 /* ContextTracker.swift */; };
@@ -48,6 +49,7 @@
 		CCEC79F02AAA05CA86B1ABD1 /* RecordingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FDDF62C96F91B142CB5AB45 /* RecordingToolbar.swift */; };
 		D022F129906DEB63C4BDA0FC /* DetectedStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9140EADCB6F2AEBDEF842736 /* DetectedStep.swift */; };
 		E5BA3D151270DA147E47E929 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D58E8F5C4464F1C226197EF /* SupabaseClient.swift */; };
+		E62536C5E06E5454E5A93837 /* RegionSelectorOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C42FACAC2DCCBC884826AF /* RegionSelectorOverlay.swift */; };
 		E627CB383226319A9A089599 /* PermissionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE016EF78211B2C266AEC9A /* PermissionChecker.swift */; };
 		F1F35B3BB5AFB1B154EF5FCC /* AVFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 81A348277FCAC156714490D4 /* AVFoundation.framework */; };
 		F797BCE0A349FA34BCCA91BA /* LocalStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = FFA9A79D177DC7ACB230263E /* LocalStore.swift */; };
@@ -75,12 +77,14 @@
 		80BC66CE434557C1546A12D4 /* PreferencesWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreferencesWindow.swift; sourceTree = "<group>"; };
 		81A348277FCAC156714490D4 /* AVFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = AVFoundation.framework; sourceTree = "<group>"; };
 		82F9108F1506416ADC0B3268 /* VibeTutoApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VibeTutoApp.swift; sourceTree = "<group>"; };
+		84D84A2586D69E052BECA29C /* AppPickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppPickerView.swift; sourceTree = "<group>"; };
 		87CD0EB5A6826C06B8DE5902 /* VSCodePlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VSCodePlugin.swift; sourceTree = "<group>"; };
 		90D542D5623F14DBE2D48FC4 /* ActionBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionBuffer.swift; sourceTree = "<group>"; };
 		9140EADCB6F2AEBDEF842736 /* DetectedStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectedStep.swift; sourceTree = "<group>"; };
 		92B5C91131047D2A9F320011 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CoreMedia.framework; sourceTree = "<group>"; };
 		9CA132FBD94216A777C63433 /* PluginProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginProtocol.swift; sourceTree = "<group>"; };
 		9DA0EE03F367A402F3A65AE3 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
+		A0C42FACAC2DCCBC884826AF /* RegionSelectorOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionSelectorOverlay.swift; sourceTree = "<group>"; };
 		A6DF90F9BCC805F27C3E8D60 /* BrowserPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BrowserPlugin.swift; sourceTree = "<group>"; };
 		B16D34F18A8AED3B493025B5 /* RecordingBorder.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingBorder.swift; sourceTree = "<group>"; };
 		B531F4A2B62B493ACA31F316 /* ActionType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionType.swift; sourceTree = "<group>"; };
@@ -214,10 +218,12 @@
 		778AA2B130044B45640FA219 /* UI */ = {
 			isa = PBXGroup;
 			children = (
+				84D84A2586D69E052BECA29C /* AppPickerView.swift */,
 				DDFDD41FD69978B945959514 /* OnboardingWindow.swift */,
 				80BC66CE434557C1546A12D4 /* PreferencesWindow.swift */,
 				B16D34F18A8AED3B493025B5 /* RecordingBorder.swift */,
 				5FDDF62C96F91B142CB5AB45 /* RecordingToolbar.swift */,
+				A0C42FACAC2DCCBC884826AF /* RegionSelectorOverlay.swift */,
 				19270F229B64F8CF54C76EA6 /* UploadPanel.swift */,
 			);
 			path = UI;
@@ -354,6 +360,7 @@
 				54D210E4D2C28B3705D91756 /* ActionBuffer.swift in Sources */,
 				C6B23734736EECF0165B8ED0 /* ActionType.swift in Sources */,
 				273B5BAC1872FA4FC011D4E5 /* AppDelegate.swift in Sources */,
+				185D14C4BAC344DD68FC3D99 /* AppPickerView.swift in Sources */,
 				13F880DB19CB80F2B0AEEEDF /* AppSwitchTracker.swift in Sources */,
 				CAE40D08EB806E34F07708CA /* AudioRecorder.swift in Sources */,
 				53020B772C9E4B7D5982CAAA /* BrowserPlugin.swift in Sources */,
@@ -378,6 +385,7 @@
 				BA68068591559D696EAA9CB7 /* RecordingSession.swift in Sources */,
 				B51C94D050E70B00B66C5C31 /* RecordingState.swift in Sources */,
 				CCEC79F02AAA05CA86B1ABD1 /* RecordingToolbar.swift in Sources */,
+				E62536C5E06E5454E5A93837 /* RegionSelectorOverlay.swift in Sources */,
 				7EE448642CD35AF9CF90298F /* RetryQueue.swift in Sources */,
 				5CE1DAF3BA22B98353CA4E53 /* SessionManager.swift in Sources */,
 				93B062614584F591F4A73012 /* StepDetector.swift in Sources */,
@@ -402,6 +410,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = K28B69CWQ7;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\".\"",
@@ -544,6 +553,7 @@
 				CODE_SIGN_STYLE = Manual;
 				COMBINE_HIDPI_IMAGES = YES;
 				DEVELOPMENT_TEAM = K28B69CWQ7;
+				ENABLE_HARDENED_RUNTIME = YES;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"\".\"",

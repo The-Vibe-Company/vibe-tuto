@@ -9,6 +9,7 @@ final class MenuBarController: NSObject {
     private var eventMonitor: Any?
     private var recordingToolbarController: RecordingToolbarController?
     private var recordingBorderController: RecordingBorderController?
+    private var regionSelectorController: RegionSelectorController?
     private var cancellables = Set<AnyCancellable>()
 
     override init() {
@@ -101,13 +102,17 @@ final class MenuBarController: NSObject {
             button.image = NSImage(systemSymbolName: "exclamationmark.triangle.fill", accessibilityDescription: "CapTuto Recorder, error")?
                 .withSymbolConfiguration(config)
 
-        case .countdown, .stopping:
+        case .selectingRegion, .countdown, .stopping:
             break
         }
     }
 
     private func handleStateTransition(_ state: RecordingState) {
         switch state {
+        case .selectingRegion:
+            popover?.performClose(nil)
+            showRegionSelector()
+
         case .recording:
             popover?.performClose(nil)
             showRecordingToolbar()
@@ -140,11 +145,34 @@ final class MenuBarController: NSObject {
         recordingToolbarController?.hide()
     }
 
+    private func showRegionSelector() {
+        if regionSelectorController == nil {
+            regionSelectorController = RegionSelectorController()
+        }
+        regionSelectorController?.show(
+            onSelected: { [weak self] rect in
+                Task { @MainActor in
+                    SessionManager.shared.regionSelected(rect: rect)
+                    self?.regionSelectorController = nil
+                }
+            },
+            onCancelled: { [weak self] in
+                Task { @MainActor in
+                    SessionManager.shared.reset()
+                    self?.regionSelectorController = nil
+                }
+            }
+        )
+    }
+
     private func showRecordingBorder() {
         if recordingBorderController == nil {
             recordingBorderController = RecordingBorderController()
         }
-        recordingBorderController?.show()
+        Task { @MainActor in
+            let region = SessionManager.shared.selectedRegion
+            recordingBorderController?.show(region: region)
+        }
     }
 
     private func hideRecordingBorder() {

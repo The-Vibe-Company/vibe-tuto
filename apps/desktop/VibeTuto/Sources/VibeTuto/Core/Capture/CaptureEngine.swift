@@ -5,7 +5,7 @@ import CoreMedia
 
 /// Protocol for capture engine implementations.
 protocol CaptureEngineProtocol: AnyObject, Sendable {
-    func startCapture(mode: RecordingMode, appBundleID: String?) async throws
+    func startCapture(mode: RecordingMode, appBundleID: String?, regionRect: CGRect?) async throws
     func stopCapture() async throws
     func takeScreenshot() async throws -> CGImage
 }
@@ -16,6 +16,7 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
     private var streamOutput: CaptureStreamOutput?
     private let captureQueue = DispatchQueue(label: "com.vibetuto.capture", qos: .userInteractive)
     private var currentFilter: SCContentFilter?
+    private var currentRegionRect: CGRect?
     private var isCapturing = false
 
     /// Check if screen recording permission is granted.
@@ -33,7 +34,7 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
         }
     }
 
-    func startCapture(mode: RecordingMode, appBundleID: String? = nil) async throws {
+    func startCapture(mode: RecordingMode, appBundleID: String? = nil, regionRect: CGRect? = nil) async throws {
         guard !isCapturing else { return }
 
         let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
@@ -64,10 +65,19 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
         }
 
         currentFilter = filter
+        currentRegionRect = (mode == .region) ? regionRect : nil
 
         let config = SCStreamConfiguration()
-        config.width = 2560
-        config.height = 1600
+        if mode == .region, let regionRect = regionRect {
+            config.sourceRect = regionRect
+            let scale = await MainActor.run { NSScreen.main?.backingScaleFactor ?? 2.0 }
+            config.width = Int(regionRect.width * scale)
+            config.height = Int(regionRect.height * scale)
+            config.destinationRect = CGRect(origin: .zero, size: CGSize(width: regionRect.width, height: regionRect.height))
+        } else {
+            config.width = 2560
+            config.height = 1600
+        }
         config.minimumFrameInterval = CMTime(value: 1, timescale: 2) // 2 fps background capture
         config.queueDepth = 5
         config.showsCursor = true
@@ -89,6 +99,7 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
         try await stream.stopCapture()
         self.stream = nil
         self.streamOutput = nil
+        self.currentRegionRect = nil
         isCapturing = false
     }
 
@@ -99,8 +110,16 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
         }
 
         let config = SCStreamConfiguration()
-        config.width = 2560
-        config.height = 1600
+        if let regionRect = currentRegionRect {
+            config.sourceRect = regionRect
+            let scale = await MainActor.run { NSScreen.main?.backingScaleFactor ?? 2.0 }
+            config.width = Int(regionRect.width * scale)
+            config.height = Int(regionRect.height * scale)
+            config.destinationRect = CGRect(origin: .zero, size: CGSize(width: regionRect.width, height: regionRect.height))
+        } else {
+            config.width = 2560
+            config.height = 1600
+        }
         config.pixelFormat = kCVPixelFormatType_32BGRA
         config.showsCursor = true
 

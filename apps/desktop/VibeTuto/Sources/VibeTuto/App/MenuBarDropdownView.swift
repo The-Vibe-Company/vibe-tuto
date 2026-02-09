@@ -34,6 +34,7 @@ struct MenuBarDropdownView: View {
             .controlSize(.large)
             .padding(.horizontal, 16)
             .padding(.vertical, 12)
+            .disabled(lastMode == RecordingMode.singleApp.rawValue && session.selectedAppBundleID == nil)
             .keyboardShortcut("r", modifiers: [.command, .shift])
 
             // Recording mode selector
@@ -49,6 +50,18 @@ struct MenuBarDropdownView: View {
                 }
                 .pickerStyle(.segmented)
                 .labelsHidden()
+                .onChange(of: lastMode) { _, newMode in
+                    if newMode != RecordingMode.singleApp.rawValue {
+                        session.selectedAppBundleID = nil
+                    }
+                    if newMode != RecordingMode.region.rawValue {
+                        session.selectedRegion = nil
+                    }
+                }
+
+                if lastMode == RecordingMode.singleApp.rawValue {
+                    AppPickerView()
+                }
             }
             .padding(.horizontal, 16)
             .padding(.bottom, 8)

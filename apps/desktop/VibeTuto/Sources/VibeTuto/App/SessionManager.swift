@@ -14,6 +14,8 @@ final class SessionManager: ObservableObject {
     @Published var elapsedTime: TimeInterval = 0
     @Published var stepCount: Int = 0
     @Published var currentMode: RecordingMode = .fullScreen
+    @Published var selectedAppBundleID: String?
+    @Published var selectedRegion: CGRect?
     @Published var micEnabled: Bool = true
     @Published var actionDetectionEnabled: Bool = true
     @Published private(set) var lastTutorialID: String?
@@ -67,12 +69,25 @@ final class SessionManager: ObservableObject {
         stepCount = 0
         elapsedTime = 0
 
+        if currentMode == .region && selectedRegion == nil {
+            state = .selectingRegion
+            return
+        }
+
         if countdown > 0 {
             state = .countdown(remaining: countdown)
             runCountdown(from: countdown)
         } else {
             beginCapture()
         }
+    }
+
+    /// Called after the user selects a region via the overlay.
+    func regionSelected(rect: CGRect) {
+        guard case .selectingRegion = state else { return }
+        selectedRegion = rect
+        state = .countdown(remaining: 3)
+        runCountdown(from: 3)
     }
 
     private func runCountdown(from count: Int) {
@@ -114,9 +129,9 @@ final class SessionManager: ObservableObject {
         Task {
             do {
                 let bundleID: String? = currentMode == .singleApp
-                    ? NSWorkspace.shared.frontmostApplication?.bundleIdentifier
+                    ? selectedAppBundleID
                     : nil
-                try await captureEngine.startCapture(mode: currentMode, appBundleID: bundleID)
+                try await captureEngine.startCapture(mode: currentMode, appBundleID: bundleID, regionRect: selectedRegion)
             } catch {
                 state = .error("Failed to start capture: \(error.localizedDescription)")
                 return
@@ -399,6 +414,7 @@ final class SessionManager: ObservableObject {
         sessionID = nil
         audioURL = nil
         lastTutorialID = nil
+        selectedRegion = nil
         eventMonitor.stop()
         _ = audioRecorder.stop()
         stepDetector.reset()
