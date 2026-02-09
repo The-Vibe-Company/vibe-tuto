@@ -159,7 +159,8 @@ if [ "$NOTARIZE" = true ]; then
     --apple-id "${APPLE_ID}" \
     --password "${APPLE_APP_SPECIFIC_PASSWORD}" \
     --team-id "$TEAM_ID" \
-    --wait
+    --wait \
+    --timeout 30m
 
   echo "Stapling notarization ticket..."
   xcrun stapler staple "$DMG_PATH"

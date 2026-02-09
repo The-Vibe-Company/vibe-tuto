@@ -84,6 +84,7 @@ jobs:
   build-desktop:
     name: Build macOS Desktop App
     runs-on: macos-15
+    timeout-minutes: 45
     env:
       HAS_MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE != '' }}
       HAS_NOTARIZATION: ${{ secrets.APPLE_ID != '' && secrets.APPLE_APP_SPECIFIC_PASSWORD != '' }}
