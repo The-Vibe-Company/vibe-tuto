@@ -84,6 +84,7 @@ final class SessionManager: ObservableObject {
 
     /// Called after the user selects a region via the overlay.
     func regionSelected(rect: CGRect) {
+        guard case .selectingRegion = state else { return }
         selectedRegion = rect
         state = .countdown(remaining: 3)
         runCountdown(from: 3)

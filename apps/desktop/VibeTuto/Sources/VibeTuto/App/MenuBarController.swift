@@ -153,14 +153,14 @@ final class MenuBarController: NSObject {
             onSelected: { [weak self] rect in
                 Task { @MainActor in
                     SessionManager.shared.regionSelected(rect: rect)
+                    self?.regionSelectorController = nil
                 }
-                self?.regionSelectorController = nil
             },
             onCancelled: { [weak self] in
                 Task { @MainActor in
                     SessionManager.shared.reset()
+                    self?.regionSelectorController = nil
                 }
-                self?.regionSelectorController = nil
             }
         )
     }
