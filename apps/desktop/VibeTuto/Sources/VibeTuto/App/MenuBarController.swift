@@ -196,6 +196,7 @@ final class MenuBarController: NSObject {
 
     private func hideRecordingBorder() {
         recordingBorderController?.hide()
+        recordingBorderController = nil
     }
 
     deinit {

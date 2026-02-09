@@ -148,15 +148,13 @@ final class CountdownOverlayController {
 
         self.panel = overlayPanel
 
-        // Escape key to cancel
-        keyMonitor = NSEvent.addLocalMonitorForEvents(matching: .keyDown) { event in
+        // Escape key to cancel — use global monitor since app is accessory/LSUIElement
+        keyMonitor = NSEvent.addGlobalMonitorForEvents(matching: .keyDown) { event in
             if event.keyCode == 53 { // Escape
                 Task { @MainActor in
                     SessionManager.shared.reset()
                 }
-                return nil
             }
-            return event
         }
     }
 
