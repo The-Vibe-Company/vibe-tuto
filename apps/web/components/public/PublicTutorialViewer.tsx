@@ -448,10 +448,10 @@ export function PublicTutorialViewer({
                         </div>
                       )}
 
-                      {/* Decorative step number (to the left of the timeline) */}
+                      {/* Decorative step number (in the left gutter, before the timeline) */}
                       {isCountedStep && (
-                        <div className="absolute left-0 top-1 z-0 hidden select-none pointer-events-none sm:block" style={{ transform: 'translateX(-100%)' }}>
-                          <span className="text-4xl font-black text-violet-200/80 pr-4 lg:text-5xl">
+                        <div className="absolute left-0 top-0 z-0 hidden w-14 select-none pointer-events-none sm:flex sm:items-start sm:justify-end sm:-top-1">
+                          <span className="text-3xl font-black text-violet-200/80 lg:text-4xl">
                             {String(currentStepNum).padStart(2, '0')}
                           </span>
                         </div>
