@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.6](https://github.com/The-Vibe-Company/captuto/compare/v0.1.5...v0.1.6) (2026-02-09)
+
+
+### Features
+
+* **desktop:** add app picker and screen region selector ([#69](https://github.com/The-Vibe-Company/captuto/issues/69)) ([2b7741b](https://github.com/The-Vibe-Company/captuto/commit/2b7741b25d2f607ed48ab4105ac36182b9d5206b))
+
 ## [0.1.5](https://github.com/The-Vibe-Company/captuto/compare/v0.1.4...v0.1.5) (2026-02-09)
 
 
