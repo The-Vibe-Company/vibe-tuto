@@ -283,8 +283,8 @@ function DocStepCardComponent({
                 />
               </div>
 
-              {/* URL chip - hidden when same as previous step, with toggle to expand */}
-              {displayUrl && (
+              {/* URL chip - completely hidden when redundant in read-only mode, collapsible toggle in editor */}
+              {displayUrl && !(isUrlRedundant && readOnly) && (
                 <div className="pb-1">
                   {isUrlRedundant && !urlExpanded && !isEditingUrl ? (
                     <button
