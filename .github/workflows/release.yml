@@ -86,6 +86,7 @@ jobs:
     runs-on: macos-15
     env:
       HAS_MACOS_CERTIFICATE: ${{ secrets.MACOS_CERTIFICATE != '' }}
+      HAS_NOTARIZATION: ${{ secrets.APPLE_ID != '' && secrets.APPLE_APP_SPECIFIC_PASSWORD != '' }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -118,13 +119,20 @@ jobs:
             -s -k "$KEYCHAIN_PASSWORD" "$KEYCHAIN_PATH"
 
       - name: Build Release DMG
+        env:
+          APPLE_ID: ${{ secrets.APPLE_ID }}
+          APPLE_APP_SPECIFIC_PASSWORD: ${{ secrets.APPLE_APP_SPECIFIC_PASSWORD }}
         run: |
           SIGN_FLAG=""
+          NOTARIZE_FLAG=""
           if [ "$HAS_MACOS_CERTIFICATE" = "true" ]; then
             SIGN_FLAG="--sign"
           fi
+          if [ "$HAS_NOTARIZATION" = "true" ] && [ "$HAS_MACOS_CERTIFICATE" = "true" ]; then
+            NOTARIZE_FLAG="--notarize"
+          fi
           ./scripts/desktop-release-build.sh \
-            --version "${{ inputs.version }}" $SIGN_FLAG
+            --version "${{ inputs.version }}" $SIGN_FLAG $NOTARIZE_FLAG
 
       - name: Upload DMG to Release
         if: ${{ inputs.upload_url != '' }}

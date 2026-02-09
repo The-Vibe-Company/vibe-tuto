@@ -22,6 +22,7 @@ targets:
         DEVELOPMENT_TEAM: K28B69CWQ7
         CODE_SIGN_ENTITLEMENTS: VibeTuto.entitlements
         MACOSX_DEPLOYMENT_TARGET: "14.0"
+        ENABLE_HARDENED_RUNTIME: YES
         LD_RUNPATH_SEARCH_PATHS: "@executable_path/../Frameworks"
         SWIFT_VERSION: "5.9"
         GENERATE_INFOPLIST_FILE: false
