@@ -88,23 +88,6 @@ export function StepScreenshot({
       onMouseEnter={() => setIsHovering(true)}
       onMouseLeave={() => setIsHovering(false)}
     >
-      {/* Annotation toolbar - inside the hover zone */}
-      <div className={cn('flex justify-center', showToolbar ? 'mb-2' : 'h-0')}>
-        {showToolbar && (
-          <div className="animate-in fade-in slide-in-from-bottom-2 duration-200">
-            <AnnotationToolbar
-              activeTool={activeTool}
-              onToolChange={handleToolChange}
-              onClearAll={handleClearAnnotations}
-              onDone={handleDone}
-              hasAnnotations={annotations.length > 0}
-              annotationStyle={annotationStyle}
-              onStyleChange={setAnnotationStyle}
-            />
-          </div>
-        )}
-      </div>
-
       {/* Screenshot container */}
       <div
         className={cn(
@@ -184,6 +167,23 @@ export function StepScreenshot({
                 </button>
               ))}
             </div>
+          </div>
+        )}
+      </div>
+
+      {/* Annotation toolbar - below the screenshot */}
+      <div className={cn('flex justify-center', showToolbar ? 'mt-2' : 'h-0')}>
+        {showToolbar && (
+          <div className="animate-in fade-in slide-in-from-top-2 duration-200">
+            <AnnotationToolbar
+              activeTool={activeTool}
+              onToolChange={handleToolChange}
+              onClearAll={handleClearAnnotations}
+              onDone={handleDone}
+              hasAnnotations={annotations.length > 0}
+              annotationStyle={annotationStyle}
+              onStyleChange={setAnnotationStyle}
+            />
           </div>
         )}
       </div>
