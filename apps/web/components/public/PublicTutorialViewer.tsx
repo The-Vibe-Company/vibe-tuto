@@ -405,6 +405,16 @@ export function PublicTutorialViewer({
                   const isNavigation = actionType === 'navigation';
                   const isTabChange = actionType === 'tab_change';
 
+                  // Find previous step's URL (skip headings/dividers)
+                  let previousStepUrl: string | null = null;
+                  for (let i = index - 1; i >= 0; i--) {
+                    const prev = visibleSteps[i];
+                    if (prev.step_type === 'heading' || prev.step_type === 'divider') continue;
+                    previousStepUrl = prev.url || prev.source?.url || null;
+                    break;
+                  }
+                  const isUrlRedundant = stepUrl != null && previousStepUrl != null && stepUrl === previousStepUrl;
+
                   return (
                     <motion.div
                       key={step.id}
@@ -441,8 +451,8 @@ export function PublicTutorialViewer({
 
                       {/* Step card with decorative number */}
                       <div className="sm:pl-16">
-                        {/* Navigation/Tab change badge above card */}
-                        {stepUrl && (isNavigation || isTabChange) && (
+                        {/* Navigation/Tab change badge above card - hidden when URL is same as previous */}
+                        {stepUrl && (isNavigation || isTabChange) && !isUrlRedundant && (
                           <motion.div
                             initial={{ opacity: 0, x: -10 }}
                             whileInView={{ opacity: 1, x: 0 }}
@@ -483,8 +493,8 @@ export function PublicTutorialViewer({
 
                           {/* The actual card */}
                           <div className="relative z-10 overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm shadow-stone-200/50 transition-all duration-300 hover:border-stone-300/80 hover:shadow-lg hover:shadow-stone-200/60">
-                            {/* URL chip inside card (for non-navigation steps that have a URL) */}
-                            {stepUrl && !isNavigation && !isTabChange && (
+                            {/* URL chip inside card (for non-navigation steps that have a URL) - hidden when redundant */}
+                            {stepUrl && !isNavigation && !isTabChange && !isUrlRedundant && (
                               <div className="border-b border-stone-100 bg-stone-50/50 px-4 py-2">
                                 <a
                                   href={stepUrl}
@@ -503,6 +513,7 @@ export function PublicTutorialViewer({
                             <DocStepCard
                               step={step}
                               stepNumber={isCountedStep ? currentStepNum : 0}
+                              previousStepUrl={previousStepUrl}
                               readOnly
                             />
                           </div>

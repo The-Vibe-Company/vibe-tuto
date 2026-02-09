@@ -4,7 +4,7 @@ import { useState, useCallback, memo } from 'react';
 import Image from 'next/image';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { GripVertical, Trash2, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X, FileText, Globe, ArrowRightLeft, Monitor } from 'lucide-react';
+import { GripVertical, Trash2, ImageOff, ImagePlus, ExternalLink, Pencil, Check, X, FileText, Globe, ArrowRightLeft, Monitor, ChevronRight } from 'lucide-react';
 import type { StepWithSignedUrl, SourceWithSignedUrl, Annotation } from '@/lib/types/editor';
 import { formatSourceUrl, getSourceActionType } from '@/lib/types/editor';
 import { InlineCaption } from './InlineCaption';
@@ -31,6 +31,7 @@ interface DocStepCardProps {
   step: StepWithSignedUrl;
   stepNumber: number;
   sources?: SourceWithSignedUrl[];
+  previousStepUrl?: string | null;
   onCaptionChange?: (caption: string) => void;
   onDescriptionChange?: (description: string) => void;
   onUrlChange?: (url: string) => void;
@@ -45,6 +46,7 @@ function DocStepCardComponent({
   step,
   stepNumber,
   sources = [],
+  previousStepUrl,
   onCaptionChange,
   onDescriptionChange,
   onUrlChange,
@@ -61,6 +63,10 @@ function DocStepCardComponent({
   const isTabChange = step.source ? getSourceActionType(step.source) === 'tab_change' : false;
   const [editedUrl, setEditedUrl] = useState(displayUrl || '');
   const annotations = step.annotations || [];
+
+  // URL is redundant if it matches the previous step's URL
+  const isUrlRedundant = displayUrl != null && previousStepUrl != null && displayUrl === previousStepUrl;
+  const [urlExpanded, setUrlExpanded] = useState(false);
 
   const availableSources = sources.filter((s) => s.signedScreenshotUrl);
 
@@ -277,10 +283,18 @@ function DocStepCardComponent({
                 />
               </div>
 
-              {/* URL chip */}
-              {displayUrl && (
+              {/* URL chip - completely hidden when redundant in read-only mode, collapsible toggle in editor */}
+              {displayUrl && !(isUrlRedundant && readOnly) && (
                 <div className="pb-1">
-                  {isEditingUrl && !readOnly ? (
+                  {isUrlRedundant && !urlExpanded && !isEditingUrl ? (
+                    <button
+                      onClick={() => setUrlExpanded(true)}
+                      className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/70 transition-colors"
+                    >
+                      <Globe className="h-2.5 w-2.5" />
+                      <ChevronRight className="h-2.5 w-2.5" />
+                    </button>
+                  ) : isEditingUrl && !readOnly ? (
                     <div className="flex items-center gap-2">
                       <input
                         type="url"
@@ -339,6 +353,16 @@ function DocStepCardComponent({
                         <span className="truncate">{formatSourceUrl(displayUrl)}</span>
                         <ExternalLink className="h-2.5 w-2.5 flex-shrink-0 opacity-50" />
                       </a>
+                      {isUrlRedundant && urlExpanded && (
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          onClick={() => setUrlExpanded(false)}
+                          className="h-6 w-6 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                        >
+                          <X className="h-3 w-3" />
+                        </Button>
+                      )}
                       {!readOnly && (
                         <Button
                           variant="ghost"
@@ -532,6 +556,7 @@ export const DocStepCard = memo(DocStepCardComponent, (prev, next) => {
     prev.step.source?.app_name === next.step.source?.app_name &&
     prev.step.source?.window_title === next.step.source?.window_title &&
     prev.stepNumber === next.stepNumber &&
+    prev.previousStepUrl === next.previousStepUrl &&
     prev.readOnly === next.readOnly &&
     JSON.stringify(prev.step.annotations) === JSON.stringify(next.step.annotations) &&
     (prev.sources?.length ?? 0) === (next.sources?.length ?? 0)

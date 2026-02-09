@@ -174,6 +174,15 @@ export function DocEditor({
                             screenshotStepNumber++;
                           }
 
+                          // Find previous step's URL (skip headings/dividers)
+                          let previousStepUrl: string | null = null;
+                          for (let i = index - 1; i >= 0; i--) {
+                            const prev = steps[i];
+                            if (prev.step_type === 'heading' || prev.step_type === 'divider') continue;
+                            previousStepUrl = prev.url || prev.source?.url || null;
+                            break;
+                          }
+
                           return (
                             <div key={step.id}>
                               {index === 0 && (
@@ -189,6 +198,7 @@ export function DocEditor({
                                     : screenshotStepNumber
                                 }
                                 sources={sources}
+                                previousStepUrl={previousStepUrl}
                                 onCaptionChange={(caption) => onStepCaptionChange(step.id, caption)}
                                 onDescriptionChange={(description) => onStepDescriptionChange(step.id, description)}
                                 onAnnotationsChange={(annotations) =>
