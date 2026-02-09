@@ -124,6 +124,7 @@ final class CountdownOverlayController {
     private var keyMonitor: Any?
 
     func show() {
+        if panel != nil { return } // Already showing — SwiftUI view handles updates
         guard let screen = NSScreen.main else { return }
 
         let hostingView = NSHostingView(rootView: CountdownOverlayView())

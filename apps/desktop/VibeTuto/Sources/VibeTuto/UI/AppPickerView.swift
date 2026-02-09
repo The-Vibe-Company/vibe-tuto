@@ -75,6 +75,10 @@ struct AppPickerView: View {
                                     withAnimation(DT.Anim.springSnappy) {
                                         session.selectedAppBundleID = app.id
                                     }
+                                    // Bring selected app to foreground
+                                    NSRunningApplication.runningApplications(withBundleIdentifier: app.id)
+                                        .first?
+                                        .activate()
                                 }
                         }
                     }

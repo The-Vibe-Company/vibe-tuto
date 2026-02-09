@@ -13,7 +13,7 @@ final class OnboardingWindowController: NSWindowController {
         window.title = "Welcome to CapTuto"
         window.center()
         window.contentView = NSHostingView(rootView: OnboardingView())
-        window.backgroundColor = NSColor(red: 0.1, green: 0.1, blue: 0.12, alpha: 1.0)
+        window.backgroundColor = NSColor(red: 0.008, green: 0.031, blue: 0.09, alpha: 1.0)
 
         self.init(window: window)
     }

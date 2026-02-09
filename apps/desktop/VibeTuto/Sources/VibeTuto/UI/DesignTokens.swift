@@ -27,20 +27,20 @@ enum DT {
     // MARK: - Colors — "Dark Studio" palette
 
     enum Colors {
-        // Surfaces (warm charcoal)
-        static let surface = Color(hex: "1A1A1E")
-        static let card = Color(hex: "252529")
-        static let elevated = Color(hex: "2F2F35")
-        static let border = Color(hex: "3A3A3E")
+        // Surfaces (navy/slate — matches web dark theme)
+        static let surface = Color(hex: "020817")
+        static let card = Color(hex: "0F172A")
+        static let elevated = Color(hex: "1E293B")
+        static let border = Color(hex: "1E293B")
 
         // NS variants for AppKit contexts
-        static let surfaceNS = NSColor(red: 0.102, green: 0.102, blue: 0.118, alpha: 1)
-        static let borderNS = NSColor(red: 0.227, green: 0.227, blue: 0.243, alpha: 1)
+        static let surfaceNS = NSColor(red: 0.008, green: 0.031, blue: 0.09, alpha: 1)
+        static let borderNS = NSColor(red: 0.118, green: 0.161, blue: 0.231, alpha: 1)
 
         // Text
-        static let textPrimary = Color(hex: "F5F5F7")
-        static let textSecondary = Color(hex: "8E8E93")
-        static let textTertiary = Color(hex: "5A5A5E")
+        static let textPrimary = Color(hex: "F8FAFC")
+        static let textSecondary = Color(hex: "94A3B8")
+        static let textTertiary = Color(hex: "64748B")
 
         // Accents — warm, vivid, purposeful
         static let accentRed = Color(hex: "FF453A")
