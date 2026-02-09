@@ -683,7 +683,7 @@ export function EditorClient({
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [pendingChanges, pendingDescriptions, pendingAnnotations, pendingUrls, hasChanges, handleSave]);
+  }, [pendingChanges, pendingDescriptions, pendingAnnotations, pendingUrls, pendingShowUrls, hasChanges, handleSave]);
 
   // Keyboard shortcuts
   useEffect(() => {

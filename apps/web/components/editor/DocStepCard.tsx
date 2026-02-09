@@ -592,6 +592,7 @@ export const DocStepCard = memo(DocStepCardComponent, (prev, next) => {
     prev.step.signedScreenshotUrl === next.step.signedScreenshotUrl &&
     prev.step.step_type === next.step.step_type &&
     prev.step.url === next.step.url &&
+    prev.step.show_url === next.step.show_url &&
     prev.step.source?.app_name === next.step.source?.app_name &&
     prev.step.source?.window_title === next.step.source?.window_title &&
     prev.stepNumber === next.stepNumber &&
