@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.5](https://github.com/The-Vibe-Company/captuto/compare/v0.1.4...v0.1.5) (2026-02-09)
+
+
+### Features
+
+* **ci:** add macOS code signing and notarization to release workflow ([#67](https://github.com/The-Vibe-Company/captuto/issues/67)) ([560e87c](https://github.com/The-Vibe-Company/captuto/commit/560e87ce6df218f62939776ca0a5a108ac1a97ce))
+
 ## [0.1.4](https://github.com/The-Vibe-Company/CapTuto/compare/v0.1.3...v0.1.4) (2026-02-06)
 
 
