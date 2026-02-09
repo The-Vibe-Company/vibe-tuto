@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.9](https://github.com/The-Vibe-Company/captuto/compare/v0.1.8...v0.1.9) (2026-02-09)
+
+
+### Features
+
+* step numbers left of timeline, per-step URL toggle, remove redundant URL ([#77](https://github.com/The-Vibe-Company/captuto/issues/77)) ([c89d755](https://github.com/The-Vibe-Company/captuto/commit/c89d755d519ff4458388889aa15bdfd66a8df800))
+
 ## [0.1.8](https://github.com/The-Vibe-Company/captuto/compare/v0.1.7...v0.1.8) (2026-02-09)
 
 
