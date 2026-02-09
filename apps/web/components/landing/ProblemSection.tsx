@@ -10,8 +10,10 @@ const problems = [
     description:
       "You spend 3 hours creating a tutorial that no one really reads.",
     color: "text-red-500",
-    bgColor: "bg-red-50",
-    hoverBorder: "hover:border-red-500/30",
+    bgColor: "bg-red-500/10",
+    borderColor: "border-red-500/20",
+    hoverBorder: "hover:border-red-500/40",
+    glow: "group-hover:shadow-red-500/5",
   },
   {
     icon: RefreshCw,
@@ -19,8 +21,10 @@ const problems = [
     description:
       "Every update to your tool = entire tutorial to recreate.",
     color: "text-orange-500",
-    bgColor: "bg-orange-50",
-    hoverBorder: "hover:border-orange-500/30",
+    bgColor: "bg-orange-500/10",
+    borderColor: "border-orange-500/20",
+    hoverBorder: "hover:border-orange-500/40",
+    glow: "group-hover:shadow-orange-500/5",
   },
   {
     icon: Users,
@@ -28,23 +32,28 @@ const problems = [
     description:
       "Your colleagues always ask the same questions. Over and over.",
     color: "text-amber-500",
-    bgColor: "bg-amber-50",
-    hoverBorder: "hover:border-amber-500/30",
+    bgColor: "bg-amber-500/10",
+    borderColor: "border-amber-500/20",
+    hoverBorder: "hover:border-amber-500/40",
+    glow: "group-hover:shadow-amber-500/5",
   },
 ];
 
 export function ProblemSection() {
   return (
     <section className="relative bg-stone-950 py-24 overflow-hidden">
-      {/* Subtle grid pattern */}
+      {/* Dot grid pattern */}
       <div
         className="absolute inset-0"
         style={{
           backgroundImage:
-            "linear-gradient(rgba(255,255,255,0.02) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.02) 1px, transparent 1px)",
-          backgroundSize: "64px 64px",
+            "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0)",
+          backgroundSize: "48px 48px",
         }}
       />
+
+      {/* Subtle glow */}
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 h-[400px] w-[600px] rounded-full bg-red-500/5 blur-[120px]" />
 
       <div className="relative mx-auto max-w-6xl px-6">
         <motion.div
@@ -71,10 +80,10 @@ export function ProblemSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: i * 0.1 }}
-              className={`rounded-2xl border border-stone-800 bg-stone-800/50 p-8 transition-all duration-300 ${problem.hoverBorder}`}
+              className={`group rounded-2xl border border-stone-800 bg-stone-900/50 p-8 transition-all duration-300 hover:bg-stone-900/80 hover:shadow-xl ${problem.hoverBorder} ${problem.glow}`}
             >
               <div
-                className={`mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl ${problem.bgColor}`}
+                className={`mb-6 inline-flex h-12 w-12 items-center justify-center rounded-xl ${problem.bgColor} border ${problem.borderColor}`}
               >
                 <problem.icon className={`h-6 w-6 ${problem.color}`} />
               </div>

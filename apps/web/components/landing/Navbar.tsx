@@ -68,7 +68,7 @@ export function Navbar() {
             </Button>
           </Link>
           <Link href="/login">
-            <Button className="cursor-pointer bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/20">
+            <Button className="cursor-pointer bg-indigo-600 text-white hover:bg-indigo-500 shadow-lg shadow-indigo-500/20 hover:shadow-xl hover:shadow-indigo-500/25 transition-all duration-200">
               Get started free
             </Button>
           </Link>

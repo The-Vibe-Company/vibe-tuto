@@ -1,10 +1,9 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, ArrowRight } from "lucide-react";
+import { Check, ArrowRight, Sparkles } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
-
 
 const features = [
   "Unlimited tutorials",
@@ -26,11 +25,14 @@ export function PricingCard() {
           className="mb-16 text-center"
         >
           <p className="mb-3 text-xs font-medium uppercase tracking-widest text-indigo-500">
-            Launch offer
+            Pricing
           </p>
           <h2 className="font-heading text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-            Join the early adopters
+            Simple, transparent pricing
           </h2>
+          <p className="mx-auto mt-4 max-w-md text-stone-500">
+            One plan, everything included. No surprises.
+          </p>
         </motion.div>
 
         <motion.div
@@ -43,34 +45,39 @@ export function PricingCard() {
             {/* Radial glow */}
             <div className="absolute -inset-4 -z-10 rounded-3xl bg-indigo-500/10 blur-[80px]" />
 
-            <div className="relative overflow-hidden rounded-3xl border-2 border-indigo-500 bg-white p-8 shadow-xl shadow-indigo-100">
+            <div className="relative overflow-hidden rounded-3xl border border-stone-200/60 bg-white p-8 shadow-xl shadow-stone-200/30">
+              {/* Top accent gradient */}
+              <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-indigo-600 via-violet-500 to-purple-500" />
+
               {/* Badge */}
-              <div className="absolute -right-12 top-6 rotate-45 bg-gradient-to-r from-indigo-600 to-violet-600 px-12 py-1 text-xs font-semibold text-white">
-                Popular
+              <div className="mb-6 inline-flex items-center gap-1.5 rounded-full bg-gradient-to-r from-indigo-50 to-violet-50 px-3 py-1 text-xs font-semibold text-indigo-600 border border-indigo-200/50">
+                <Sparkles className="h-3 w-3" />
+                All-in-one
               </div>
 
-              <div className="mb-6">
-                <div className="flex items-baseline gap-2">
+              <div className="mb-8">
+                <div className="flex items-baseline gap-1">
                   <span className="font-heading text-5xl font-bold text-stone-900">
-                    $15
+                    $8
                   </span>
                   <span className="text-lg text-stone-400">/month</span>
-                  <span className="text-lg text-stone-400 line-through">
-                    $29/month
-                  </span>
                 </div>
                 <p className="mt-2 text-sm text-stone-500">
-                  50% off while in Beta. Unlimited usage.
+                  Unlimited usage. No hidden fees.
                 </p>
               </div>
 
-              <ul className="mb-8 space-y-3">
+              <div className="mb-8 h-px bg-stone-100" />
+
+              <ul className="mb-8 space-y-3.5">
                 {features.map((feature, i) => (
                   <li
                     key={i}
                     className="flex items-center gap-3 text-stone-600"
                   >
-                    <Check className="h-5 w-5 flex-shrink-0 text-indigo-500" />
+                    <div className="flex h-5 w-5 flex-shrink-0 items-center justify-center rounded-full bg-indigo-50">
+                      <Check className="h-3 w-3 text-indigo-600" />
+                    </div>
                     {feature}
                   </li>
                 ))}
@@ -79,18 +86,18 @@ export function PricingCard() {
               <Link href="/login" className="block">
                 <Button
                   size="lg"
-                  className="group cursor-pointer w-full h-12 bg-indigo-600 text-base font-medium text-white shadow-lg shadow-indigo-200 hover:bg-indigo-500"
+                  className="group cursor-pointer w-full h-12 bg-indigo-600 text-base font-medium text-white shadow-lg shadow-indigo-500/20 hover:bg-indigo-500 hover:shadow-xl hover:shadow-indigo-500/30 transition-all duration-200"
                 >
-                  Join the free beta
+                  Get started free
                   <ArrowRight className="ml-2 h-4 w-4 transition-transform group-hover:translate-x-1" />
                 </Button>
               </Link>
+
+              <p className="mt-4 text-center text-xs text-stone-400">
+                No credit card required
+              </p>
             </div>
           </div>
-
-          <p className="mt-6 text-center text-sm text-stone-400">
-            Premium plans coming Q2 2026
-          </p>
         </motion.div>
       </div>
     </section>

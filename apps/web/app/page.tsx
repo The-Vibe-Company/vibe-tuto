@@ -1,4 +1,3 @@
-import { AnnouncementBar } from "@/components/landing/AnnouncementBar";
 import { Navbar } from "@/components/landing/Navbar";
 import { HeroSection } from "@/components/landing/HeroSection";
 import { LogoCloud } from "@/components/landing/LogoCloud";
@@ -14,7 +13,6 @@ import { Footer } from "@/components/landing/Footer";
 export default function Home() {
   return (
     <div className="min-h-screen bg-stone-50">
-      <AnnouncementBar />
       <Navbar />
       <HeroSection />
       <LogoCloud />

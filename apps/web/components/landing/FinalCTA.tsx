@@ -5,8 +5,6 @@ import { ArrowRight, Check, Shield, Zap, Clock } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 
-const SPOTS_LEFT = 53;
-
 const benefits = [
   { icon: Zap, text: "10x faster" },
   { icon: Check, text: "Perfect instructions" },
@@ -35,6 +33,16 @@ export function FinalCTA() {
         />
       </div>
 
+      {/* Subtle grid */}
+      <div
+        className="absolute inset-0"
+        style={{
+          backgroundImage:
+            "radial-gradient(circle at 1px 1px, rgba(255,255,255,0.05) 1px, transparent 0)",
+          backgroundSize: "48px 48px",
+        }}
+      />
+
       <div className="relative mx-auto max-w-4xl px-6 text-center">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -46,6 +54,11 @@ export function FinalCTA() {
             <br />
             your documentation?
           </h2>
+
+          <p className="mx-auto mb-10 max-w-lg text-lg text-white/70">
+            Join hundreds of teams already saving hours every week with
+            AI-powered tutorials.
+          </p>
 
           {/* Benefits */}
           <div className="mb-10 flex flex-wrap items-center justify-center gap-6">
@@ -77,25 +90,13 @@ export function FinalCTA() {
             <Link href="/login">
               <Button
                 size="lg"
-                className="group cursor-pointer h-14 bg-white px-10 text-lg font-semibold text-indigo-600 shadow-2xl hover:bg-stone-50"
+                className="group cursor-pointer h-14 bg-white px-10 text-lg font-semibold text-indigo-600 shadow-2xl hover:bg-stone-50 transition-all duration-200"
               >
                 Start for free
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>
           </motion.div>
-
-          {/* Urgency */}
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            className="mt-4 text-sm text-white/80"
-          >
-            Limited offer for the first 100 users &middot; {SPOTS_LEFT} spots
-            left
-          </motion.p>
 
           {/* Trust badges */}
           <motion.div

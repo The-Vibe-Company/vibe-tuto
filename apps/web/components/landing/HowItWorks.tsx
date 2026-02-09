@@ -10,6 +10,10 @@ const steps = [
     title: "Install",
     headline: "Add our Chrome extension",
     description: "One click install, 2MB, done in 30 seconds.",
+    color: "bg-indigo-600",
+    shadow: "shadow-indigo-500/25",
+    iconBg: "bg-indigo-50",
+    iconColor: "text-indigo-600",
   },
   {
     number: 2,
@@ -18,6 +22,10 @@ const steps = [
     headline: "Do your workflow",
     description:
       "Click Record, then navigate normally. We capture everything.",
+    color: "bg-violet-600",
+    shadow: "shadow-violet-500/25",
+    iconBg: "bg-violet-50",
+    iconColor: "text-violet-600",
   },
   {
     number: 3,
@@ -25,7 +33,11 @@ const steps = [
     title: "Generate",
     headline: "AI writes your tutorial",
     description:
-      "Claude AI analyzes your actions and creates polished step-by-step instructions.",
+      "AI analyzes your actions and creates polished step-by-step instructions.",
+    color: "bg-purple-600",
+    shadow: "shadow-purple-500/25",
+    iconBg: "bg-purple-50",
+    iconColor: "text-purple-600",
   },
 ];
 
@@ -69,14 +81,18 @@ export function HowItWorks() {
                 className="relative flex gap-4 md:flex-col md:items-center md:text-center"
               >
                 {/* Step badge */}
-                <div className="relative z-10 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full bg-indigo-600 text-lg font-bold text-white shadow-lg shadow-indigo-500/25">
+                <div
+                  className={`relative z-10 flex h-14 w-14 flex-shrink-0 items-center justify-center rounded-full ${step.color} text-lg font-bold text-white shadow-lg ${step.shadow}`}
+                >
                   {step.number}
                 </div>
 
                 <div className="flex-1 md:mt-6">
                   {/* Icon */}
-                  <div className="mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl bg-indigo-50 md:mx-auto">
-                    <step.icon className="h-5 w-5 text-indigo-600" />
+                  <div
+                    className={`mb-3 inline-flex h-10 w-10 items-center justify-center rounded-xl ${step.iconBg} md:mx-auto`}
+                  >
+                    <step.icon className={`h-5 w-5 ${step.iconColor}`} />
                   </div>
 
                   <h3 className="mb-2 text-lg font-semibold text-stone-900">

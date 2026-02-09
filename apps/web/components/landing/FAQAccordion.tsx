@@ -8,7 +8,7 @@ const faqs = [
   {
     question: "How much does it cost?",
     answer:
-      "During the Beta, CapTuto is 50% off at $15/month with unlimited usage. No hidden limits.",
+      "CapTuto is $8/month with unlimited usage. No hidden fees, no hidden limits.",
   },
   {
     question: "Do I need to install anything?",

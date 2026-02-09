@@ -1,4 +1,3 @@
-export { AnnouncementBar } from "./AnnouncementBar";
 export { Navbar } from "./Navbar";
 export { HeroSection } from "./HeroSection";
 export { LogoCloud } from "./LogoCloud";
