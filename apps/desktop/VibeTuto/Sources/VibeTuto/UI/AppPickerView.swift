@@ -19,35 +19,66 @@ struct AppPickerView: View {
     }
 
     var body: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            Text("Select Application")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+        VStack(alignment: .leading, spacing: DT.Spacing.sm) {
+            SectionHeader(title: "Application")
 
-            TextField("Search apps...", text: $searchText)
-                .textFieldStyle(.roundedBorder)
-                .font(.caption)
+            // Custom dark search field
+            HStack(spacing: DT.Spacing.sm) {
+                Image(systemName: "magnifyingglass")
+                    .font(.system(size: 11))
+                    .foregroundStyle(DT.Colors.textTertiary)
+                TextField("Search apps...", text: $searchText)
+                    .textFieldStyle(.plain)
+                    .font(DT.Typography.caption)
+                    .foregroundStyle(DT.Colors.textPrimary)
+                if !searchText.isEmpty {
+                    Button(action: { searchText = "" }) {
+                        Image(systemName: "xmark.circle.fill")
+                            .font(.system(size: 10))
+                            .foregroundStyle(DT.Colors.textTertiary)
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+            .padding(.horizontal, DT.Spacing.sm)
+            .padding(.vertical, DT.Spacing.xs + 1)
+            .background(
+                RoundedRectangle(cornerRadius: DT.Radius.sm)
+                    .fill(DT.Colors.card)
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: DT.Radius.sm)
+                    .strokeBorder(DT.Colors.border, lineWidth: 1)
+            )
 
             if isLoading {
                 HStack {
                     Spacer()
-                    ProgressView().controlSize(.small)
+                    ProgressView()
+                        .controlSize(.small)
+                        .tint(DT.Colors.textSecondary)
                     Spacer()
                 }
                 .frame(height: 80)
             } else if filteredApps.isEmpty {
                 Text("No apps found")
-                    .font(.caption)
-                    .foregroundStyle(.tertiary)
+                    .font(DT.Typography.caption)
+                    .foregroundStyle(DT.Colors.textTertiary)
                     .frame(maxWidth: .infinity, alignment: .center)
-                    .padding(.vertical, 8)
+                    .padding(.vertical, DT.Spacing.sm)
             } else {
                 ScrollView {
-                    LazyVStack(spacing: 2) {
+                    LazyVStack(spacing: DT.Spacing.xxs) {
                         ForEach(filteredApps) { app in
                             AppRow(app: app, isSelected: session.selectedAppBundleID == app.id)
                                 .onTapGesture {
-                                    session.selectedAppBundleID = app.id
+                                    withAnimation(DT.Anim.springSnappy) {
+                                        session.selectedAppBundleID = app.id
+                                    }
+                                    // Bring selected app to foreground
+                                    NSRunningApplication.runningApplications(withBundleIdentifier: app.id)
+                                        .first?
+                                        .activate()
                                 }
                         }
                     }
@@ -93,33 +124,42 @@ struct AppPickerView: View {
 struct AppRow: View {
     let app: AppInfo
     let isSelected: Bool
+    @State private var isHovering = false
 
     var body: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: DT.Spacing.sm + 2) {
             if let icon = app.icon {
                 Image(nsImage: icon)
                     .resizable()
-                    .frame(width: 20, height: 20)
+                    .frame(width: DT.Size.appIconSize, height: DT.Size.appIconSize)
             } else {
                 Image(systemName: "app.fill")
-                    .frame(width: 20, height: 20)
+                    .frame(width: DT.Size.appIconSize, height: DT.Size.appIconSize)
+                    .foregroundStyle(DT.Colors.textTertiary)
             }
             Text(app.name)
-                .font(.body)
+                .font(DT.Typography.body)
+                .foregroundStyle(DT.Colors.textPrimary)
                 .lineLimit(1)
             Spacer()
             if isSelected {
                 Image(systemName: "checkmark")
-                    .font(.caption)
-                    .foregroundStyle(Color.accentColor)
+                    .font(.system(size: 11, weight: .semibold))
+                    .foregroundStyle(DT.Colors.accentRed)
             }
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 4)
+        .padding(.horizontal, DT.Spacing.sm + 2)
+        .padding(.vertical, DT.Spacing.xs + 2)
         .background(
-            RoundedRectangle(cornerRadius: 4)
-                .fill(isSelected ? Color.blue.opacity(0.1) : Color.clear)
+            RoundedRectangle(cornerRadius: DT.Radius.sm)
+                .fill(
+                    isSelected ? DT.Colors.accentRed.opacity(0.12) :
+                    isHovering ? DT.Colors.elevated : .clear
+                )
         )
         .contentShape(Rectangle())
+        .onHover { hovering in
+            withAnimation(DT.Anim.fadeQuick) { isHovering = hovering }
+        }
     }
 }

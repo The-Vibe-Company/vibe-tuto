@@ -7,7 +7,8 @@ struct VibeTutoApp: App {
     var body: some Scene {
         Settings {
             PreferencesView()
-                .frame(width: 480, height: 400)
+                .frame(width: 500, height: 440)
+                .preferredColorScheme(.dark)
         }
     }
 }

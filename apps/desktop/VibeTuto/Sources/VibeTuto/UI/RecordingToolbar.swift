@@ -1,6 +1,6 @@
 import SwiftUI
 
-/// SwiftUI view for the floating recording toolbar capsule.
+/// Dark studio floating recording toolbar.
 struct RecordingToolbarView: View {
     @ObservedObject private var session = SessionManager.shared
     @State private var isExpanded = true
@@ -17,18 +17,24 @@ struct RecordingToolbarView: View {
                 stoppingView
             case .uploading(let progress):
                 UploadPanelView(progress: progress)
+                    .panelTransition()
             case .completed:
                 CompletionPanelView()
+                    .panelTransition()
             case .error(let message):
                 ErrorPanelView(message: message)
+                    .panelTransition()
+            case .countdown:
+                EmptyView() // Handled by CountdownOverlayController
             default:
                 EmptyView()
             }
         }
+        .animation(DT.Anim.springGentle, value: session.state)
         .onHover { hovering in
             isHovering = hovering
             if hovering {
-                withAnimation(.spring(response: 0.2, dampingFraction: 0.8)) {
+                withAnimation(DT.Anim.springOvershoot) {
                     isExpanded = true
                 }
                 collapseTask?.cancel()
@@ -37,111 +43,125 @@ struct RecordingToolbarView: View {
             }
         }
         .onChange(of: session.stepCount) { _, _ in
-            // Pulse the step counter on new step
-            withAnimation(.easeOut(duration: 0.15)) {
-                stepPulse = true
-            }
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
-                withAnimation(.easeIn(duration: 0.15)) {
-                    stepPulse = false
-                }
+            withAnimation(DT.Anim.fadeQuick) { stepPulse = true }
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                withAnimation(DT.Anim.fadeQuick) { stepPulse = false }
             }
         }
-        .onAppear {
-            scheduleCollapse()
-        }
+        .onAppear { scheduleCollapse() }
+        .preferredColorScheme(.dark)
     }
 
-    private var recordingToolbar: some View {
-        HStack(spacing: isExpanded ? 8 : 4) {
-            // Recording dot
-            Circle()
-                .fill(session.state.isPaused ? Color.yellow : Color.red)
-                .frame(width: 6, height: 6)
-                .opacity(session.state.isPaused ? 1.0 : pulsingOpacity)
+    // MARK: - Recording Toolbar
 
-            // Timer
+    private var recordingToolbar: some View {
+        HStack(spacing: isExpanded ? DT.Spacing.sm : DT.Spacing.xs) {
+            // Pulsing recording dot with glow
+            RecordingDot(isPaused: session.state.isPaused)
+
+            // Timer — monospaced instrument style
             Text(formattedTime)
-                .font(.system(.caption, design: .monospaced))
+                .font(DT.Typography.mono)
+                .foregroundStyle(DT.Colors.textPrimary)
                 .monospacedDigit()
 
             if isExpanded {
-                // Divider
-                Rectangle()
-                    .fill(Color.primary.opacity(0.2))
-                    .frame(width: 0.5, height: 16)
+                toolbarDivider
 
-                // Step counter
+                // Step counter with flash effect
                 Text("\(session.stepCount) steps")
-                    .font(.caption)
-                    .scaleEffect(stepPulse ? 1.15 : 1.0)
+                    .font(DT.Typography.monoSmall)
+                    .foregroundStyle(stepPulse ? DT.Colors.accentAmber : DT.Colors.textSecondary)
+                    .padding(.horizontal, DT.Spacing.xs)
+                    .padding(.vertical, DT.Spacing.xxs)
+                    .background(
+                        RoundedRectangle(cornerRadius: DT.Radius.sm)
+                            .fill(stepPulse ? DT.Colors.accentAmber.opacity(0.15) : .clear)
+                    )
+                    .scaleEffect(stepPulse ? 1.1 : 1.0)
 
-                // Divider
-                Rectangle()
-                    .fill(Color.primary.opacity(0.2))
-                    .frame(width: 0.5, height: 16)
+                toolbarDivider
 
                 // Pause/Resume
                 Button(action: togglePause) {
-                    Image(systemName: session.state.isPaused ? "play.circle" : "pause.circle")
-                        .font(.system(size: 16))
+                    Image(systemName: session.state.isPaused ? "play.fill" : "pause.fill")
+                        .font(.system(size: 14))
+                        .foregroundStyle(DT.Colors.accentAmber)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ToolbarIconStyle())
                 .help(session.state.isPaused ? "Resume recording" : "Pause recording")
 
                 // Add Marker
                 Button(action: { session.addMarker() }) {
                     Image(systemName: "flag.fill")
-                        .font(.system(size: 14))
+                        .font(.system(size: 12))
+                        .foregroundStyle(DT.Colors.accentBlue)
                 }
-                .buttonStyle(.plain)
+                .buttonStyle(ToolbarIconStyle())
                 .help("Add step marker")
 
-                // Stop
+                // Stop — prominent red
                 Button(action: { session.stopRecording() }) {
-                    Image(systemName: "stop.circle.fill")
-                        .font(.system(size: 18))
-                        .foregroundStyle(.red)
+                    ZStack {
+                        Circle()
+                            .fill(DT.Colors.accentRed)
+                            .frame(width: 28, height: 28)
+                        RoundedRectangle(cornerRadius: 2)
+                            .fill(.white)
+                            .frame(width: 10, height: 10)
+                    }
                 }
                 .buttonStyle(.plain)
                 .help("Stop recording")
             }
         }
-        .padding(.horizontal, isExpanded ? 16 : 10)
-        .padding(.vertical, 8)
-        .frame(width: isExpanded ? 260 : 100, height: isExpanded ? 40 : 32)
+        .padding(.horizontal, isExpanded ? DT.Spacing.lg : DT.Spacing.md)
+        .padding(.vertical, DT.Spacing.sm)
+        .frame(
+            width: isExpanded ? DT.Size.toolbarExpandedWidth : DT.Size.toolbarCollapsedWidth,
+            height: isExpanded ? DT.Size.toolbarHeight : DT.Size.toolbarCollapsedHeight
+        )
         .background(.ultraThinMaterial)
+        .background(DT.Colors.surface.opacity(0.5))
         .clipShape(Capsule())
         .overlay(
             Capsule()
-                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+                .strokeBorder(DT.Colors.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
-        .animation(.spring(response: 0.25, dampingFraction: 0.8), value: isExpanded)
+        .shadow(color: DT.Shadow.floatingColor, radius: DT.Shadow.floatingRadius, y: DT.Shadow.floatingY)
+        .animation(DT.Anim.springOvershoot, value: isExpanded)
     }
+
+    // MARK: - Stopping View
 
     private var stoppingView: some View {
-        HStack(spacing: 8) {
+        HStack(spacing: DT.Spacing.sm) {
             ProgressView()
                 .controlSize(.small)
+                .tint(DT.Colors.textSecondary)
             Text("Saving...")
-                .font(.caption)
+                .font(DT.Typography.monoSmall)
+                .foregroundStyle(DT.Colors.textSecondary)
         }
-        .padding(.horizontal, 16)
-        .padding(.vertical, 8)
-        .frame(width: 120, height: 40)
+        .padding(.horizontal, DT.Spacing.lg)
+        .padding(.vertical, DT.Spacing.sm)
+        .frame(width: 130, height: DT.Size.toolbarHeight)
         .background(.ultraThinMaterial)
+        .background(DT.Colors.surface.opacity(0.5))
         .clipShape(Capsule())
         .overlay(
             Capsule()
-                .strokeBorder(Color.primary.opacity(0.1), lineWidth: 0.5)
+                .strokeBorder(DT.Colors.border, lineWidth: 1)
         )
-        .shadow(color: .black.opacity(0.1), radius: 8, x: 0, y: 2)
+        .shadow(color: DT.Shadow.floatingColor, radius: DT.Shadow.floatingRadius, y: DT.Shadow.floatingY)
     }
 
-    private var pulsingOpacity: Double {
-        // Pulsing effect for recording dot
-        1.0
+    // MARK: - Helpers
+
+    private var toolbarDivider: some View {
+        Rectangle()
+            .fill(DT.Colors.border)
+            .frame(width: 1, height: 16)
     }
 
     private var formattedTime: String {
@@ -161,12 +181,47 @@ struct RecordingToolbarView: View {
     private func scheduleCollapse() {
         collapseTask?.cancel()
         collapseTask = Task { @MainActor in
-            try? await Task.sleep(nanoseconds: 4_000_000_000) // 4 seconds
+            try? await Task.sleep(nanoseconds: 4_000_000_000)
             guard !Task.isCancelled, !isHovering else { return }
-            withAnimation(.spring(response: 0.25, dampingFraction: 0.8)) {
+            withAnimation(DT.Anim.springOvershoot) {
                 isExpanded = false
             }
         }
+    }
+}
+
+// MARK: - Recording Dot with Glow
+
+struct RecordingDot: View {
+    let isPaused: Bool
+    @State private var glowing = false
+
+    var body: some View {
+        Circle()
+            .fill(isPaused ? DT.Colors.accentAmber : DT.Colors.accentRed)
+            .frame(width: DT.Size.recordingDotSize, height: DT.Size.recordingDotSize)
+            .shadow(
+                color: isPaused ? DT.Colors.glowAmber : DT.Colors.glowRed,
+                radius: glowing ? 12 : 3
+            )
+            .scaleEffect(glowing ? 1.4 : 1.0)
+            .opacity(isPaused ? 1.0 : (glowing ? 0.6 : 1.0))
+            .onAppear {
+                if !isPaused {
+                    withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                        glowing = true
+                    }
+                }
+            }
+            .onChange(of: isPaused) { _, paused in
+                if paused {
+                    glowing = false
+                } else {
+                    withAnimation(.easeInOut(duration: 1.0).repeatForever(autoreverses: true)) {
+                        glowing = true
+                    }
+                }
+            }
     }
 }
 
@@ -188,10 +243,10 @@ final class RecordingToolbarController {
     func show() {
         if panel == nil {
             let hostingView = NSHostingView(rootView: RecordingToolbarView())
-            hostingView.frame = NSRect(x: 0, y: 0, width: 300, height: 180)
+            hostingView.frame = NSRect(x: 0, y: 0, width: 340, height: 200)
 
             let newPanel = NSPanel(
-                contentRect: NSRect(x: 0, y: 0, width: 300, height: 180),
+                contentRect: NSRect(x: 0, y: 0, width: 340, height: 200),
                 styleMask: [.nonactivatingPanel, .borderless],
                 backing: .buffered,
                 defer: false
@@ -205,10 +260,9 @@ final class RecordingToolbarController {
             newPanel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
             newPanel.contentView = hostingView
 
-            // Position at bottom center of main screen
             if let screen = NSScreen.main {
                 let screenFrame = screen.visibleFrame
-                let x = screenFrame.midX - 150
+                let x = screenFrame.midX - 170
                 let y = screenFrame.minY + 32
                 newPanel.setFrameOrigin(NSPoint(x: x, y: y))
             }

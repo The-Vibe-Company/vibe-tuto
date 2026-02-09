@@ -1,7 +1,7 @@
 import SwiftUI
 import AVFoundation
 
-/// SwiftUI view for the Preferences window with 4 tabs.
+/// SwiftUI view for the dark studio Preferences window with 4 tabs.
 struct PreferencesView: View {
     var body: some View {
         TabView {
@@ -25,7 +25,9 @@ struct PreferencesView: View {
                     Label("Advanced", systemImage: "wrench.and.screwdriver")
                 }
         }
-        .padding(20)
+        .padding(DT.Spacing.xl)
+        .background(DT.Colors.surface)
+        .preferredColorScheme(.dark)
     }
 }
 
@@ -44,11 +46,14 @@ struct GeneralPreferencesView: View {
         Form {
             Section("Startup") {
                 Toggle("Launch at login", isOn: $launchAtLogin)
+                    .tint(DT.Colors.accentRed)
                 Toggle("Show Dock icon", isOn: $showDockIcon)
+                    .tint(DT.Colors.accentRed)
             }
 
             Section("Recording") {
                 Toggle("Show countdown before recording", isOn: $showCountdown)
+                    .tint(DT.Colors.accentRed)
                 if showCountdown {
                     Picker("Countdown duration", selection: $countdownDuration) {
                         Text("3 seconds").tag(3)
@@ -56,6 +61,7 @@ struct GeneralPreferencesView: View {
                     }
                 }
                 Toggle("Auto-open editor after upload", isOn: $autoOpenEditor)
+                    .tint(DT.Colors.accentRed)
                 Picker("Capture quality", selection: $captureQuality) {
                     Text("Standard (1x)").tag("standard")
                     Text("High (2x Retina)").tag("high")
@@ -63,16 +69,29 @@ struct GeneralPreferencesView: View {
             }
 
             Section("Account") {
-                VStack(alignment: .leading, spacing: 8) {
+                VStack(alignment: .leading, spacing: DT.Spacing.sm) {
                     Text("API Token")
-                        .font(.body)
+                        .font(DT.Typography.body)
+                        .foregroundStyle(DT.Colors.textPrimary)
                     SecureField("Paste your API token here", text: $apiToken)
-                        .textFieldStyle(.roundedBorder)
+                        .textFieldStyle(.plain)
+                        .font(DT.Typography.mono)
+                        .foregroundStyle(DT.Colors.textPrimary)
+                        .padding(.horizontal, DT.Spacing.md)
+                        .padding(.vertical, DT.Spacing.sm)
+                        .background(
+                            RoundedRectangle(cornerRadius: DT.Radius.sm)
+                                .fill(DT.Colors.card)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DT.Radius.sm)
+                                .strokeBorder(DT.Colors.border, lineWidth: 1)
+                        )
                     HStack {
                         if !apiToken.isEmpty {
                             Label("Token saved", systemImage: "checkmark.circle.fill")
-                                .font(.caption)
-                                .foregroundStyle(.green)
+                                .font(DT.Typography.caption)
+                                .foregroundStyle(DT.Colors.accentTeal)
                         }
                         Spacer()
                         Button("Get Token") {
@@ -81,7 +100,9 @@ struct GeneralPreferencesView: View {
                                 NSWorkspace.shared.open(url)
                             }
                         }
-                        .font(.caption)
+                        .buttonStyle(.plain)
+                        .font(DT.Typography.caption)
+                        .foregroundStyle(DT.Colors.accentBlue)
                     }
                 }
             }
@@ -100,51 +121,43 @@ struct ShortcutsPreferencesView: View {
     var body: some View {
         Form {
             Section("Global Keyboard Shortcuts") {
-                HStack {
-                    Text("Start/Stop Recording")
-                    Spacer()
-                    Text(shortcutRecord)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.primary.opacity(0.05))
-                        )
-                        .font(.system(.body, design: .monospaced))
-                }
-
-                HStack {
-                    Text("Pause/Resume")
-                    Spacer()
-                    Text(shortcutPause)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.primary.opacity(0.05))
-                        )
-                        .font(.system(.body, design: .monospaced))
-                }
-
-                HStack {
-                    Text("Add Marker")
-                    Spacer()
-                    Text(shortcutMarker)
-                        .padding(.horizontal, 8)
-                        .padding(.vertical, 4)
-                        .background(
-                            RoundedRectangle(cornerRadius: 4)
-                                .fill(Color.primary.opacity(0.05))
-                        )
-                        .font(.system(.body, design: .monospaced))
-                }
+                shortcutRow(label: "Start/Stop Recording", shortcut: shortcutRecord)
+                shortcutRow(label: "Pause/Resume", shortcut: shortcutPause)
+                shortcutRow(label: "Add Marker", shortcut: shortcutMarker)
             }
 
             Text("Click a shortcut to change it. Press Escape to clear.")
-                .font(.caption)
-                .foregroundStyle(.secondary)
+                .font(DT.Typography.caption)
+                .foregroundStyle(DT.Colors.textTertiary)
         }
         .formStyle(.grouped)
+    }
+
+    private func shortcutRow(label: String, shortcut: String) -> some View {
+        HStack {
+            Text(label)
+                .font(DT.Typography.body)
+                .foregroundStyle(DT.Colors.textPrimary)
+            Spacer()
+            // Keycap style badge
+            HStack(spacing: 2) {
+                ForEach(shortcut.components(separatedBy: "+"), id: \.self) { key in
+                    Text(key)
+                        .font(DT.Typography.monoSmall)
+                        .foregroundStyle(DT.Colors.textPrimary)
+                        .padding(.horizontal, DT.Spacing.sm)
+                        .padding(.vertical, DT.Spacing.xs)
+                        .background(
+                            RoundedRectangle(cornerRadius: DT.Radius.sm)
+                                .fill(DT.Colors.card)
+                        )
+                        .overlay(
+                            RoundedRectangle(cornerRadius: DT.Radius.sm)
+                                .strokeBorder(DT.Colors.border, lineWidth: 1)
+                        )
+                }
+            }
+        }
     }
 }
 
@@ -160,20 +173,39 @@ struct AudioPreferencesView: View {
             Section("Input Device") {
                 Picker("Microphone", selection: $selectedDevice) {
                     Text("Default").tag("Default")
-                    // Audio devices would be populated dynamically
                 }
             }
 
             Section("Processing") {
                 Toggle("Noise reduction", isOn: $noiseReduction)
+                    .tint(DT.Colors.accentRed)
             }
 
             Section("Level Meter") {
-                ProgressView(value: Double(audioLevel))
-                    .progressViewStyle(.linear)
+                // Custom gradient audio meter
+                GeometryReader { geometry in
+                    ZStack(alignment: .leading) {
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(DT.Colors.elevated)
+                            .frame(height: 8)
+
+                        RoundedRectangle(cornerRadius: 3)
+                            .fill(
+                                LinearGradient(
+                                    colors: [DT.Colors.accentTeal, DT.Colors.accentBlue],
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .frame(width: max(0, geometry.size.width * CGFloat(audioLevel)), height: 8)
+                            .animation(.easeOut(duration: 0.1), value: audioLevel)
+                    }
+                }
+                .frame(height: 8)
+
                 Text("Speak to test your microphone level")
-                    .font(.caption)
-                    .foregroundStyle(.secondary)
+                    .font(DT.Typography.caption)
+                    .foregroundStyle(DT.Colors.textTertiary)
             }
         }
         .formStyle(.grouped)
@@ -199,23 +231,46 @@ struct AdvancedPreferencesView: View {
 
                 VStack(alignment: .leading) {
                     Text("Step grouping delay: \(Int(groupingDelay))ms")
+                        .font(DT.Typography.monoSmall)
+                        .foregroundStyle(DT.Colors.textSecondary)
                     Slider(value: $groupingDelay, in: 200...2000, step: 100)
+                        .tint(DT.Colors.accentRed)
                 }
             }
 
             Section("Server") {
                 TextField("API URL", text: $apiBaseURL)
-                    .textFieldStyle(.roundedBorder)
+                    .textFieldStyle(.plain)
+                    .font(DT.Typography.mono)
+                    .foregroundStyle(DT.Colors.textPrimary)
+                    .padding(.horizontal, DT.Spacing.md)
+                    .padding(.vertical, DT.Spacing.sm)
+                    .background(
+                        RoundedRectangle(cornerRadius: DT.Radius.sm)
+                            .fill(DT.Colors.card)
+                    )
+                    .overlay(
+                        RoundedRectangle(cornerRadius: DT.Radius.sm)
+                            .strokeBorder(DT.Colors.border, lineWidth: 1)
+                    )
             }
 
             Section("Data") {
                 Button("Clear Local Cache") {
                     clearCache()
                 }
+                .buttonStyle(GhostButtonStyle())
+
                 Button("Reset All Preferences") {
                     resetPreferences()
                 }
-                .foregroundStyle(.red)
+                .foregroundStyle(DT.Colors.accentRed)
+                .padding(.horizontal, DT.Spacing.md)
+                .padding(.vertical, DT.Spacing.xs)
+                .background(
+                    RoundedRectangle(cornerRadius: DT.Radius.sm)
+                        .fill(DT.Colors.accentRed.opacity(0.1))
+                )
             }
         }
         .formStyle(.grouped)

@@ -19,6 +19,7 @@
 		3288F9C0A569B70259F35CE9 /* CaptureEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC555B299D3BDF3D34F00CFD /* CaptureEngine.swift */; };
 		32E3DE3D12AF8F6107EBEE52 /* PluginProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA132FBD94216A777C63433 /* PluginProtocol.swift */; };
 		46A78A3BF52D83073C10DF4D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B388485E442C141AFB0FEA /* Cocoa.framework */; };
+		4AC694D20F23869BB8193451 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5758D2653C988B55F9871EA6 /* DesignTokens.swift */; };
 		4BCA8C1EB2E74F029CE0CAA1 /* RecordingMode.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C0C14112D209FD8E3A6756 /* RecordingMode.swift */; };
 		4FB451FC1BD33100B0FDB72E /* PermissionStatus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 601C7008DD558E8715FB6849 /* PermissionStatus.swift */; };
 		53020B772C9E4B7D5982CAAA /* BrowserPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = A6DF90F9BCC805F27C3E8D60 /* BrowserPlugin.swift */; };
@@ -38,6 +39,7 @@
 		9C561F93AB713D76D0580899 /* ElementInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3392E9751508CA1D8D38BC33 /* ElementInfo.swift */; };
 		9FC16C2AC0E1A22FB60A92FD /* FrameProcessor.swift in Sources */ = {isa = PBXBuildFile; fileRef = EE3B35FE6C5BA01CB293B8DA /* FrameProcessor.swift */; };
 		A304AB0BE50F698E066758E8 /* FigmaPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = C4E5FC7E3C37BDC56BBB4BCE /* FigmaPlugin.swift */; };
+		AF8278E316F2686A4E0AADF0 /* CountdownOverlayView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 52B8F1C20AE4C8B3F9C1196C /* CountdownOverlayView.swift */; };
 		B51C94D050E70B00B66C5C31 /* RecordingState.swift in Sources */ = {isa = PBXBuildFile; fileRef = C3189217557EE184AF096ECB /* RecordingState.swift */; };
 		B6BCBF861769E7729AEDBB49 /* MenuBarController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7AB00C77C9420CEC726679D5 /* MenuBarController.swift */; };
 		BA68068591559D696EAA9CB7 /* RecordingSession.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7B90039699C96F31D00B5C45 /* RecordingSession.swift */; };
@@ -68,6 +70,8 @@
 		4B84011FD3BB60622BC86DC4 /* UploadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UploadManager.swift; sourceTree = "<group>"; };
 		4F9C001588F98F4B220F183D /* StepDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StepDetector.swift; sourceTree = "<group>"; };
 		504F4FEB32948F3CA854C878 /* ApplicationServices.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = ApplicationServices.framework; path = System/Library/Frameworks/ApplicationServices.framework; sourceTree = SDKROOT; };
+		52B8F1C20AE4C8B3F9C1196C /* CountdownOverlayView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CountdownOverlayView.swift; sourceTree = "<group>"; };
+		5758D2653C988B55F9871EA6 /* DesignTokens.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesignTokens.swift; sourceTree = "<group>"; };
 		5FB4562302619255A57CFA8B /* CoreGraphics.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CoreGraphics.framework; sourceTree = "<group>"; };
 		5FDDF62C96F91B142CB5AB45 /* RecordingToolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingToolbar.swift; sourceTree = "<group>"; };
 		601C7008DD558E8715FB6849 /* PermissionStatus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionStatus.swift; sourceTree = "<group>"; };
@@ -219,6 +223,8 @@
 			isa = PBXGroup;
 			children = (
 				84D84A2586D69E052BECA29C /* AppPickerView.swift */,
+				52B8F1C20AE4C8B3F9C1196C /* CountdownOverlayView.swift */,
+				5758D2653C988B55F9871EA6 /* DesignTokens.swift */,
 				DDFDD41FD69978B945959514 /* OnboardingWindow.swift */,
 				80BC66CE434557C1546A12D4 /* PreferencesWindow.swift */,
 				B16D34F18A8AED3B493025B5 /* RecordingBorder.swift */,
@@ -367,6 +373,8 @@
 				3288F9C0A569B70259F35CE9 /* CaptureEngine.swift in Sources */,
 				59DE893C279D9C9F8351CC80 /* CapturedAction.swift in Sources */,
 				2BD6C98FDF17AC0DFFF248BF /* ContextTracker.swift in Sources */,
+				AF8278E316F2686A4E0AADF0 /* CountdownOverlayView.swift in Sources */,
+				4AC694D20F23869BB8193451 /* DesignTokens.swift in Sources */,
 				D022F129906DEB63C4BDA0FC /* DetectedStep.swift in Sources */,
 				9C561F93AB713D76D0580899 /* ElementInfo.swift in Sources */,
 				214093E66CB254378F64955A /* EventMonitor.swift in Sources */,
