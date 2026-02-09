@@ -1,5 +1,17 @@
 # Changelog
 
+## [0.1.8](https://github.com/The-Vibe-Company/captuto/compare/v0.1.7...v0.1.8) (2026-02-09)
+
+
+### Features
+
+* **desktop:** Dark Studio UI redesign ([#74](https://github.com/The-Vibe-Company/captuto/issues/74)) ([e879511](https://github.com/The-Vibe-Company/captuto/commit/e8795119440b2f80481e45fb1264b26e630fb0bc))
+
+
+### Bug Fixes
+
+* move annotation toolbar from top to bottom of screenshot ([#76](https://github.com/The-Vibe-Company/captuto/issues/76)) ([53d3cea](https://github.com/The-Vibe-Company/captuto/commit/53d3cea2df4f185a5ba32b414bb76ef99358a539))
+
 ## [0.1.7](https://github.com/The-Vibe-Company/captuto/compare/v0.1.6...v0.1.7) (2026-02-09)
 
 

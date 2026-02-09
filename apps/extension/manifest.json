@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "CapTuto",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Create professional tutorials in seconds by recording your screen while talking.",
   "icons": {
     "16": "icons/icon16.png",
