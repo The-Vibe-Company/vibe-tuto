@@ -42,6 +42,10 @@ next-env.d.ts
 # Turborepo
 .turbo
 
+# Python
+__pycache__/
+*.pyc
+
 # Editor
 .idea
 .vscode
