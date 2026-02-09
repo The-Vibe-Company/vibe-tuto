@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.7](https://github.com/The-Vibe-Company/captuto/compare/v0.1.6...v0.1.7) (2026-02-09)
+
+
+### Features
+
+* Refresh landing page design and update pricing ([#72](https://github.com/The-Vibe-Company/captuto/issues/72)) ([cc7d65e](https://github.com/The-Vibe-Company/captuto/commit/cc7d65e407e17d29569e9e064ee898d8b07a69b7))
+
 ## [0.1.6](https://github.com/The-Vibe-Company/captuto/compare/v0.1.5...v0.1.6) (2026-02-09)
 
 
