@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.11](https://github.com/The-Vibe-Company/captuto/compare/v0.1.10...v0.1.11) (2026-02-11)
+
+
+### Bug Fixes
+
+* **ci:** fix macOS release app bundle lookup ([#81](https://github.com/The-Vibe-Company/captuto/issues/81)) ([73ee9d0](https://github.com/The-Vibe-Company/captuto/commit/73ee9d00354d7eae99158da2cd0e9d61cf358b07))
+
 ## [0.1.10](https://github.com/The-Vibe-Company/captuto/compare/v0.1.9...v0.1.10) (2026-02-11)
 
 
