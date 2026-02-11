@@ -15,7 +15,9 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 DESKTOP_DIR="$ROOT_DIR/apps/desktop/VibeTuto"
 BUILD_DIR="$DESKTOP_DIR/.build/release"
 DERIVED_DATA="$DESKTOP_DIR/.build/DerivedData-Release"
-APP_NAME="VibeTuto"
+PROJECT_NAME="VibeTuto"
+SCHEME_NAME="VibeTuto"
+APP_NAME="CapTuto"
 TEAM_ID="K28B69CWQ7"
 
 # Defaults
@@ -80,8 +82,8 @@ if [ "$SIGN" = true ]; then
   echo "Using certificate: $CERT_ID"
 
   xcodebuild \
-    -project "$APP_NAME.xcodeproj" \
-    -scheme "$APP_NAME" \
+    -project "$PROJECT_NAME.xcodeproj" \
+    -scheme "$SCHEME_NAME" \
     -configuration Release \
     -derivedDataPath "$DERIVED_DATA" \
     CODE_SIGN_STYLE=Manual \
@@ -90,8 +92,8 @@ if [ "$SIGN" = true ]; then
     build
 else
   xcodebuild \
-    -project "$APP_NAME.xcodeproj" \
-    -scheme "$APP_NAME" \
+    -project "$PROJECT_NAME.xcodeproj" \
+    -scheme "$SCHEME_NAME" \
     -configuration Release \
     -derivedDataPath "$DERIVED_DATA" \
     CODE_SIGN_IDENTITY="-" \
