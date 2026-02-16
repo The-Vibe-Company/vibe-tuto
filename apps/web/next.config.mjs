@@ -1,4 +1,6 @@
-import withBundleAnalyzer from '@next/bundle-analyzer';
+import { createRequire } from "node:module";
+
+const require = createRequire(import.meta.url);
 
 /** @type {import('next').NextConfig} */
 const nextConfig = {
@@ -75,9 +77,15 @@ const nextConfig = {
   },
 };
 
-// Enable bundle analyzer only when ANALYZE env var is set
-const config = withBundleAnalyzer({
-  enabled: process.env.ANALYZE === 'true',
-})(nextConfig);
+let withBundleAnalyzer = (config) => config;
+try {
+  withBundleAnalyzer = require("@next/bundle-analyzer")({
+    enabled: process.env.ANALYZE === "true",
+  });
+} catch {
+  // Optional in local/dev environments where analyzer isn't available.
+}
+
+const config = withBundleAnalyzer(nextConfig);
 
 export default config;

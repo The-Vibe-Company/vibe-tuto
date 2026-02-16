@@ -1,4 +1,3 @@
-import { Outfit, Work_Sans } from "next/font/google";
 import Link from "next/link";
 import { ArrowRight, CheckCircle2, Sparkles, Timer } from "lucide-react";
 
@@ -6,23 +5,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-const outfit = Outfit({
-  subsets: ["latin"],
-  weight: ["500", "700", "800"],
-  display: "swap",
-});
-
-const workSans = Work_Sans({
-  subsets: ["latin"],
-  weight: ["400", "500", "600"],
-  display: "swap",
-});
-
 export default function Home() {
   return (
-    <main
-      className={`min-h-screen bg-sky-50 text-sky-950 ${workSans.className}`}
-    >
+    <main className="min-h-screen bg-sky-50 font-sans text-sky-950">
       <section className="relative overflow-hidden border-b border-sky-200/70">
         <div
           className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_top_right,_rgba(14,165,233,0.2),transparent_45%),radial-gradient(circle_at_bottom_left,_rgba(249,115,22,0.15),transparent_40%)]"
@@ -30,9 +15,7 @@ export default function Home() {
         />
         <div className="container relative py-6 md:py-8">
           <div className="flex items-center justify-between">
-            <p className={`${outfit.className} text-xl font-bold tracking-tight`}>
-              Vibe Tuto
-            </p>
+            <p className="font-heading text-xl font-bold tracking-tight">Vibe Tuto</p>
             <Button asChild variant="outline" className="cursor-pointer">
               <Link href="/login">Sign in</Link>
             </Button>
@@ -43,9 +26,7 @@ export default function Home() {
           <Badge className="mb-5 bg-sky-100 text-sky-900 hover:bg-sky-100">
             New workflow for tutorial teams
           </Badge>
-          <h1
-            className={`${outfit.className} max-w-4xl text-5xl font-extrabold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl`}
-          >
+          <h1 className="font-heading max-w-4xl text-5xl font-extrabold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl">
             Build polished tutorials in 3 minutes.
           </h1>
           <p className="mt-6 max-w-2xl text-base text-sky-900/80 md:text-lg">
@@ -60,7 +41,7 @@ export default function Home() {
               </Link>
             </Button>
             <Button asChild size="lg" variant="outline" className="cursor-pointer border-sky-300 bg-white/80 hover:bg-white">
-              <Link href="/dashboard">Watch demo</Link>
+              <Link href="/support">View help center</Link>
             </Button>
           </div>
         </div>
@@ -70,19 +51,19 @@ export default function Home() {
         <div className="grid grid-cols-1 gap-3 text-center md:grid-cols-3">
           <Card className="border-sky-200/80 bg-white/85 shadow-sm">
             <CardContent className="py-6">
-              <p className={`${outfit.className} text-3xl font-bold`}>2,000+</p>
+              <p className="font-heading text-3xl font-bold">2,000+</p>
               <p className="mt-1 text-sm text-sky-900/70">tutorials shipped</p>
             </CardContent>
           </Card>
           <Card className="border-sky-200/80 bg-white/85 shadow-sm">
             <CardContent className="py-6">
-              <p className={`${outfit.className} text-3xl font-bold`}>65%</p>
+              <p className="font-heading text-3xl font-bold">65%</p>
               <p className="mt-1 text-sm text-sky-900/70">less production time</p>
             </CardContent>
           </Card>
           <Card className="border-sky-200/80 bg-white/85 shadow-sm">
             <CardContent className="py-6">
-              <p className={`${outfit.className} text-3xl font-bold`}>4.9/5</p>
+              <p className="font-heading text-3xl font-bold">4.9/5</p>
               <p className="mt-1 text-sm text-sky-900/70">average team rating</p>
             </CardContent>
           </Card>
@@ -94,7 +75,7 @@ export default function Home() {
           <Card className="border-sky-200/80 bg-white/90 shadow-sm">
             <CardHeader>
               <Sparkles className="size-5 text-sky-700" />
-              <CardTitle className={`${outfit.className} text-xl`}>
+              <CardTitle className="font-heading text-xl">
                 Auto script
               </CardTitle>
             </CardHeader>
@@ -105,7 +86,7 @@ export default function Home() {
           <Card className="border-sky-200/80 bg-white/90 shadow-sm">
             <CardHeader>
               <Timer className="size-5 text-sky-700" />
-              <CardTitle className={`${outfit.className} text-xl`}>
+              <CardTitle className="font-heading text-xl">
                 Fast capture
               </CardTitle>
             </CardHeader>
@@ -116,7 +97,7 @@ export default function Home() {
           <Card className="border-sky-200/80 bg-white/90 shadow-sm">
             <CardHeader>
               <CheckCircle2 className="size-5 text-sky-700" />
-              <CardTitle className={`${outfit.className} text-xl`}>
+              <CardTitle className="font-heading text-xl">
                 Instant export
               </CardTitle>
             </CardHeader>
@@ -129,7 +110,7 @@ export default function Home() {
 
       <section className="border-t border-sky-200/70 bg-white/70">
         <div className="container py-14 text-center md:py-20">
-          <h2 className={`${outfit.className} text-3xl font-bold md:text-5xl`}>
+          <h2 className="font-heading text-3xl font-bold md:text-5xl">
             Ready to ship your next tutorial faster?
           </h2>
           <p className="mx-auto mt-4 max-w-xl text-sky-900/75">
