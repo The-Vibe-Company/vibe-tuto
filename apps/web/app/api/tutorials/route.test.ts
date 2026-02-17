@@ -14,19 +14,15 @@ function createMockSupabase(overrides: {
   authError?: object | null;
   tutorials?: unknown[] | null;
   tutorialsError?: object | null;
-  sources?: unknown[] | null;
-  signedUrlResults?: Array<{ data: { signedUrl: string } | null; error: unknown }>;
+  signedUrlResults?: Array<{ signedUrl: string; path: string }>;
 }) {
   const {
     user = null,
     authError = null,
     tutorials = null,
     tutorialsError = null,
-    sources = null,
     signedUrlResults = [],
   } = overrides;
-
-  let signedUrlCallIndex = 0;
 
   const mockFrom = vi.fn().mockImplementation((table: string) => {
     if (table === 'tutorials') {
@@ -36,20 +32,6 @@ function createMockSupabase(overrides: {
             order: vi.fn().mockResolvedValue({
               data: tutorials,
               error: tutorialsError,
-            }),
-          }),
-        }),
-      };
-    }
-    if (table === 'sources') {
-      return {
-        select: vi.fn().mockReturnValue({
-          in: vi.fn().mockReturnValue({
-            order: vi.fn().mockReturnValue({
-              order: vi.fn().mockResolvedValue({
-                data: sources,
-                error: null,
-              }),
             }),
           }),
         }),
@@ -72,13 +54,9 @@ function createMockSupabase(overrides: {
     from: mockFrom,
     storage: {
       from: vi.fn().mockReturnValue({
-        createSignedUrl: vi.fn().mockImplementation(() => {
-          const result = signedUrlResults[signedUrlCallIndex] ?? {
-            data: null,
-            error: null,
-          };
-          signedUrlCallIndex++;
-          return Promise.resolve(result);
+        createSignedUrls: vi.fn().mockResolvedValue({
+          data: signedUrlResults,
+          error: null,
         }),
       }),
     },
@@ -131,6 +109,9 @@ describe('GET /api/tutorials', () => {
             visibility: 'public',
             created_at: '2024-01-01',
             steps: [{ count: 5 }],
+            sources: [
+              { tutorial_id: 't1', screenshot_url: 'path/to/screenshot1.png', order_index: 0 },
+            ],
           },
           {
             id: 't2',
@@ -140,13 +121,11 @@ describe('GET /api/tutorials', () => {
             visibility: 'private',
             created_at: '2024-01-02',
             steps: [{ count: 0 }],
+            sources: [],
           },
         ],
-        sources: [
-          { tutorial_id: 't1', screenshot_url: 'path/to/screenshot1.png' },
-        ],
         signedUrlResults: [
-          { data: { signedUrl: 'https://signed-url-1.com' }, error: null },
+          { signedUrl: 'https://signed-url-1.com', path: 'path/to/screenshot1.png' },
         ],
       }) as any
     );
@@ -219,9 +198,9 @@ describe('GET /api/tutorials', () => {
             visibility: null,
             created_at: '2024-01-01',
             steps: [],
+            sources: [],
           },
         ],
-        sources: [],
       }) as any
     );
 
@@ -244,9 +223,9 @@ describe('GET /api/tutorials', () => {
             visibility: 'private',
             created_at: '2024-01-01',
             steps: [],
+            sources: [],
           },
         ],
-        sources: [],
       }) as any
     );
 

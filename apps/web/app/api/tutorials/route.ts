@@ -14,7 +14,7 @@ export async function GET() {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
   }
 
-  // Fetch tutorials with step count
+  // Fetch tutorials with step count AND first source screenshot in a single query
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const { data: tutorials, error: tutorialsError } = await (supabase as any)
     .from('tutorials')
@@ -26,7 +26,8 @@ export async function GET() {
       status,
       visibility,
       created_at,
-      steps:steps(count)
+      steps:steps(count),
+      sources:sources(tutorial_id, screenshot_url, order_index)
     `
     )
     .eq('user_id', user.id)
@@ -44,46 +45,39 @@ export async function GET() {
     return NextResponse.json({ tutorials: [] });
   }
 
-  // Get all tutorial IDs for batch query
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const tutorialIds = tutorials.map((t: any) => t.id);
-
-  // Batch fetch first sources for all tutorials in ONE query using distinct on tutorial_id
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const { data: firstSources } = await (supabase as any)
-    .from('sources')
-    .select('tutorial_id, screenshot_url')
-    .in('tutorial_id', tutorialIds)
-    .order('tutorial_id')
-    .order('order_index', { ascending: true });
-
-  // Create a map of tutorial_id -> first screenshot_url
+  // Build thumbnail map from the joined sources data (pick first by order_index)
   const thumbnailMap = new Map<string, string>();
-  if (firstSources) {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    for (const source of firstSources as any[]) {
-      // Only keep the first source per tutorial (they're ordered by order_index)
-      if (!thumbnailMap.has(source.tutorial_id) && source.screenshot_url) {
-        thumbnailMap.set(source.tutorial_id, source.screenshot_url);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  for (const tutorial of tutorials as any[]) {
+    if (Array.isArray(tutorial.sources) && tutorial.sources.length > 0) {
+      // Sort by order_index and pick the first one with a screenshot_url
+      const sorted = [...tutorial.sources].sort(
+        (a: { order_index: number }, b: { order_index: number }) => a.order_index - b.order_index
+      );
+      const first = sorted.find((s: { screenshot_url: string | null }) => s.screenshot_url);
+      if (first?.screenshot_url) {
+        thumbnailMap.set(tutorial.id, first.screenshot_url);
       }
     }
   }
 
-  // Batch generate signed URLs for all thumbnails in parallel
+  // Batch generate signed URLs in a single API call using createSignedUrls (plural)
   const screenshotPaths = Array.from(thumbnailMap.values());
-  const signedUrlPromises = screenshotPaths.map(path =>
-    supabase.storage.from('screenshots').createSignedUrl(path, 3600)
-  );
-  const signedUrlResults = await Promise.all(signedUrlPromises);
-
-  // Create a map of path -> signed URL
   const signedUrlMap = new Map<string, string>();
-  screenshotPaths.forEach((path, index) => {
-    const result = signedUrlResults[index];
-    if (result.data?.signedUrl) {
-      signedUrlMap.set(path, result.data.signedUrl);
+
+  if (screenshotPaths.length > 0) {
+    const { data: signedUrlResults } = await supabase.storage
+      .from('screenshots')
+      .createSignedUrls(screenshotPaths, 3600);
+
+    if (signedUrlResults) {
+      for (const result of signedUrlResults) {
+        if (result.signedUrl && result.path) {
+          signedUrlMap.set(result.path, result.signedUrl);
+        }
+      }
     }
-  });
+  }
 
   // Build final response
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
