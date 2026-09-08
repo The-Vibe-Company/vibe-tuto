@@ -1,0 +1,503 @@
+.claude/skills/design-frontend-dev/reference/clarify.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-288
+.agents/skills/review-code-dev/companion.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-120
+apps/web/app/settings/page.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 261-262
+apps/web/components/editor/AnnotationCanvas.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 19-21,49-50,56-67,635,932
+apps/desktop/VibeTuto/VibeTuto.xcodeproj/project.pbxproj
+  s_1930cc3a6b228d::t_82a18235f5ce53 22,74,261,416
+.agents/skills/design-frontend-dev/reference/overdrive.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-130
+.gitignore
+  s_1930cc3a6b228d::t_82a18235f5ce53 56-58
+apps/desktop/VibeTuto/Sources/VibeTuto/Core/Capture/CaptureEngine.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 19-25,27-29,51-65,68-70,88-91,94-98,100-101,124,135-139,141-142,153-156
+  s_1930cc3a6b228d::t_a6aa1d7eba3f49 157
+apps/web/components/editor/studio/icons.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-77
+apps/desktop/VibeTuto/Sources/VibeTuto/App/AppDelegate.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 5,11,15,32,49,76
+.agents/skills/review-code-dev/references/reviewers/data-migration.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-28
+.agents/skills/review-code-dev/scripts/collect_review_context.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-418
+apps/web/components/landing/FAQAccordion.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 47-53,55-61
+.agents/skills/design-frontend-dev/reference/onboard.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-234
+.claude/skills/review-code-dev/references/reviewers/architecture.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+apps/web/components/landing/HeroSection.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 33,35-38,41,46-51,64-69,76,78,80-84,93-94,105,107,123,126,128-144,148,168,206,234,240,245,256-259,262,264,267-268
+  s_1930cc3a6b228d::t_51110524a98626 6,145-147,149-163,165-167,169,173,199
+.claude/skills/review-code-dev/references/reviewers/security.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+apps/web/components/editor/studio/FocusMode.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-265
+apps/web/components/editor/DocEditor.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 115,126,130-136,165-167,169,176,182-186,188-190,194,262,264-265,267-274,276-277,349,417,428,431
+.claude/skills/design-frontend-dev/SKILL.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-143
+apps/web/components/editor/StepScreenshot.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 20-26,39,104-105,134-145,160,165,173-174
+.claude/skills/review-code-dev/references/reviewers/red-team.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-30
+apps/web/components/dashboard/DashboardSidebar.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-127
+.agents/skills/review-code-dev/scripts/parse_review_findings.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-81
+.agents/skills/design-frontend-dev/reference/animate.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-201
+.agents/skills/review-code-dev/references/reviewers/security.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+.claude/skills/review-code-dev/references/output-contract.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-373
+.agents/skills/design-frontend-dev/SOURCE.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-26
+apps/extension/manifest.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 4
+apps/desktop/VibeTuto/Sources/VibeTuto/App/VibeTutoApp.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 9
+apps/web/components/editor/DocStepCard.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 44-49,66,139,157,193,201,219,243-245,259,269,272,274-278,306,326,347,367-368,386,401-402,425,438,443,466,482,506,514,527,542,572,590,615
+apps/web/lib/constants/download.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-2
+apps/web/app/api/tutorials/[id]/share/route.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 4,169-177
+  s_1930cc3a6b228d::t_796e0f3f8e6f9c 178-179
+.agents/skills/design-frontend-dev/evals/evals.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-20
+.claude/skills/design-frontend-dev/reference/distill.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-111
+.agents/skills/design-frontend-dev/reference/shape.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-165
+.claude/skills/design-frontend-dev/reference/polish.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-236
+apps/desktop/VibeTuto/Sources/VibeTuto/Core/Events/EventMonitor.swift
+  s_1930cc3a6b228d::t_a6fea113ab62e2 98
+  s_1930cc3a6b228d::t_82a18235f5ce53 15,19-24,27-31,34,75,84-91,94-96,100-113,119-122,125-126,144-148,156-157,185-215
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/PreferencesWindow.swift
+  s_1930cc3a6b228d::t_bc888f471823ec 50-57
+  s_1930cc3a6b228d::t_82a18235f5ce53 3,7,9-10,12-13,16,18-19,33-34,36-39,43-47,67-68,72-73,75-77,80,84-87,91-93,95-97,102-109,112-113,119,121-124,127-129,132-133,135-137
+  s_1930cc3a6b228d::t_16b3a5686762e8 48-49
+  s_1930cc3a6b228d::t_5ba6cc4645789c 66
+.claude/skills/ship-pr-dev/evals/evals.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-40
+.claude/skills/design-frontend-dev/evals/evals.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-20
+apps/web/components/editor/studio/Artboard.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-265
+.claude/skills/design-frontend-dev/reference/bolder.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-113
+.agents/skills/review-code-dev/references/reviewers/backend.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+apps/web/app/api/steps/[id]/route.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 3,114-120
+  s_1930cc3a6b228d::t_158111b9273717 121-122
+apps/web/public/brand/captuto-mark-mono.svg
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-9
+.claude/skills/design-frontend-dev/reference/typeset.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-279
+.claude/skills/review-code-dev/references/local-review-rules.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-50
+apps/web/app/api/tutorials/route.test.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 12-22,26-27,33-34,38,47,82,96,104-105,114-115,154-155,165,168,175-178,185,193-194,206,210,213-214,218-219,228
+apps/web/lib/supabase/types.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 239-254
+.agents/skills/design-frontend-dev/reference/critique.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-59
+.agents/skills/review-code-dev/references/output-contract.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-373
+.agents/skills/design-frontend-dev/reference/layout.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-161
+.claude/skills/design-frontend-dev/reference/adapt.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-311
+.claude/skills/design-frontend-dev/reference/layout.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-161
+.claude/skills/review-code-dev/scripts/parse_review_findings.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-81
+.claude/skills/design-frontend-dev/reference/brand.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-108
+apps/web/components/editor/studio/studio.css
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-237
+apps/web/components/landing/SolutionSection.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 16,20-24,46-47,56-57,62-63,72
+supabase/migrations/20260505100641_dashboard_perf.sql
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-60
+.agents/skills/design-frontend-dev/reference/interaction-design.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-189
+apps/desktop/VibeTuto/Sources/VibeTuto/App/MenuBarDropdownView.swift
+  s_1930cc3a6b228d::t_ceb7062213d719 2
+  s_1930cc3a6b228d::t_523f7cc9d0a921 6,9,17-25,27-46,48-57,59-62,64,66,68-110,113-114,119-120,125-126,128-129,131-140,142-229,236-244,250,263-266,269-274,277-283,289,297-299
+.agents/skills/review-code-dev/references/review-playbook.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-155
+.agents/skills/review-code-dev/references/finding-rubric.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-99
+.agents/skills/design-frontend-dev/reference/quieter.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-99
+.agents/skills/review-code-dev/references/reviewers/performance.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-28
+apps/desktop/VibeTuto/Sources/VibeTuto/Core/Capture/CaptureGeometry.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-99
+apps/web/components/editor/studio/StudioTopBar.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-273
+.claude/skills/review-code-dev/evals/evals.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-80
+apps/desktop/VibeTuto/Sources/VibeTuto/Storage/LocalStore.swift
+  s_1930cc3a6b228d::t_534ef8bbdbcdc6 19
+  s_1930cc3a6b228d::t_21b934089b252c 10-11,14,20-22,43,47-48
+  s_1930cc3a6b228d::t_82a18235f5ce53 12-13,15,44-46,80-97
+  s_1930cc3a6b228d::t_2c3a4a4c80b196 98
+.agents/skills/review-code-dev/references/local-review-rules.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-50
+apps/desktop/VibeTuto/Sources/VibeTuto/Models/RecordingSession.swift
+  s_1930cc3a6b228d::t_fb4ab036bfd911 86-87
+  s_1930cc3a6b228d::t_82a18235f5ce53 93-94
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/AppPickerView.swift
+  s_1930cc3a6b228d::t_130b8f7b7d183a 71-73,78
+  s_1930cc3a6b228d::t_82a18235f5ce53 22,26,35,40-41,43-44,58-59,64,140,143-144,146,148-149
+.claude/skills/design-frontend-dev/reference/optimize.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-258
+apps/web/components/editor/studio/StudioEditor.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-2,4-196
+  s_1930cc3a6b228d::t_4579d5a2186792 3
+apps/web/components/editor/GenerateDialog.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 186,213,226,232,237,243,248,254,264,278,309,327,355,380,428,463
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/RecordingToolbar.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 5,12,14-15,29,33-36,39,42-46,52,54-55,58-60,62-67,69-70,72-76,78-79,82-86,89-90,93-95,97-100,126,133,136,149,151-152,160,162-171
+.claude/skills/design-frontend-dev/reference/overdrive.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-130
+apps/web/components/editor/EditorClient.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 6-7,737,742-743
+.agents/skills/design-frontend-dev/reference/harden.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-347
+.claude/skills/review-code-dev/references/reviewers/tests.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-28
+.claude/skills/review-code-dev/references/review-playbook.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-155
+apps/desktop/VibeTuto/Sources/VibeTuto/App/FloatingPanelController.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 19-21,23-24,38-39,41,43
+apps/web/app/layout.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 3,27-41
+  s_1930cc3a6b228d::t_16f15ad1f8a887 54
+apps/web/lib/agent/service.ts
+  s_1930cc3a6b228d::t_a9f3181529b0a9 47-48
+.claude/skills/ship-pr-dev/references/review-board.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-72
+apps/web/app/signup/page.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 78,115,133,168,177,192
+.agents/skills/design-frontend-dev/SKILL.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-143
+apps/desktop/VibeTuto/Sources/VibeTuto/App/SessionManager.swift
+  s_1930cc3a6b228d::t_5cb2c8ccf74be6 219-223
+  s_1930cc3a6b228d::t_ff26cd9da95620 412
+  s_1930cc3a6b228d::t_f0b6fa54a9bd38 141,164-165,181,187,191-192
+  s_1930cc3a6b228d::t_020d8cf27f0063 158-162
+  s_1930cc3a6b228d::t_7b7bce4c1b4405 445-446,534,536,543,548-552,555
+  s_1930cc3a6b228d::t_82a18235f5ce53 50-51,123-140,151,163,188-190,269,275,338,344-347,376,383,488-501,523-533,535,537-542,544-547,553-554,556-560
+  s_1930cc3a6b228d::t_6c7b9862101e98 46-47
+  s_1930cc3a6b228d::t_f7cf7052046f02 48-49
+  s_1930cc3a6b228d::t_2fc3372981ff96 142
+  s_1930cc3a6b228d::t_2eac8cee2a1bae 193-194
+  s_1930cc3a6b228d::t_c02e7461a27772 561
+.claude/skills/ship-pr-dev/references/pr-template.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-76
+apps/desktop/VibeTuto/Sources/VibeTuto/Models/ElementInfo.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 9-23,30
+.agents/skills/ship-pr-dev/evals/evals.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-40
+.claude/skills/design-frontend-dev/reference/quieter.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-99
+apps/web/components/landing/Navbar.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 7-8,38-43,47-49,65-78,88-89,128-142,152-153
+apps/extension/package.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 3
+apps/web/components/editor/AnnotationToolbar.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 101,115-116,149,167,170,182,202,212,231,234,245-246,273,287,290,301-302,323,328-330,345,348,359-360,381,395,399,402,438
+apps/desktop/VibeTuto/Tests/VibeTutoTests/CaptureGeometryTests.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-78
+apps/web/components/editor/DocHeader.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 4,40-66,68-72,75-77,79-84,86-97,115,117,124,130-134,137,145-146
+apps/web/app/api/tutorials/route.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 4-8,21-24,26-27,34,38-40,46,57-68,70
+.claude/skills/design-frontend-dev/reference/critique.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-59
+.claude/skills/review-code-dev/companion.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-120
+.agents/skills/ship-pr-dev/companion.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-69
+.agents/skills/review-code-dev/references/review-intelligence.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-113
+.agents/skills/ship-pr-dev/scripts/collect_ship_context.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-171
+.claude/skills/review-code-dev/references/reviewers/api-contract.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+apps/web/components/editor/AddStepBetween.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 44-45,56,58-59,72-73,76-77
+apps/web/components/landing/FinalCTA.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 22-23,25-33,53-56,94
+.agents/skills/design-frontend-dev/reference/audit.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-133
+.claude/skills/ship-pr-dev/references/workflow.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-162
+apps/web/app/dashboard/layout.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 2-3,17-18,21,23-33
+apps/web/components/public/EmbedTutorialViewer.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 47
+.claude/skills/review-code-dev/references/review-intelligence.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-113
+apps/web/components/editor/TiptapEditor.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 67,74-75,86-87,98-99
+scripts/dev-start.sh
+  s_1930cc3a6b228d::t_82a18235f5ce53 16,155,158,187-223
+  s_1930cc3a6b228d::t_942ec7e18cf142 227
+supabase/migrations/20260504195919_add_screenshots_flattened_bucket.sql
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-56
+apps/web/components/dashboard/DashboardTopBar.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-133
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/UploadPanel.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 8-15,18,20-26,28,31-34,49-52,54-56,62,64-67,84-87,90-91,94,98,104,106-109
+.claude/skills/review-code-dev/references/reviewers/frontend.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-48
+.claude/skills/design-frontend-dev/reference/shape.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-165
+.agents/skills/ship-pr-dev/references/workflow.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-162
+apps/web/components/landing/FeatureBento.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 21-22,30-31,39-40,72-78,80-86,103,108,112,135
+.agents/skills/design-frontend-dev/reference/typeset.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-279
+apps/web/lib/flatten/render-step.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-24
+.release-please-manifest.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 2
+.claude/skills/ship-pr-dev/scripts/collect_ship_context.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-171
+.claude/skills/design-frontend-dev/companion.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-48
+.claude/skills/review-code-dev/references/subagent-briefs.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-305
+apps/web/lib/flatten/cache.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-198
+apps/web/tailwind.config.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 22-23,26-56,96-107
+apps/web/components/landing/HowItWorks.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 13-16,25-28,37-40,54-60,62-68,75,80
+.agents/skills/ship-pr-dev/references/readiness-gates.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-105
+.claude/skills/review-code-dev/agents/openai.yaml
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-4
+.claude/skills/ship-pr-dev/references/readiness-gates.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-105
+apps/web/app/support/page.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 87,126,134-135,145,163,252
+apps/web/components/editor/studio/helpers.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-73
+CHANGELOG.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 3-56
+.agents/skills/design-frontend-dev/reference/clarify.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-288
+.claude/skills/design-frontend-dev/reference/animate.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-201
+.claude/skills/design-frontend-dev/reference/audit.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-133
+apps/web/components/editor/InlineCaption.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 70-71,85,92-93,98,110
+.companion/skills.lock.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-85
+apps/web/next.config.mjs
+  s_1930cc3a6b228d::t_82a18235f5ce53 32-35
+.agents/skills/ship-pr-dev/references/pr-template.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-76
+.agents/skills/ship-pr-dev/references/review-board.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-72
+.agents/skills/design-frontend-dev/reference/adapt.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-311
+apps/web/components/shared/PageHeader.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 18,21-25,29,31,36,41-47,57
+.agents/skills/review-code-dev/SKILL.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-223
+.agents/skills/design-frontend-dev/reference/polish.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-236
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/RecordingBorder.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 3-4,9-11,46,48-49,60,62
+.claude/skills/design-frontend-dev/reference/colorize.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-245
+apps/web/app/captuto-tokens.css
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-87
+.claude/skills/review-code-dev/scripts/prepare_review_run.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-137
+apps/web/app/editor/[id]/page.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 77-81,84,91-96,98,171
+.agents/skills/review-code-dev/references/reviewers/frontend.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-48
+conductor.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-8
+.agents/skills/ship-pr-dev/scripts/prepare_ship_run.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-91
+.agents/skills/design-frontend-dev/companion.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-48
+apps/desktop/VibeTuto/Sources/VibeTuto/App/MenuBarController.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 36,39-41
+.claude/skills/review-code-dev/references/reviewers/performance.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-28
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/DesignTokens.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 15-17,25-28,30-31,33-35,37-42,44,46-51,54,61-66,84-85,89-95,99-101,103-105,109-114,116-120,127-129,132-133,135,145-146,148-149,152-153,155,162-164,166,173,176,185-186,193,211-213
+.agents/skills/design-frontend-dev/reference/delight.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-302
+.claude/skills/design-frontend-dev/reference/harden.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-347
+apps/desktop/VibeTuto/Sources/VibeTuto/Upload/UploadManager.swift
+  s_1930cc3a6b228d::t_db36d6996c8d43 2-4,25,44-45,50
+apps/web/components/dashboard/TutorialTableRow.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-229
+.claude/skills/design-frontend-dev/LICENSE
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-191
+apps/web/components/editor/SourcesSidebar.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 53-61,225,232,264,266,276,283,290,297,307,321,334,346,486,488,498-499,501-503,505-506,520
+.agents/skills/design-frontend-dev/reference/optimize.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-258
+docs/captuto/development.md
+  s_1930cc3a6b228d::t_ff0b5a11a804b6 80-94
+.agents/skills/design-frontend-dev/reference/distill.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-111
+.claude/skills/design-frontend-dev/reference/interaction-design.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-189
+.claude/skills/design-frontend-dev/reference/delight.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-302
+apps/web/public/brand/captuto-mark.svg
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-30
+apps/web/lib/agent/transcription.ts
+  s_1930cc3a6b228d::t_a9f3181529b0a9 10-11
+apps/web/public/brand/captuto-wordmark.svg
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-21
+.claude/skills/design-frontend-dev/SOURCE.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-26
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/CountdownOverlayView.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 7,11,14-18,21-22,39,41-42
+apps/web/components/landing/Footer.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 21-26
+.agents/skills/design-frontend-dev/reference/bolder.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-113
+.claude/skills/ship-pr-dev/companion.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-69
+.claude/skills/design-frontend-dev/reference/onboard.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-234
+.agents/skills/design-frontend-dev/reference/colorize.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-245
+apps/web/app/api/recordings/route.ts
+  s_1930cc3a6b228d::t_a9f3181529b0a9 18-20,72-78
+apps/web/components/editor/QuickAnnotationBar.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 33,46
+apps/web/components/editor/studio/Timeline.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-509
+apps/web/app/not-found.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 11,20,47
+apps/web/components/dashboard/Header.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 6-7,51-60,63-75,77-136
+apps/web/app/login/page.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 105,141,159,185,200
+.agents/skills/review-code-dev/references/reviewers/tests.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-28
+apps/web/app/dashboard/page.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 3,5,7-9,12-17,21-29,33,43-44,61,66,71-72,75,78-119,123-141,146-163,165,167-170,172-238,240-248,250-273,275-290,298-300
+.agents/skills/ship-pr-dev/SKILL.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-183
+apps/desktop/VibeTuto/Tests/VibeTutoTests/StepDetectorTests.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 130-169
+.agents/skills/review-code-dev/references/reviewers/api-contract.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+.claude/skills/ship-pr-dev/SKILL.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-183
+.claude/skills/review-code-dev/scripts/collect_review_context.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-418
+.claude/skills/review-code-dev/references/reviewers/backend.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+apps/web/package.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 22
+.agents/skills/review-code-dev/scripts/prepare_review_run.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-137
+.claude/skills/review-code-dev/SKILL.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-223
+.claude/skills/ship-pr-dev/scripts/prepare_ship_run.py
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-91
+apps/web/app/globals.css
+  s_1930cc3a6b228d::t_82a18235f5ce53 5-6
+.agents/skills/design-frontend-dev/LICENSE
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-191
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/OnboardingWindow.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 7,12,15,29-34,37-51,54,56,58,67,73-80,82-83,86-88,96-97,101,103-104,108-110,117,119-120,123,125-126
+  s_1930cc3a6b228d::t_b64c604fc57565 24,57,59-66
+apps/web/app/editor/layout.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1,6-9
+apps/web/app/icon.svg
+  s_1930cc3a6b228d::t_82a18235f5ce53 4-6,9-14
+package.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 3
+.agents/skills/review-code-dev/evals/evals.json
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-80
+.agents/skills/review-code-dev/agents/openai.yaml
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-4
+.claude/skills/review-code-dev/references/finding-rubric.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-99
+apps/web/components/editor/studio/Canvas.tsx
+  s_1930cc3a6b228d::t_a9f3181529b0a9 37-38,49
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-36,39-48,50-622
+.claude/skills/review-code-dev/references/reviewers/data-migration.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-28
+.agents/skills/review-code-dev/references/subagent-briefs.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-305
+apps/web/lib/flatten/draw-annotations.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-310
+.agents/skills/design-frontend-dev/reference/brand.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-108
+apps/web/components/editor/studio/Inspector.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-837
+.agents/skills/review-code-dev/references/reviewers/architecture.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-29
+apps/web/app/api/tutorials/[id]/route.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 198-201
+apps/web/app/api/tutorials/[id]/share/route.test.ts
+  s_1930cc3a6b228d::t_82a18235f5ce53 12-15
+apps/web/app/api/recordings/route.test.ts
+  s_1930cc3a6b228d::t_a9f3181529b0a9 18-22
+apps/desktop/VibeTuto/Tests/VibeTutoTests/LocalStoreTests.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-60
+apps/web/components/dashboard/KpiStrip.tsx
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-89
+.agents/skills/review-code-dev/references/reviewers/red-team.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-30
+apps/desktop/VibeTuto/Sources/VibeTuto/Detection/StepDetector.swift
+  s_1930cc3a6b228d::t_82a18235f5ce53 7,10,13-17,22-23,27-32,36,38-40,45,62,64-82,87-98,158-162
+.agents/skills/design-frontend-dev/reference/product.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-60
+.claude/skills/design-frontend-dev/reference/product.md
+  s_1930cc3a6b228d::t_82a18235f5ce53 1-60
+apps/web/components/public/PublicTutorialViewer.tsx
+  s_1930cc3a6b228d::t_b2f6184079e198 82
+pnpm-lock.yaml
+  s_1930cc3a6b228d::t_1d5836b3f694ad 65-67,989-1058,5686-5732
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "22ead0f5ef992c89a0ad792f6d81aa2bb55053d8",
+  "prompts": {},
+  "humans": {
+    "h_42fad98ca714c8": {
+      "author": "StanGirard"
+    }
+  },
+  "sessions": {
+    "s_1930cc3a6b228d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08264-1a3c-7973-8ac1-d1503c6b7118",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "StanGirard <stan@quivr.app>"
+    }
+  }
+}
