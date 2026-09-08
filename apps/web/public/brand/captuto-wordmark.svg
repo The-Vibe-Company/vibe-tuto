@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 56" width="240" height="56" role="img" aria-label="CapTuto">
+  <defs>
+    <linearGradient id="cw-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"></stop>
+      <stop offset="55%" stop-color="#0d9488"></stop>
+      <stop offset="100%" stop-color="#06b6d4"></stop>
+    </linearGradient>
+  </defs>
+
+  <g transform="translate(4 8)">
+    <rect x="0" y="0" width="40" height="40" rx="11" fill="url(#cw-grad)"></rect>
+    <g transform="translate(20 20)">
+      <circle r="12" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.2"></circle>
+      <path d="M -4.5 -6.5 L 8 0 L -4.5 6.5 Z" fill="#ffffff"></path>
+      <circle cx="8" cy="-8" r="2" fill="#ffffff"></circle>
+    </g>
+  </g>
+
+  <text x="56" y="36" font-family="Sora, Inter, system-ui, sans-serif" font-weight="600" font-size="22" letter-spacing="-0.5" fill="#1c1917">CapTuto</text>
+</svg>

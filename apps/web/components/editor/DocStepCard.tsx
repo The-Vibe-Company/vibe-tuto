@@ -41,6 +41,12 @@ interface DocStepCardProps {
   onRemoveImage?: () => void;
   onSetImage?: (source: SourceWithSignedUrl) => void;
   readOnly?: boolean;
+  /**
+   * Public / embed views receive screenshots that already have annotations
+   * baked in by the server. Forward this so StepScreenshot skips the
+   * client-side annotation canvas (otherwise we'd double-draw).
+   */
+  flattened?: boolean;
 }
 
 function DocStepCardComponent({
@@ -57,6 +63,7 @@ function DocStepCardComponent({
   onRemoveImage,
   onSetImage,
   readOnly = false,
+  flattened = false,
 }: DocStepCardProps) {
   const [isHovered, setIsHovered] = useState(false);
   const [showImagePicker, setShowImagePicker] = useState(false);
@@ -129,7 +136,7 @@ function DocStepCardComponent({
               {...attributes}
               {...listeners}
               className={cn(
-                'cursor-grab touch-none text-muted-foreground/40 transition-all hover:text-muted-foreground',
+                'cursor-grab touch-none text-stone-500/40 transition-all hover:text-stone-500',
                 isHovered ? 'opacity-100' : 'opacity-0'
               )}
             >
@@ -147,7 +154,7 @@ function DocStepCardComponent({
                   size="icon"
                   onClick={onDelete}
                   className={cn(
-                    'h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all',
+                    'h-7 w-7 text-stone-500 hover:text-destructive hover:bg-destructive/10 transition-all',
                     isHovered ? 'opacity-100' : 'opacity-0'
                   )}
                 >
@@ -183,7 +190,7 @@ function DocStepCardComponent({
               {...attributes}
               {...listeners}
               className={cn(
-                'mt-2 cursor-grab touch-none text-muted-foreground/40 transition-all hover:text-muted-foreground',
+                'mt-2 cursor-grab touch-none text-stone-500/40 transition-all hover:text-stone-500',
                 isHovered ? 'opacity-100' : 'opacity-0'
               )}
             >
@@ -191,7 +198,7 @@ function DocStepCardComponent({
             </button>
           )}
 
-          <div className="min-w-0 flex-1 border-l-[3px] border-primary/60 pl-4 py-1">
+          <div className="min-w-0 flex-1 border-l-[3px] border-brand-500/60 pl-4 py-1">
             <InlineCaption
               content={step.text_content || ''}
               onChange={onCaptionChange}
@@ -209,7 +216,7 @@ function DocStepCardComponent({
                   size="icon"
                   onClick={onDelete}
                   className={cn(
-                    'mt-1 h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10 transition-all',
+                    'mt-1 h-7 w-7 text-stone-500 hover:text-destructive hover:bg-destructive/10 transition-all',
                     isHovered ? 'opacity-100' : 'opacity-0'
                   )}
                 >
@@ -233,9 +240,9 @@ function DocStepCardComponent({
         ref={readOnly ? undefined : setNodeRef}
         style={readOnly ? undefined : style}
         className={cn(
-          'group relative rounded-xl border transition-all duration-200',
-          !readOnly && isDragging && 'z-50 opacity-50 shadow-xl ring-2 ring-primary/20',
-          !isDragging && 'hover:shadow-md hover:border-border/80'
+          'group relative rounded-2xl border border-stone-200/60 bg-white transition-all duration-200 ease-out-expo',
+          !readOnly && isDragging && 'z-50 opacity-50 shadow-xl ring-2 ring-brand-200',
+          !isDragging && 'hover:-translate-y-0.5 hover:border-stone-300/60 hover:shadow-lg hover:shadow-stone-200/40',
         )}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
@@ -249,7 +256,7 @@ function DocStepCardComponent({
                   {...attributes}
                   {...listeners}
                   className={cn(
-                    'cursor-grab touch-none text-muted-foreground/40 transition-all hover:text-muted-foreground',
+                    'cursor-grab touch-none text-stone-500/40 transition-all hover:text-stone-500',
                     isHovered ? 'opacity-100' : 'opacity-0'
                   )}
                 >
@@ -259,11 +266,16 @@ function DocStepCardComponent({
 
               <div
                 className={cn(
-                  'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold shadow-sm',
+                  'flex h-8 w-8 items-center justify-center rounded-full text-sm font-semibold font-heading shadow-sm',
                   isTabChange
                     ? 'bg-amber-500/15 text-amber-600 ring-1 ring-amber-500/30'
-                    : 'bg-primary text-primary-foreground'
+                    : 'text-white'
                 )}
+                style={
+                  !isTabChange
+                    ? { backgroundImage: 'var(--brand-gradient)' }
+                    : undefined
+                }
               >
                 {stepNumber}
               </div>
@@ -291,7 +303,7 @@ function DocStepCardComponent({
                   {isUrlRedundant && !urlExpanded && !isEditingUrl ? (
                     <button
                       onClick={() => setUrlExpanded(true)}
-                      className="inline-flex items-center gap-1 rounded-full bg-muted/50 px-2 py-0.5 text-xs text-muted-foreground/60 hover:text-muted-foreground hover:bg-muted/70 transition-colors"
+                      className="inline-flex items-center gap-1 rounded-full bg-stone-100/50 px-2 py-0.5 text-xs text-stone-500/60 hover:text-stone-500 hover:bg-stone-100/70 transition-colors"
                     >
                       <Globe className="h-2.5 w-2.5" />
                       <ChevronRight className="h-2.5 w-2.5" />
@@ -311,7 +323,7 @@ function DocStepCardComponent({
                             setIsEditingUrl(false);
                           }
                         }}
-                        className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
+                        className="flex-1 rounded-md border border-input bg-background px-2 py-1 text-sm focus:outline-none focus:ring-2 focus:ring-brand-500/20"
                         autoFocus
                       />
                       <Button
@@ -332,7 +344,7 @@ function DocStepCardComponent({
                           setEditedUrl(displayUrl || '');
                           setIsEditingUrl(false);
                         }}
-                        className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        className="h-7 w-7 text-stone-500 hover:text-destructive hover:bg-destructive/10"
                       >
                         <X className="h-3.5 w-3.5" />
                       </Button>
@@ -352,8 +364,8 @@ function DocStepCardComponent({
                         className={cn(
                           "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs transition-all duration-200 max-w-[300px]",
                           step.show_url === false
-                            ? "bg-destructive/5 text-muted-foreground/30 line-through decoration-destructive/40"
-                            : "bg-muted/70 text-muted-foreground hover:text-primary hover:bg-muted"
+                            ? "bg-destructive/5 text-stone-500/30 line-through decoration-destructive/40"
+                            : "bg-stone-100/70 text-stone-500 hover:text-brand-600 hover:bg-stone-100"
                         )}
                       >
                         <Globe className="h-3 w-3 flex-shrink-0" />
@@ -371,7 +383,7 @@ function DocStepCardComponent({
                           variant="ghost"
                           size="icon"
                           onClick={() => setUrlExpanded(false)}
-                          className="h-6 w-6 text-muted-foreground/50 hover:text-muted-foreground transition-colors"
+                          className="h-6 w-6 text-stone-500/50 hover:text-stone-500 transition-colors"
                         >
                           <X className="h-3 w-3" />
                         </Button>
@@ -386,8 +398,8 @@ function DocStepCardComponent({
                               className={cn(
                                 "h-6 w-6 transition-all",
                                 step.show_url === false
-                                  ? "text-destructive/60 hover:text-primary"
-                                  : "opacity-0 group-hover/url:opacity-100 text-muted-foreground hover:text-primary"
+                                  ? "text-destructive/60 hover:text-brand-600"
+                                  : "opacity-0 group-hover/url:opacity-100 text-stone-500 hover:text-brand-600"
                               )}
                             >
                               {step.show_url === false ? (
@@ -410,7 +422,7 @@ function DocStepCardComponent({
                             setEditedUrl(displayUrl || '');
                             setIsEditingUrl(true);
                           }}
-                          className="h-6 w-6 opacity-0 group-hover/url:opacity-100 text-muted-foreground hover:text-primary transition-opacity"
+                          className="h-6 w-6 opacity-0 group-hover/url:opacity-100 text-stone-500 hover:text-brand-600 transition-opacity"
                         >
                           <Pencil className="h-3 w-3" />
                         </Button>
@@ -423,12 +435,12 @@ function DocStepCardComponent({
               {/* App context badge for desktop sources */}
               {step.source?.app_name && (
                 <div className="flex items-center gap-1.5 pb-1">
-                  <Badge variant="outline" className="gap-1.5 font-normal text-muted-foreground border-border/60 bg-muted/30">
+                  <Badge variant="outline" className="gap-1.5 font-normal text-stone-500 border-stone-200/60 bg-stone-100/30">
                     <Monitor className="h-3 w-3" />
                     <span className="text-xs">{step.source.app_name}</span>
                   </Badge>
                   {step.source.window_title && (
-                    <span className="truncate text-xs text-muted-foreground/60 max-w-[200px]">
+                    <span className="truncate text-xs text-stone-500/60 max-w-[200px]">
                       {step.source.window_title}
                     </span>
                   )}
@@ -451,7 +463,7 @@ function DocStepCardComponent({
                         variant="ghost"
                         size="icon"
                         onClick={onRemoveImage}
-                        className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                        className="h-7 w-7 text-stone-500 hover:text-destructive hover:bg-destructive/10"
                       >
                         <ImageOff className="h-3.5 w-3.5" />
                       </Button>
@@ -467,7 +479,7 @@ function DocStepCardComponent({
                       variant="ghost"
                       size="icon"
                       onClick={onDelete}
-                      className="h-7 w-7 text-muted-foreground hover:text-destructive hover:bg-destructive/10"
+                      className="h-7 w-7 text-stone-500 hover:text-destructive hover:bg-destructive/10"
                     >
                       <Trash2 className="h-3.5 w-3.5" />
                     </Button>
@@ -491,6 +503,7 @@ function DocStepCardComponent({
                 onUpdateAnnotation={handleUpdateAnnotation}
                 onDeleteAnnotation={handleDeleteAnnotation}
                 readOnly={readOnly}
+                flattened={flattened}
               />
             </div>
           ) : !readOnly ? (
@@ -498,7 +511,7 @@ function DocStepCardComponent({
               <Button
                 variant="outline"
                 onClick={() => setShowImagePicker(true)}
-                className="w-full border-dashed hover:border-primary hover:bg-primary/5 hover:text-primary transition-colors"
+                className="w-full border-dashed hover:border-brand-500 hover:bg-brand-500/5 hover:text-brand-600 transition-colors"
               >
                 <ImagePlus className="h-4 w-4 mr-2" />
                 <span>Add an image</span>
@@ -511,7 +524,7 @@ function DocStepCardComponent({
           {/* Description */}
           {step.description != null ? (
             <div className="px-4 pb-4">
-              <div className="rounded-lg bg-muted/40 border border-border/50 p-3">
+              <div className="rounded-lg bg-stone-100/40 border border-stone-200/50 p-3">
                 <InlineCaption
                   content={step.description}
                   onChange={onDescriptionChange}
@@ -526,7 +539,7 @@ function DocStepCardComponent({
                 variant="ghost"
                 size="sm"
                 onClick={() => onDescriptionChange?.('')}
-                className="text-muted-foreground hover:text-foreground"
+                className="text-stone-500 hover:text-stone-900"
               >
                 <FileText className="h-4 w-4 mr-2" />
                 <span>Add description</span>
@@ -556,7 +569,7 @@ function DocStepCardComponent({
                       onSetImage?.(source);
                       setShowImagePicker(false);
                     }}
-                    className="group relative aspect-video overflow-hidden rounded-lg border border-border bg-muted transition-all hover:border-primary hover:ring-2 hover:ring-primary/20"
+                    className="group relative aspect-video overflow-hidden rounded-lg border border-stone-200/60 bg-stone-100 transition-all hover:border-brand-500 hover:ring-2 hover:ring-brand-500/20"
                   >
                     <Image
                 unoptimized
@@ -574,7 +587,7 @@ function DocStepCardComponent({
             </ScrollArea>
           ) : (
             <div className="py-8 text-center">
-              <p className="text-sm text-muted-foreground">
+              <p className="text-sm text-stone-500">
                 No images available in the timeline
               </p>
             </div>
@@ -599,6 +612,7 @@ export const DocStepCard = memo(DocStepCardComponent, (prev, next) => {
     prev.stepNumber === next.stepNumber &&
     prev.previousStepUrl === next.previousStepUrl &&
     prev.readOnly === next.readOnly &&
+    prev.flattened === next.flattened &&
     JSON.stringify(prev.step.annotations) === JSON.stringify(next.step.annotations) &&
     (prev.sources?.length ?? 0) === (next.sources?.length ?? 0)
   );

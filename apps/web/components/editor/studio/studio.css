@@ -1,0 +1,237 @@
+/* Studio editor — scoped design tokens & utilities.
+   Ported from the Claude Design `editor.html` prototype.
+   Everything is scoped to `.studio` so it doesn't leak into the rest of the app. */
+
+.studio {
+  /* Aligned to the CapTuto design system — stone neutrals + brand indigo. */
+  --studio-bg: var(--stone-50);
+  --studio-canvas-bg: var(--stone-50);
+  --studio-surface: #ffffff;
+  --studio-surface-2: var(--stone-100);
+  --studio-ink: var(--stone-900);
+  --studio-ink-2: var(--stone-700);
+  --studio-muted: var(--stone-600);
+  --studio-muted-2: var(--stone-500);
+  --studio-line: var(--stone-200);
+  --studio-line-strong: var(--stone-300);
+  --studio-accent: var(--brand-600);
+  --studio-accent-soft: var(--brand-50);
+  --studio-accent-ink: var(--brand-700);
+  --studio-click: #ef5a3a;
+  --studio-click-soft: #fff1ec;
+  --studio-warn: #c08a2a;
+  --studio-ok: var(--success-600);
+  --studio-radius-sm: 6px;
+  --studio-radius: 10px;
+  --studio-radius-lg: 16px;
+  --studio-shadow-1: 0 1px 0 rgba(28, 25, 23, 0.04), 0 1px 2px rgba(28, 25, 23, 0.04);
+  --studio-shadow-2: 0 1px 0 rgba(28, 25, 23, 0.04), 0 8px 24px -8px rgba(28, 25, 23, 0.1);
+  --studio-shadow-3: 0 1px 0 rgba(28, 25, 23, 0.04), 0 24px 60px -20px rgba(28, 25, 23, 0.18);
+  --studio-font-ui: var(--font-inter), system-ui, sans-serif;
+  --studio-font-display: var(--font-display-serif), Georgia, serif;
+  --studio-font-heading: var(--font-heading), system-ui, sans-serif;
+  --studio-font-mono: var(--font-jetbrains-mono), ui-monospace, monospace;
+
+  font-family: var(--studio-font-ui);
+  color: var(--studio-ink);
+  background: var(--studio-bg);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+.studio,
+.studio * {
+  box-sizing: border-box;
+}
+
+.studio .ed-mono {
+  font-family: var(--studio-font-mono);
+}
+.studio .ed-serif {
+  font-family: var(--studio-font-display);
+  font-weight: 400;
+  letter-spacing: -0.005em;
+}
+
+/* ---- Buttons ---- */
+.studio .ed-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: 8px;
+  border: 1px solid var(--studio-line-strong);
+  background: var(--studio-surface);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--studio-ink-2);
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  font-family: inherit;
+}
+.studio .ed-btn:hover:not(:disabled) {
+  background: var(--studio-surface-2);
+  border-color: var(--studio-ink-2);
+  color: var(--studio-ink);
+}
+.studio .ed-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+.studio .ed-btn-ghost {
+  border-color: transparent;
+  background: transparent;
+}
+.studio .ed-btn-ghost:hover:not(:disabled) {
+  background: var(--studio-surface-2);
+  border-color: var(--studio-line);
+}
+.studio .ed-btn-primary {
+  background: var(--studio-ink);
+  color: #fff;
+  border-color: var(--studio-ink);
+}
+.studio .ed-btn-primary:hover:not(:disabled) {
+  background: #000;
+  border-color: #000;
+  color: #fff;
+}
+.studio .ed-btn-accent {
+  background: var(--studio-accent);
+  color: #fff;
+  border-color: var(--studio-accent);
+}
+.studio .ed-btn-accent:hover:not(:disabled) {
+  filter: brightness(0.95);
+  color: #fff;
+}
+.studio .ed-btn-sm {
+  height: 26px;
+  padding: 0 8px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+.studio .ed-btn-icon {
+  width: 30px;
+  padding: 0;
+  justify-content: center;
+}
+.studio .ed-btn-icon.ed-btn-sm {
+  width: 26px;
+}
+
+/* ---- Inputs ---- */
+.studio .ed-input {
+  height: 30px;
+  padding: 0 10px;
+  border-radius: 8px;
+  border: 1px solid var(--studio-line-strong);
+  background: var(--studio-surface);
+  color: var(--studio-ink);
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.studio .ed-input:focus {
+  border-color: var(--studio-accent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--studio-accent) 18%, transparent);
+}
+
+/* ---- Chips ---- */
+.studio .ed-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 22px;
+  padding: 0 8px;
+  border-radius: 999px;
+  background: var(--studio-surface-2);
+  color: var(--studio-ink-2);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.01em;
+  border: 1px solid var(--studio-line);
+}
+.studio .ed-chip.solid {
+  background: var(--studio-ink);
+  color: #fff;
+  border-color: var(--studio-ink);
+}
+.studio .ed-chip.accent {
+  background: var(--studio-accent-soft);
+  color: var(--studio-accent-ink);
+  border-color: color-mix(in oklab, var(--studio-accent) 25%, transparent);
+}
+.studio .ed-chip.click {
+  background: var(--studio-click-soft);
+  color: #b94627;
+  border-color: color-mix(in oklab, var(--studio-click) 25%, transparent);
+}
+
+/* ---- Misc ---- */
+.studio .ed-divider {
+  height: 1px;
+  background: var(--studio-line);
+}
+.studio .ed-shadow-1 {
+  box-shadow: var(--studio-shadow-1);
+}
+.studio .ed-shadow-2 {
+  box-shadow: var(--studio-shadow-2);
+}
+.studio .ed-shadow-3 {
+  box-shadow: var(--studio-shadow-3);
+}
+.studio [contenteditable] {
+  outline: none;
+}
+
+/* ---- Dot-grid canvas background ---- */
+.studio .studio-canvas-bg {
+  background:
+    radial-gradient(circle at center, rgba(99, 102, 241, 0.07) 1px, transparent 1.4px) 0 0 / 22px 22px,
+    radial-gradient(circle at center, rgba(99, 102, 241, 0.07) 1px, transparent 1.4px) 11px 11px / 22px 22px,
+    var(--studio-canvas-bg);
+}
+
+/* ---- Subtle scrollbar ---- */
+.studio *::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+.studio *::-webkit-scrollbar-thumb {
+  background: var(--stone-300);
+  border-radius: 999px;
+  border: 2px solid transparent;
+  background-clip: padding-box;
+}
+.studio *::-webkit-scrollbar-thumb:hover {
+  background: var(--stone-400);
+  background-clip: padding-box;
+  border: 2px solid transparent;
+}
+.studio *::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* ---- Focus mode fade-in ---- */
+@keyframes studioFocusIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.studio .studio-focus-anim {
+  animation: studioFocusIn 0.25s ease;
+}
+
+/* ---- Caret blink for the title input ---- */
+@keyframes studioCaret {
+  50% {
+    opacity: 0;
+  }
+}

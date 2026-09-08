@@ -9,40 +9,33 @@ import { createClient } from '@/lib/supabase/server';
 
 const mockCreateClient = vi.mocked(createClient);
 
+type DashboardRow = {
+  id: string;
+  title: string;
+  slug: string | null;
+  status: string;
+  visibility: string | null;
+  created_at: string;
+  steps_count: number;
+  thumbnail_path: string | null;
+};
+
 function createMockSupabase(overrides: {
   user?: { id: string } | null;
   authError?: object | null;
-  tutorials?: unknown[] | null;
-  tutorialsError?: object | null;
+  rows?: DashboardRow[] | null;
+  rpcError?: object | null;
   signedUrlResults?: Array<{ signedUrl: string; path: string }>;
 }) {
   const {
     user = null,
     authError = null,
-    tutorials = null,
-    tutorialsError = null,
+    rows = null,
+    rpcError = null,
     signedUrlResults = [],
   } = overrides;
 
-  const mockFrom = vi.fn().mockImplementation((table: string) => {
-    if (table === 'tutorials') {
-      return {
-        select: vi.fn().mockReturnValue({
-          eq: vi.fn().mockReturnValue({
-            order: vi.fn().mockResolvedValue({
-              data: tutorials,
-              error: tutorialsError,
-            }),
-          }),
-        }),
-      };
-    }
-    return {
-      select: vi.fn().mockReturnValue({
-        eq: vi.fn().mockResolvedValue({ data: null, error: null }),
-      }),
-    };
-  });
+  const rpc = vi.fn().mockResolvedValue({ data: rows, error: rpcError });
 
   return {
     auth: {
@@ -51,7 +44,7 @@ function createMockSupabase(overrides: {
         error: authError,
       }),
     },
-    from: mockFrom,
+    rpc,
     storage: {
       from: vi.fn().mockReturnValue({
         createSignedUrls: vi.fn().mockResolvedValue({
@@ -86,7 +79,7 @@ describe('GET /api/tutorials', () => {
     mockCreateClient.mockResolvedValue(
       createMockSupabase({
         user: { id: 'user-123' },
-        tutorials: [],
+        rows: [],
       }) as any
     );
 
@@ -100,7 +93,7 @@ describe('GET /api/tutorials', () => {
     mockCreateClient.mockResolvedValue(
       createMockSupabase({
         user: { id: 'user-123' },
-        tutorials: [
+        rows: [
           {
             id: 't1',
             title: 'Tutorial 1',
@@ -108,10 +101,8 @@ describe('GET /api/tutorials', () => {
             status: 'ready',
             visibility: 'public',
             created_at: '2024-01-01',
-            steps: [{ count: 5 }],
-            sources: [
-              { tutorial_id: 't1', screenshot_url: 'path/to/screenshot1.png', order_index: 0 },
-            ],
+            steps_count: 5,
+            thumbnail_path: 'path/to/screenshot1.png',
           },
           {
             id: 't2',
@@ -120,8 +111,8 @@ describe('GET /api/tutorials', () => {
             status: 'draft',
             visibility: 'private',
             created_at: '2024-01-02',
-            steps: [{ count: 0 }],
-            sources: [],
+            steps_count: 0,
+            thumbnail_path: null,
           },
         ],
         signedUrlResults: [
@@ -160,8 +151,8 @@ describe('GET /api/tutorials', () => {
     mockCreateClient.mockResolvedValue(
       createMockSupabase({
         user: { id: 'user-123' },
-        tutorials: null,
-        tutorialsError: { message: 'DB error' },
+        rows: null,
+        rpcError: { message: 'DB error' },
       }) as any
     );
 
@@ -171,25 +162,27 @@ describe('GET /api/tutorials', () => {
     expect(body.error).toBe('Failed to fetch tutorials');
   });
 
-  it('orders tutorials by created_at descending', async () => {
+  it('calls the dashboard RPC with pagination args', async () => {
     const mockSupabase = createMockSupabase({
       user: { id: 'user-123' },
-      tutorials: [],
+      rows: [],
     });
 
     mockCreateClient.mockResolvedValue(mockSupabase as any);
 
     await GET();
 
-    // Verify that from('tutorials') was called and order was chained
-    expect(mockSupabase.from).toHaveBeenCalledWith('tutorials');
+    expect(mockSupabase.rpc).toHaveBeenCalledWith(
+      'get_user_dashboard_tutorials',
+      expect.objectContaining({ p_limit: expect.any(Number), p_offset: 0 })
+    );
   });
 
   it('handles tutorials with null visibility', async () => {
     mockCreateClient.mockResolvedValue(
       createMockSupabase({
         user: { id: 'user-123' },
-        tutorials: [
+        rows: [
           {
             id: 't1',
             title: 'No visibility',
@@ -197,8 +190,8 @@ describe('GET /api/tutorials', () => {
             status: 'draft',
             visibility: null,
             created_at: '2024-01-01',
-            steps: [],
-            sources: [],
+            steps_count: 0,
+            thumbnail_path: null,
           },
         ],
       }) as any
@@ -210,20 +203,20 @@ describe('GET /api/tutorials', () => {
     expect(body.tutorials[0].visibility).toBe('private');
   });
 
-  it('handles tutorials with no step count aggregation', async () => {
+  it('returns null thumbnail when thumbnail_path is missing', async () => {
     mockCreateClient.mockResolvedValue(
       createMockSupabase({
         user: { id: 'user-123' },
-        tutorials: [
+        rows: [
           {
             id: 't1',
-            title: 'No steps',
-            slug: 'no-steps',
+            title: 'No thumb',
+            slug: 'no-thumb',
             status: 'draft',
             visibility: 'private',
             created_at: '2024-01-01',
-            steps: [],
-            sources: [],
+            steps_count: 0,
+            thumbnail_path: null,
           },
         ],
       }) as any
@@ -232,6 +225,6 @@ describe('GET /api/tutorials', () => {
     const response = await GET();
     expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body.tutorials[0].stepsCount).toBe(0);
+    expect(body.tutorials[0].thumbnailUrl).toBeNull();
   });
 });

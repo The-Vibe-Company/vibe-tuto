@@ -29,6 +29,10 @@ const nextConfig = {
       'lucide-react',
       '@radix-ui/react-icons',
     ],
+    // Keep native bindings external — webpack can't parse .node binaries.
+    // @napi-rs/canvas is used server-side by lib/flatten to bake annotations
+    // into share-page screenshots.
+    serverComponentsExternalPackages: ['@napi-rs/canvas'],
   },
   // Compress output for better performance
   compress: true,

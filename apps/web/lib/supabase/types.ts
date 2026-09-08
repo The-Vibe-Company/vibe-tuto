@@ -236,6 +236,22 @@ export type Database = {
     Functions: {
       approve_desktop_connection: { Args: { connection_id: string; approving_user_id: string }; Returns: string };
       exchange_desktop_connection: { Args: { connection_id: string; verifier: string }; Returns: Json };
+      get_user_dashboard_tutorials: {
+        Args: {
+          p_limit?: number;
+          p_offset?: number;
+        };
+        Returns: {
+          id: string;
+          title: string;
+          slug: string | null;
+          status: string;
+          visibility: string | null;
+          created_at: string;
+          steps_count: number;
+          thumbnail_path: string | null;
+        }[];
+      };
     };
     Enums: {
       [_ in never]: never;

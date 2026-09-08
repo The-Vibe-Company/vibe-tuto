@@ -1,5 +1,6 @@
 import { createClient } from '@/lib/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
+import { flattenStepIfShared } from '@/lib/flatten/cache';
 
 export async function PATCH(
   request: Request,
@@ -108,6 +109,15 @@ export async function PATCH(
     if (updateError) {
       console.error('Failed to update step:', updateError);
       return NextResponse.json({ error: 'Failed to update step' }, { status: 500 });
+    }
+
+    // If annotations changed and the parent tutorial is shared, re-flatten the
+    // image so the next public view picks up the new content-hashed path.
+    // Best-effort: do not block the PATCH response.
+    if (annotations !== undefined) {
+      flattenStepIfShared(id).catch((err) => {
+        console.error('flatten: background re-flatten failed', err);
+      });
     }
 
     return NextResponse.json({ step: updatedStep });

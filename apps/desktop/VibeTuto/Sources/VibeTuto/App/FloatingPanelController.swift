@@ -16,14 +16,12 @@ final class FloatingPanelController: NSWindowController, NSWindowDelegate {
     private var cancellables = Set<AnyCancellable>()
 
     convenience init() {
+        let panelWidth = DT.Size.mainPanelWidth
+        let panelHeight: CGFloat = 360
+
         let panel = FloatingPanelWindow(
-            contentRect: NSRect(
-                x: 0,
-                y: 0,
-                width: DT.Size.floatingPanelWidth,
-                height: DT.Size.floatingPanelHeight
-            ),
-            styleMask: [.titled, .closable, .miniaturizable, .resizable, .fullSizeContentView],
+            contentRect: NSRect(x: 0, y: 0, width: panelWidth, height: panelHeight),
+            styleMask: [.titled, .closable, .miniaturizable, .fullSizeContentView],
             backing: .buffered,
             defer: false
         )
@@ -37,15 +35,13 @@ final class FloatingPanelController: NSWindowController, NSWindowDelegate {
         panel.hidesOnDeactivate = false
         panel.isMovableByWindowBackground = true
         panel.hasShadow = true
-        panel.backgroundColor = .clear
-        panel.isOpaque = false
+        panel.backgroundColor = DT.Colors.surfaceNS
+        panel.isOpaque = true
         panel.center()
+
         let hostingController = NSHostingController(rootView: FloatingPanelView())
-        hostingController.view.wantsLayer = true
-        hostingController.view.layer?.backgroundColor = NSColor.clear.cgColor
+        hostingController.sizingOptions = []
         panel.contentViewController = hostingController
-        panel.contentView?.wantsLayer = true
-        panel.contentView?.layer?.backgroundColor = NSColor.clear.cgColor
 
         self.init(window: panel)
         panel.delegate = self

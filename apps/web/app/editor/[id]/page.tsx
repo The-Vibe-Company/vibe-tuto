@@ -74,20 +74,28 @@ export default async function EditorPage({ params }: EditorPageProps) {
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     .map((s: any) => s.screenshot_url);
 
-  // Also add audio path
-  const audioPath = `${tutorial.user_id}/${tutorial.id}.webm`;
+  // Browser extension recordings are webm; desktop recordings are m4a.
+  const audioPaths = [
+    `${tutorial.user_id}/${tutorial.id}.webm`,
+    `${tutorial.user_id}/${tutorial.id}.m4a`,
+  ];
 
   // 6. Generate ALL signed URLs in one parallel batch
-  const [screenshotSignedUrls, audioSignedUrlResult] = await Promise.all([
+  const [screenshotSignedUrls, audioSignedUrlResults] = await Promise.all([
     // Batch all screenshot signed URLs
     Promise.all(
       screenshotPaths.map(path =>
         supabase.storage.from('screenshots').createSignedUrl(path, 3600)
       )
     ),
-    // Audio signed URL
-    supabase.storage.from('recordings').createSignedUrl(audioPath, 3600),
+    // Audio signed URLs
+    Promise.all(
+      audioPaths.map(path =>
+        supabase.storage.from('recordings').createSignedUrl(path, 3600)
+      )
+    ),
   ]);
+  const audioUrl = audioSignedUrlResults.find(result => result.data?.signedUrl)?.data?.signedUrl || null;
 
   // Build path -> signed URL map for screenshots
   const signedUrlMap = new Map<string, string>();
@@ -160,7 +168,7 @@ export default async function EditorPage({ params }: EditorPageProps) {
       initialTutorial={tutorial}
       initialSources={sourcesWithSignedUrls}
       initialSteps={stepsWithSources}
-      audioUrl={audioSignedUrlResult.data?.signedUrl || null}
+      audioUrl={audioUrl}
     />
   );
 }

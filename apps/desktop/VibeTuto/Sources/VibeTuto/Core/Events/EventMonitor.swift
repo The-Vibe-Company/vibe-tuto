@@ -12,14 +12,26 @@ final class EventMonitor: @unchecked Sendable {
     private var globalScrollMonitor: Any?
     private var onAction: ActionCallback?
     private var sessionStartTime: Date?
+    private var captureArea: CaptureGeometry.CaptureArea?
     private var isMonitoring = false
 
     private let accessibilityReader = AccessibilityReader()
+    private let plugins: [AppPlugin] = [
+        BrowserPlugin(),
+        VSCodePlugin(),
+        TerminalPlugin(),
+        FigmaPlugin(),
+    ]
 
     /// Start monitoring global events.
-    func start(sessionStart: Date, onAction: @escaping ActionCallback) {
+    func start(
+        sessionStart: Date,
+        captureArea: CaptureGeometry.CaptureArea? = nil,
+        onAction: @escaping ActionCallback
+    ) {
         guard !isMonitoring else { return }
         self.sessionStartTime = sessionStart
+        self.captureArea = captureArea
         self.onAction = onAction
         isMonitoring = true
 
@@ -60,42 +72,58 @@ final class EventMonitor: @unchecked Sendable {
             globalScrollMonitor = nil
         }
         isMonitoring = false
+        captureArea = nil
         onAction = nil
     }
 
     // MARK: - Event Handlers
 
-    var captureScreenFrame: CGRect?
-
     private func handleClickEvent(_ event: NSEvent) {
         guard let sessionStart = sessionStartTime else { return }
 
-        let screenLocation = event.locationInWindow
-        let screenFrame = captureScreenFrame ?? NSScreen.main?.frame ?? CGRect(x: 0, y: 0, width: 2560, height: 1600)
+        let screenLocation = NSEvent.mouseLocation
+        let fallbackArea = CaptureGeometry.CaptureArea(
+            frame: NSScreen.main?.frame ?? CGRect(x: 0, y: 0, width: 2560, height: 1600),
+            visibleFrame: NSScreen.main?.visibleFrame ?? CGRect(x: 0, y: 0, width: 2560, height: 1560),
+            scale: NSScreen.main?.backingScaleFactor ?? 1,
+            displayID: nil
+        )
+        let activeArea = captureArea ?? fallbackArea
 
         // Convert to normalized coordinates (0-1 range)
-        let normalizedX = (screenLocation.x - screenFrame.minX) / screenFrame.width
-        // NSEvent y is from bottom, flip to top-origin
-        let normalizedY = 1.0 - ((screenLocation.y - screenFrame.minY) / screenFrame.height)
+        guard let normalized = CaptureGeometry.normalizedPoint(screenLocation, in: activeArea.frame) else {
+            return
+        }
 
-        // Get accessibility info at click point
-        let elementInfo = accessibilityReader.elementAt(
-            point: CGPoint(x: screenLocation.x, y: (NSScreen.screens.first?.frame.height ?? screenFrame.height) - screenLocation.y)
-        )
-
+        // Get accessibility info at click point.
         let frontApp = NSWorkspace.shared.frontmostApplication
+        let windowTitle = accessibilityReader.frontWindowTitle()
+        let pluginContext = pluginContext(
+            bundleID: frontApp?.bundleIdentifier,
+            windowTitle: windowTitle
+        )
+        let elementInfo = enrich(
+            accessibilityReader.elementAt(
+                point: CGPoint(
+                    x: screenLocation.x,
+                    y: activeArea.frame.maxY - (screenLocation.y - activeArea.frame.minY)
+                )
+            ),
+            with: pluginContext
+        )
         let relativeTime = Date().timeIntervalSince(sessionStart)
 
         let action = CapturedAction(
             relativeTime: relativeTime,
             actionType: .click,
-            clickX: normalizedX,
-            clickY: normalizedY,
-            viewportWidth: Int(screenFrame.width),
-            viewportHeight: Int(screenFrame.height),
+            clickX: normalized.x,
+            clickY: normalized.y,
+            viewportWidth: activeArea.pixelWidth,
+            viewportHeight: activeArea.pixelHeight,
             appBundleID: frontApp?.bundleIdentifier,
             appName: frontApp?.localizedName,
-            windowTitle: accessibilityReader.frontWindowTitle(),
+            windowTitle: windowTitle,
+            url: pluginContext?.url,
             elementInfo: elementInfo
         )
 
@@ -113,6 +141,11 @@ final class EventMonitor: @unchecked Sendable {
 
         let keyCombo = buildKeyCombo(event: event, modifiers: modifiers)
         let frontApp = NSWorkspace.shared.frontmostApplication
+        let windowTitle = accessibilityReader.frontWindowTitle()
+        let pluginContext = pluginContext(
+            bundleID: frontApp?.bundleIdentifier,
+            windowTitle: windowTitle
+        )
         let relativeTime = Date().timeIntervalSince(sessionStart)
 
         let action = CapturedAction(
@@ -120,7 +153,8 @@ final class EventMonitor: @unchecked Sendable {
             actionType: .keyboardShortcut,
             appBundleID: frontApp?.bundleIdentifier,
             appName: frontApp?.localizedName,
-            windowTitle: accessibilityReader.frontWindowTitle(),
+            windowTitle: windowTitle,
+            url: pluginContext?.url,
             keyCombo: keyCombo
         )
 
@@ -147,5 +181,36 @@ final class EventMonitor: @unchecked Sendable {
         }
 
         return parts.joined(separator: "+")
+    }
+
+    private func pluginContext(bundleID: String?, windowTitle: String?) -> AppPluginContext? {
+        guard let bundleID else { return nil }
+        return plugins
+            .first { $0.supportedBundleIDs.contains(bundleID) }?
+            .extractContext(bundleID: bundleID, windowTitle: windowTitle)
+    }
+
+    private func enrich(_ elementInfo: ElementInfo?, with context: AppPluginContext?) -> ElementInfo? {
+        guard let context, !context.additionalInfo.isEmpty else {
+            return elementInfo
+        }
+
+        if let elementInfo {
+            return ElementInfo(
+                role: elementInfo.role,
+                title: elementInfo.title,
+                value: elementInfo.value,
+                parentChain: elementInfo.parentChain,
+                context: context.additionalInfo
+            )
+        }
+
+        return ElementInfo(
+            role: "AppContext",
+            title: nil,
+            value: nil,
+            parentChain: [],
+            context: context.additionalInfo
+        )
     }
 }

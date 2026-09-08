@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="CapTuto mark">
+  <defs>
+    <linearGradient id="ct-grad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5"></stop>
+      <stop offset="55%" stop-color="#0d9488"></stop>
+      <stop offset="100%" stop-color="#06b6d4"></stop>
+    </linearGradient>
+    <linearGradient id="ct-shine" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.35"></stop>
+      <stop offset="60%" stop-color="#ffffff" stop-opacity="0"></stop>
+    </linearGradient>
+    <filter id="ct-soft" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur stdDeviation="0.4"></feGaussianBlur>
+    </filter>
+  </defs>
+
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#ct-grad)"></rect>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#ct-shine)"></rect>
+
+  <g transform="translate(32 32)">
+
+    <circle r="18" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.5"></circle>
+
+    <path d="M -7 -10 L 13 0 L -7 10 Z" fill="#ffffff" filter="url(#ct-soft)"></path>
+
+    <circle cx="13" cy="-13" r="3" fill="#ffffff"></circle>
+    <circle cx="13" cy="-13" r="5" fill="#ffffff" fill-opacity="0.25"></circle>
+  </g>
+</svg>

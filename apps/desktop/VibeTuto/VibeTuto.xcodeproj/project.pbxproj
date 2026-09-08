@@ -19,6 +19,7 @@
 		2BD6C98FDF17AC0DFFF248BF /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F070A063E4C97ADD612D0EF3 /* ContextTracker.swift */; };
 		2D5245366035EB9BD519C7CF /* PreferencesWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BC66CE434557C1546A12D4 /* PreferencesWindow.swift */; };
 		3288F9C0A569B70259F35CE9 /* CaptureEngine.swift in Sources */ = {isa = PBXBuildFile; fileRef = DC555B299D3BDF3D34F00CFD /* CaptureEngine.swift */; };
+		35C51B6BE77F45F4A648D038 /* CaptureGeometry.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36E9BC28EFB64EF787C68BDF /* CaptureGeometry.swift */; };
 		32E3DE3D12AF8F6107EBEE52 /* PluginProtocol.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9CA132FBD94216A777C63433 /* PluginProtocol.swift */; };
 		46A78A3BF52D83073C10DF4D /* Cocoa.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 24B388485E442C141AFB0FEA /* Cocoa.framework */; };
 		4AC694D20F23869BB8193451 /* DesignTokens.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5758D2653C988B55F9871EA6 /* DesignTokens.swift */; };
@@ -70,6 +71,7 @@
 		288BD3F7C89CB3D8A800ECE7 /* VibeTuto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VibeTuto.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		318761302EB9D8487F4DB965 /* RecordingTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingTimeline.swift; sourceTree = "<group>"; };
 		3392E9751508CA1D8D38BC33 /* ElementInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementInfo.swift; sourceTree = "<group>"; };
+		36E9BC28EFB64EF787C68BDF /* CaptureGeometry.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureGeometry.swift; sourceTree = "<group>"; };
 		3D58E8F5C4464F1C226197EF /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
 		3F3A65271A33E8F476233201 /* RetryQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryQueue.swift; sourceTree = "<group>"; };
 		3FAC64886E1DB6FAB42AB7D2 /* CapturedAction.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CapturedAction.swift; sourceTree = "<group>"; };
@@ -256,6 +258,7 @@
 			children = (
 				E5B1775A58F7830F71C89A78 /* CaptureCoordinates.swift */,
 				DC555B299D3BDF3D34F00CFD /* CaptureEngine.swift */,
+				36E9BC28EFB64EF787C68BDF /* CaptureGeometry.swift */,
 				EE3B35FE6C5BA01CB293B8DA /* FrameProcessor.swift */,
 			);
 			path = Capture;
@@ -410,6 +413,7 @@
 				53020B772C9E4B7D5982CAAA /* BrowserPlugin.swift in Sources */,
 				21BBD834D14B24103738F123 /* CaptureCoordinates.swift in Sources */,
 				3288F9C0A569B70259F35CE9 /* CaptureEngine.swift in Sources */,
+				35C51B6BE77F45F4A648D038 /* CaptureGeometry.swift in Sources */,
 				59DE893C279D9C9F8351CC80 /* CapturedAction.swift in Sources */,
 				2BD6C98FDF17AC0DFFF248BF /* ContextTracker.swift in Sources */,
 				AF8278E316F2686A4E0AADF0 /* CountdownOverlayView.swift in Sources */,

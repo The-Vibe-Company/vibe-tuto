@@ -67,8 +67,8 @@ export function InlineCaption({
             className={cn(
               'max-w-none',
               isHeading
-                ? 'text-lg font-semibold text-foreground'
-                : 'prose prose-sm dark:prose-invert prose-strong:text-primary'
+                ? 'text-lg font-semibold text-stone-900'
+                : 'prose prose-sm dark:prose-invert prose-strong:text-brand-600'
             )}
             dangerouslySetInnerHTML={{ __html: content }}
           />
@@ -82,20 +82,20 @@ export function InlineCaption({
     return (
       <div
         onClick={() => setIsEditing(true)}
-        className="cursor-text rounded-md px-2 py-1 transition-colors hover:bg-muted"
+        className="cursor-text rounded-md px-2 py-1 transition-colors hover:bg-stone-100"
       >
         {content ? (
           <div
             className={cn(
               'max-w-none',
               isHeading
-                ? 'text-lg font-semibold text-foreground'
-                : 'prose prose-sm dark:prose-invert prose-strong:text-primary'
+                ? 'text-lg font-semibold text-stone-900'
+                : 'prose prose-sm dark:prose-invert prose-strong:text-brand-600'
             )}
             dangerouslySetInnerHTML={{ __html: content }}
           />
         ) : (
-          <span className="text-muted-foreground italic">
+          <span className="text-stone-500 italic">
             {placeholder || 'Click to add a description...'}
           </span>
         )}
@@ -107,7 +107,7 @@ export function InlineCaption({
   return (
     <div
       ref={containerRef}
-      className="rounded-md border border-primary bg-background px-2 py-1 ring-2 ring-primary/20"
+      className="rounded-md border border-brand-500 bg-background px-2 py-1 ring-2 ring-brand-500/20"
     >
       <Suspense fallback={<Skeleton className="h-6 w-full" />}>
         <TiptapEditor

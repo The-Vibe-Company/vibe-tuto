@@ -44,7 +44,8 @@ export class TutorialService {
       clickPosition: source.click_x != null && source.click_y != null && source.viewport_width && source.viewport_height
         ? { x: source.click_x/source.viewport_width, y: source.click_y/source.viewport_height } : null,
     })));
-    const audioUrl = await this.signed('recordings', `${this.auth.userId}/${id}.webm`);
+    const audioUrl = await this.signed('recordings', `${this.auth.userId}/${id}.webm`)
+      || await this.signed('recordings', `${this.auth.userId}/${id}.m4a`);
     const { data: transcriptFile } = await this.auth.supabase.storage.from('recordings')
       .download(`${this.auth.userId}/${id}.transcript.json`);
     let transcript: unknown = null;

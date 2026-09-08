@@ -127,4 +127,44 @@ final class StepDetectorTests: XCTestCase {
         let step = detector.processAction(action2, orderIndex: 0)
         XCTAssertNotNil(step)
     }
+
+    func testConfiguredGroupingDelayControlsDebounceWindow() {
+        detector.configure(sensitivity: 1, groupingDelayMS: 100)
+        let action1 = CapturedAction(
+            relativeTime: 1.0,
+            actionType: .click,
+            elementInfo: ElementInfo(role: "AXButton", title: "First", value: nil, parentChain: [])
+        )
+        let action2 = CapturedAction(
+            relativeTime: 1.2,
+            actionType: .click,
+            elementInfo: ElementInfo(role: "AXButton", title: "Second", value: nil, parentChain: [])
+        )
+
+        XCTAssertNotNil(detector.processAction(action1, orderIndex: 0))
+        XCTAssertNotNil(detector.processAction(action2, orderIndex: 1))
+    }
+
+    func testURLChangePromotesActionToNavigationStep() {
+        let first = CapturedAction(
+            relativeTime: 1.0,
+            actionType: .click,
+            appName: "Safari",
+            url: "https://example.com/start",
+            elementInfo: ElementInfo(role: "AXButton", title: "Next", value: nil, parentChain: [])
+        )
+        let second = CapturedAction(
+            relativeTime: 2.0,
+            actionType: .click,
+            appName: "Safari",
+            url: "https://example.com/done",
+            elementInfo: ElementInfo(role: "AXButton", title: "Next", value: nil, parentChain: [])
+        )
+
+        _ = detector.processAction(first, orderIndex: 0)
+        let step = detector.processAction(second, orderIndex: 1)
+
+        XCTAssertEqual(step?.actionType, .urlNavigation)
+        XCTAssertEqual(step?.autoCaption, "Navigate to https://example.com/done")
+    }
 }

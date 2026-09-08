@@ -1,5 +1,4 @@
 import Link from "next/link";
-import { Play } from "lucide-react";
 
 const productLinks = [
   { label: "Features", href: "#features" },
@@ -19,9 +18,12 @@ export function Footer() {
           {/* Brand */}
           <div className="sm:col-span-2 md:col-span-1">
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-indigo-500 to-indigo-600">
-                <Play className="h-4 w-4 fill-white text-white" />
-              </div>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/brand/captuto-mark.svg"
+                alt=""
+                className="h-8 w-8 rounded-lg"
+              />
               <span className="font-heading text-lg font-semibold text-white">
                 CapTuto
               </span>

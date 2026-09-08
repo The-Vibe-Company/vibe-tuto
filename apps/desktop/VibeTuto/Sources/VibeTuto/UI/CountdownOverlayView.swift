@@ -1,77 +1,28 @@
 import SwiftUI
 import Cocoa
 
-// MARK: - Film-Leader Countdown Overlay
-
 struct CountdownOverlayView: View {
     @ObservedObject private var session = SessionManager.shared
     @State private var displayedNumber: Int = 3
-    @State private var numberScale: CGFloat = 0.3
-    @State private var numberOpacity: Double = 0
-    @State private var ringProgress: CGFloat = 1.0
-    @State private var recDotVisible = true
+    @State private var numberOpacity: Double = 1
 
     var body: some View {
         ZStack {
-            // Dimmed background
-            Color.black.opacity(0.5)
+            Color.black.opacity(0.28)
                 .ignoresSafeArea()
 
-            VStack(spacing: DT.Spacing.xxl) {
-                // Film-leader reticle
-                ZStack {
-                    // Outer reference circle
-                    Circle()
-                        .stroke(Color.white.opacity(0.12), lineWidth: 2)
-                        .frame(width: 200, height: 200)
+            VStack(spacing: 12) {
+                Text("\(displayedNumber)")
+                    .font(.system(size: 96, weight: .thin, design: .rounded))
+                    .foregroundStyle(.white)
+                    .opacity(numberOpacity)
 
-                    // Crosshairs through center
-                    Rectangle()
-                        .fill(Color.white.opacity(0.08))
-                        .frame(width: 200, height: 1)
-                    Rectangle()
-                        .fill(Color.white.opacity(0.08))
-                        .frame(width: 1, height: 200)
-
-                    // Progress ring — drains each second
-                    Circle()
-                        .trim(from: 0, to: ringProgress)
-                        .stroke(
-                            DT.Colors.accentRed,
-                            style: StrokeStyle(lineWidth: 3, lineCap: .round)
-                        )
-                        .frame(width: 200, height: 200)
-                        .rotationEffect(.degrees(-90))
-
-                    // The number
-                    Text("\(displayedNumber)")
-                        .font(DT.Typography.displayLarge)
-                        .foregroundStyle(.white)
-                        .scaleEffect(numberScale)
-                        .opacity(numberOpacity)
-                }
-
-                // "REC" indicator with blinking dot
-                HStack(spacing: DT.Spacing.sm) {
-                    Circle()
-                        .fill(DT.Colors.accentRed)
-                        .frame(width: 6, height: 6)
-                        .opacity(recDotVisible ? 1.0 : 0.2)
-                    Text("REC")
-                        .font(DT.Typography.monoSmall)
-                        .tracking(2)
-                        .foregroundStyle(DT.Colors.accentRed)
-                }
-
-                // Escape hint
                 Text("Press Esc to cancel")
-                    .font(DT.Typography.monoSmall)
-                    .foregroundStyle(DT.Colors.textTertiary)
+                    .font(.caption)
+                    .foregroundStyle(.white.opacity(0.72))
             }
         }
-        .preferredColorScheme(.dark)
         .onAppear {
-            startBlinkingDot()
             if case .countdown(let remaining) = session.state {
                 animateNumber(remaining)
             }
@@ -84,35 +35,12 @@ struct CountdownOverlayView: View {
     }
 
     private func animateNumber(_ number: Int) {
-        // Reset for new number
-        numberScale = 0.3
-        numberOpacity = 0
-        ringProgress = 1.0
         displayedNumber = number
-
-        // Scale in + fade in
-        withAnimation(DT.Anim.countdownScale) {
-            numberScale = 1.0
-            numberOpacity = 1.0
-        }
-
-        // Drain ring over ~0.9s
-        withAnimation(.linear(duration: 0.9)) {
-            ringProgress = 0
-        }
-
-        // Fade number at end of second
+        numberOpacity = 1
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.7) {
-            withAnimation(.easeIn(duration: 0.25)) {
-                numberOpacity = 0.2
-                numberScale = 0.85
+            withAnimation(.easeOut(duration: 0.18)) {
+                numberOpacity = 0.35
             }
-        }
-    }
-
-    private func startBlinkingDot() {
-        withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
-            recDotVisible.toggle()
         }
     }
 }

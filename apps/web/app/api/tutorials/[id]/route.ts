@@ -195,8 +195,10 @@ export async function DELETE(
   }
 
   // Delete audio recording
-  const audioPath = `${user.id}/${tutorialId}.webm`;
-  await supabase.storage.from('recordings').remove([audioPath]);
+  await supabase.storage.from('recordings').remove([
+    `${user.id}/${tutorialId}.webm`,
+    `${user.id}/${tutorialId}.m4a`,
+  ]);
 
   return NextResponse.json({ success: true });
 }

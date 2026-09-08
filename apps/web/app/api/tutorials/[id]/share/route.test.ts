@@ -9,6 +9,10 @@ vi.mock('nanoid', () => ({
   nanoid: vi.fn(() => 'mock-token-12'),
 }));
 
+vi.mock('@/lib/flatten/cache', () => ({
+  flattenTutorial: vi.fn().mockResolvedValue(undefined),
+}));
+
 import { createClient } from '@/lib/supabase/server';
 
 const mockCreateClient = vi.mocked(createClient);

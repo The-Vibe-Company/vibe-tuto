@@ -77,3 +77,18 @@ rendering. It must never use NEXT_PUBLIC_ prefix. New migrations remove anonymou
 raw-source/storage access so blur cannot be bypassed through original captures.
 Deploy code and migrations together via the existing CI/CD; no manual Vercel deploy.
 Existing signed raw-image URLs may remain usable until their previous expiry.
+
+### Deployment order and recovery
+
+Configure `SUPABASE_SERVICE_ROLE_KEY` before deploying this branch. Deploy the
+server routes through CI/CD before (or together with) the policy-removal migration:
+old anonymous public readers cannot read guides after that migration. Prefer a
+short controlled release window if hosting and database pipelines run separately.
+The new desktop-connection table and source metadata column are additive.
+
+If a release fails, keep raw-capture access private and roll forward to the fixed
+server routes. Rolling back only the frontend can break public viewing. Do not
+restore anonymous raw screenshot policies as a recovery shortcut: that reopens
+access to content hidden by blur. Existing owner editing and stored captures
+remain available. Pairing can be disabled by withholding its new routes; its
+expired requests and tokens do not require dropping data.

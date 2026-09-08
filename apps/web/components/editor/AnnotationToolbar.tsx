@@ -98,7 +98,7 @@ export function AnnotationToolbar({
     activeTool === 'rectangle' || activeTool === 'circle' || activeTool === 'arrow' || activeTool === 'numbered-callout';
 
   return (
-    <div className="flex items-center gap-1 rounded-xl border border-border/50 bg-background/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl">
+    <div className="flex items-center gap-1 rounded-xl border border-stone-200/50 bg-background/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl">
       {/* Drawing Tools */}
       <div className="flex items-center gap-0.5">
         {TOOLS.map(({ type, icon: Icon, label }) => (
@@ -112,8 +112,8 @@ export function AnnotationToolbar({
                 }
                 className={cn(
                   'relative h-8 w-8 rounded-lg p-0 transition-all duration-150',
-                  'hover:bg-muted/80',
-                  activeTool === type && 'bg-primary/10 text-primary shadow-sm'
+                  'hover:bg-stone-100/80',
+                  activeTool === type && 'bg-brand-500/10 text-brand-600 shadow-sm'
                 )}
               >
                 <Icon className="h-4 w-4" />
@@ -146,7 +146,7 @@ export function AnnotationToolbar({
                 <Button
                   variant="ghost"
                   size="sm"
-                  className="h-8 w-8 rounded-lg p-0 hover:bg-muted/80"
+                  className="h-8 w-8 rounded-lg p-0 hover:bg-stone-100/80"
                 >
                   <div className="flex items-center justify-center">
                     <div
@@ -164,10 +164,10 @@ export function AnnotationToolbar({
           <PopoverContent
             side="bottom"
             align="start"
-            className="w-auto rounded-xl border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
+            className="w-auto rounded-xl border-stone-200/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
           >
             <div className="flex flex-col gap-2">
-              <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+              <p className="text-[11px] font-medium uppercase tracking-wider text-stone-500">
                 Color
               </p>
               <div className="flex gap-1.5">
@@ -179,7 +179,7 @@ export function AnnotationToolbar({
                       'h-6 w-6 rounded-full border-2 transition-all duration-150 hover:scale-110',
                       style.color === c.value
                         ? 'border-foreground shadow-md'
-                        : 'border-transparent hover:border-muted-foreground/30'
+                        : 'border-transparent hover:border-stone-400/30'
                     )}
                     style={{ backgroundColor: c.value }}
                     title={c.name}
@@ -199,7 +199,7 @@ export function AnnotationToolbar({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 rounded-lg p-0 hover:bg-muted/80"
+                    className="h-8 w-8 rounded-lg p-0 hover:bg-stone-100/80"
                   >
                     <div className="flex items-center gap-0.5">
                       {STROKE_WIDTHS.map((s) => (
@@ -209,7 +209,7 @@ export function AnnotationToolbar({
                             'rounded-full transition-colors',
                             style.strokeWidth === s.value
                               ? 'bg-foreground'
-                              : 'bg-muted-foreground/40'
+                              : 'bg-stone-500/40'
                           )}
                           style={{
                             width: s.px + 1,
@@ -228,10 +228,10 @@ export function AnnotationToolbar({
             <PopoverContent
               side="bottom"
               align="center"
-              className="w-auto rounded-xl border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
+              className="w-auto rounded-xl border-stone-200/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
             >
               <div className="flex flex-col gap-2">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-stone-500">
                   Stroke
                 </p>
                 <div className="flex gap-2">
@@ -242,8 +242,8 @@ export function AnnotationToolbar({
                       className={cn(
                         'flex h-8 w-8 items-center justify-center rounded-lg border transition-all duration-150',
                         style.strokeWidth === s.value
-                          ? 'border-primary bg-primary/10'
-                          : 'border-border hover:border-muted-foreground/50 hover:bg-muted/50'
+                          ? 'border-brand-500 bg-brand-500/10'
+                          : 'border-stone-200/60 hover:border-stone-400/50 hover:bg-stone-100/50'
                       )}
                     >
                       <div
@@ -270,7 +270,7 @@ export function AnnotationToolbar({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 gap-0.5 rounded-lg px-1.5 text-[11px] font-medium hover:bg-muted/80"
+                    className="h-8 gap-0.5 rounded-lg px-1.5 text-[11px] font-medium hover:bg-stone-100/80"
                   >
                     <Type className="h-3 w-3" />
                     <span>{style.fontSize}</span>
@@ -284,10 +284,10 @@ export function AnnotationToolbar({
             <PopoverContent
               side="bottom"
               align="center"
-              className="w-auto rounded-xl border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
+              className="w-auto rounded-xl border-stone-200/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
             >
               <div className="flex flex-col gap-2">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-stone-500">
                   Font Size
                 </p>
                 <div className="flex gap-1.5">
@@ -298,8 +298,8 @@ export function AnnotationToolbar({
                       className={cn(
                         'flex h-8 w-8 items-center justify-center rounded-lg border text-xs font-medium transition-all duration-150',
                         style.fontSize === f.value
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border text-muted-foreground hover:border-muted-foreground/50 hover:bg-muted/50'
+                          ? 'border-brand-500 bg-brand-500/10 text-brand-600'
+                          : 'border-stone-200/60 text-stone-500 hover:border-stone-400/50 hover:bg-stone-100/50'
                       )}
                     >
                       {f.label}
@@ -320,14 +320,14 @@ export function AnnotationToolbar({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 w-8 rounded-lg p-0 hover:bg-muted/80"
+                    className="h-8 w-8 rounded-lg p-0 hover:bg-stone-100/80"
                   >
                     <div
                       className={cn(
                         'flex h-4 w-4 items-center justify-center text-[8px] font-bold',
-                        style.textBackground === 'pill' && 'rounded-full bg-muted',
-                        style.textBackground === 'rectangle' && 'rounded-[2px] bg-muted',
-                        style.textBackground === 'none' && 'text-muted-foreground'
+                        style.textBackground === 'pill' && 'rounded-full bg-stone-100',
+                        style.textBackground === 'rectangle' && 'rounded-[2px] bg-stone-100',
+                        style.textBackground === 'none' && 'text-stone-500'
                       )}
                     >
                       A
@@ -342,10 +342,10 @@ export function AnnotationToolbar({
             <PopoverContent
               side="bottom"
               align="center"
-              className="w-auto rounded-xl border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
+              className="w-auto rounded-xl border-stone-200/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
             >
               <div className="flex flex-col gap-2">
-                <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                <p className="text-[11px] font-medium uppercase tracking-wider text-stone-500">
                   Background
                 </p>
                 <div className="flex gap-1.5">
@@ -356,8 +356,8 @@ export function AnnotationToolbar({
                       className={cn(
                         'flex h-8 items-center justify-center rounded-lg border px-2.5 text-[11px] font-medium capitalize transition-all duration-150',
                         style.textBackground === bg
-                          ? 'border-primary bg-primary/10 text-primary'
-                          : 'border-border text-muted-foreground hover:border-muted-foreground/50 hover:bg-muted/50'
+                          ? 'border-brand-500 bg-brand-500/10 text-brand-600'
+                          : 'border-stone-200/60 text-stone-500 hover:border-stone-400/50 hover:bg-stone-100/50'
                       )}
                     >
                       {bg}
@@ -378,7 +378,7 @@ export function AnnotationToolbar({
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="h-8 gap-1 rounded-lg px-1.5 text-[11px] font-medium hover:bg-muted/80"
+                    className="h-8 gap-1 rounded-lg px-1.5 text-[11px] font-medium hover:bg-stone-100/80"
                   >
                     <Palette className="h-3 w-3" />
                     <span>{Math.round(style.opacity * 100)}%</span>
@@ -392,14 +392,14 @@ export function AnnotationToolbar({
             <PopoverContent
               side="bottom"
               align="center"
-              className="w-48 rounded-xl border-border/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
+              className="w-48 rounded-xl border-stone-200/50 bg-background/95 p-3 shadow-xl backdrop-blur-xl"
             >
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-between">
-                  <p className="text-[11px] font-medium uppercase tracking-wider text-muted-foreground">
+                  <p className="text-[11px] font-medium uppercase tracking-wider text-stone-500">
                     Opacity
                   </p>
-                  <span className="text-xs font-medium tabular-nums text-foreground">
+                  <span className="text-xs font-medium tabular-nums text-stone-900">
                     {Math.round(style.opacity * 100)}%
                   </span>
                 </div>
@@ -435,7 +435,7 @@ export function AnnotationToolbar({
                 'h-8 w-8 rounded-lg p-0 transition-all duration-150',
                 hasAnnotations
                   ? 'text-destructive hover:bg-destructive/10 hover:text-destructive'
-                  : 'text-muted-foreground/50'
+                  : 'text-stone-500/50'
               )}
             >
               <Trash2 className="h-4 w-4" />

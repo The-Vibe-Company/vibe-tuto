@@ -1,14 +1,4 @@
-You are working on https://linear.app/thevibecompany/project/vibe-tuto-1a5dd4d3df0b/ project. 
 
-When you are looking for information on the project, use Linear MCP to get the information from the project. 
-
-Work can proceed without a Linear issue. Use an issue when the user provides one; otherwise work directly from the request without asking for or creating a ticket as a prerequisite.
-
-If i ask you to do something that Linear could do, you should use Linear MCP to do it. 
-
-Once a feature is complete, always look at the remaining issues and update them if needed.
-
-Never mark an issue as done, let the PR do it. 
 
 ## Browser Automation
 
@@ -39,7 +29,6 @@ The Screenshot should be in the folder `screenshots/pr-<pr-number>/<screenshot-n
 https://raw.githubusercontent.com/The-Vibe-Company/vibe-tuto/<branch-name>/screenshots/pr-<number>/<image>.png
 ```
 
-Add the issue link to the PR description when the work has an associated issue.
 
 ## Git
 
@@ -62,9 +51,6 @@ When asked to fix a PR, use the skill address-github-comments to address the com
 
 Always use frontend-design skill and ui-ux-pro-max skill for designing pages and components or when the user asks you to design something.
 
-## Planning 
-
-When planning, always create a graph of tasks and dependencies between them. 
 
 ## Vercel
 

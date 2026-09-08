@@ -8,7 +8,7 @@ export default function NotFound() {
       <div className="text-center max-w-md">
         {/* Logo */}
         <div className="flex items-center justify-center gap-2 mb-8">
-          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 shadow-sm">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 shadow-sm">
             <Play className="h-5 w-5 fill-white text-white" />
           </div>
           <span className="text-xl font-semibold tracking-tight text-stone-900">
@@ -17,7 +17,7 @@ export default function NotFound() {
         </div>
 
         {/* 404 Message */}
-        <h1 className="text-8xl font-bold text-violet-600 mb-4">404</h1>
+        <h1 className="text-8xl font-bold text-brand-600 mb-4">404</h1>
         <h2 className="text-2xl font-semibold text-gray-900 mb-2">
           Page not found
         </h2>
@@ -44,7 +44,7 @@ export default function NotFound() {
         {/* Help text */}
         <p className="mt-8 text-sm text-gray-500">
           Need help?{' '}
-          <Link href="/#faq" className="text-violet-600 hover:underline">
+          <Link href="/#faq" className="text-brand-600 hover:underline">
             Check our FAQ
           </Link>
         </p>

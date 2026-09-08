@@ -84,7 +84,7 @@ export default function SupportPage() {
       <nav className="sticky top-0 z-50 border-b border-stone-100 bg-white/80 backdrop-blur-md">
         <div className="mx-auto flex h-16 max-w-6xl items-center justify-between px-6">
           <Link href="/" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-violet-600 shadow-sm">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-600 shadow-sm">
               <Play className="h-4 w-4 fill-white text-white" />
             </div>
             <span className="text-lg font-semibold tracking-tight text-stone-900">
@@ -123,7 +123,7 @@ export default function SupportPage() {
       </section>
 
       {/* Contact Section */}
-      <section className="border-t border-stone-100 bg-violet-50 py-12">
+      <section className="border-t border-stone-100 bg-brand-50 py-12">
         <div className="mx-auto max-w-4xl px-6">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -131,8 +131,8 @@ export default function SupportPage() {
             viewport={{ once: true }}
             className="flex flex-col items-center gap-4 text-center"
           >
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-100">
-              <Mail className="h-7 w-7 text-violet-600" />
+            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-100">
+              <Mail className="h-7 w-7 text-brand-600" />
             </div>
             <h2 className="text-xl font-semibold text-stone-900">
               Need help?
@@ -142,7 +142,7 @@ export default function SupportPage() {
             </p>
             <a
               href="mailto:support@thevibecompany.co"
-              className="inline-flex items-center gap-2 rounded-lg bg-violet-600 px-6 py-3 font-medium text-white transition-colors hover:bg-violet-700"
+              className="inline-flex items-center gap-2 rounded-lg bg-brand-600 px-6 py-3 font-medium text-white transition-colors hover:bg-brand-700"
             >
               <Mail className="h-4 w-4" />
               support@thevibecompany.co
@@ -160,7 +160,7 @@ export default function SupportPage() {
             viewport={{ once: true }}
             className="mb-10 text-center"
           >
-            <p className="mb-3 text-sm font-medium uppercase tracking-widest text-violet-600">
+            <p className="mb-3 text-sm font-medium uppercase tracking-widest text-brand-600">
               FAQ
             </p>
             <h2 className="text-2xl font-semibold tracking-tight text-stone-900 sm:text-3xl">
@@ -249,7 +249,7 @@ export default function SupportPage() {
         <div className="mx-auto max-w-6xl px-6">
           <div className="flex flex-col items-center justify-between gap-6 md:flex-row">
             <div className="flex items-center gap-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-violet-500 to-violet-600">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-brand-500 to-brand-600">
                 <Play className="h-4 w-4 fill-white text-white" />
               </div>
               <span className="text-lg font-semibold text-stone-900">

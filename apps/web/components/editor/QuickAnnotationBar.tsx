@@ -30,7 +30,7 @@ export function QuickAnnotationBar({ onToolSelect, className }: QuickAnnotationB
   return (
     <div
       className={cn(
-        'flex items-center gap-0.5 rounded-xl border border-border/50 bg-background/80 p-1 shadow-lg shadow-black/5 backdrop-blur-xl',
+        'flex items-center gap-0.5 rounded-xl border border-stone-200/50 bg-background/80 p-1 shadow-lg shadow-black/5 backdrop-blur-xl',
         'animate-in fade-in slide-in-from-bottom-1 duration-200',
         className
       )}
@@ -43,7 +43,7 @@ export function QuickAnnotationBar({ onToolSelect, className }: QuickAnnotationB
               variant="ghost"
               size="icon"
               onClick={() => onToolSelect(type)}
-              className="relative h-7 w-7 rounded-lg transition-all duration-150 hover:bg-primary/10 hover:text-primary"
+              className="relative h-7 w-7 rounded-lg transition-all duration-150 hover:bg-brand-500/10 hover:text-brand-600"
             >
               <Icon className="h-3.5 w-3.5" />
               {/* Color indicator dot */}

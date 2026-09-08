@@ -16,6 +16,9 @@ interface AnnotationCanvasProps {
   containerRef: React.RefObject<HTMLDivElement | null>;
   readOnly?: boolean;
   annotationStyle?: AnnotationStyle;
+  /** When provided, makes selection a controlled value driven by the parent. */
+  selectedAnnotationId?: string | null;
+  onSelectionChange?: (id: string | null) => void;
 }
 
 const SELECTION_COLOR = '#8b5cf6';
@@ -43,12 +46,25 @@ export function AnnotationCanvas({
   containerRef,
   readOnly = false,
   annotationStyle,
+  selectedAnnotationId: controlledSelectedId,
+  onSelectionChange,
 }: AnnotationCanvasProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isDrawing, setIsDrawing] = useState(false);
   const [startPos, setStartPos] = useState<{ x: number; y: number } | null>(null);
   const [currentPos, setCurrentPos] = useState<{ x: number; y: number } | null>(null);
-  const [selectedAnnotationId, setSelectedAnnotationId] = useState<string | null>(null);
+  const [internalSelectedId, setInternalSelectedId] = useState<string | null>(null);
+  const isSelectionControlled = controlledSelectedId !== undefined;
+  const selectedAnnotationId = isSelectionControlled
+    ? controlledSelectedId ?? null
+    : internalSelectedId;
+  const setSelectedAnnotationId = useCallback(
+    (id: string | null) => {
+      if (!isSelectionControlled) setInternalSelectedId(id);
+      onSelectionChange?.(id);
+    },
+    [isSelectionControlled, onSelectionChange]
+  );
   const [isDragging, setIsDragging] = useState(false);
   const [dragStartPos, setDragStartPos] = useState<{ x: number; y: number } | null>(null);
   const [hoveredAnnotationId, setHoveredAnnotationId] = useState<string | null>(null);
@@ -616,7 +632,7 @@ export function AnnotationCanvas({
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [selectedAnnotationId, onDeleteAnnotation, readOnly, textInputState]);
+  }, [selectedAnnotationId, onDeleteAnnotation, readOnly, textInputState, setSelectedAnnotationId]);
 
   const handleMouseDown = (e: React.MouseEvent<HTMLCanvasElement>) => {
     if (readOnly) return;
@@ -913,7 +929,7 @@ export function AnnotationCanvas({
           ref={textInputRef}
           type="text"
           placeholder="Type annotation text..."
-          className="absolute z-10 rounded border border-primary bg-background/95 px-2 py-1 text-sm shadow-lg outline-none ring-2 ring-primary/30 backdrop-blur-sm"
+          className="absolute z-10 rounded border border-brand-500 bg-background/95 px-2 py-1 text-sm shadow-lg outline-none ring-2 ring-brand-500/30 backdrop-blur-sm"
           style={{
             left: getTextInputPosition().left,
             top: getTextInputPosition().top,

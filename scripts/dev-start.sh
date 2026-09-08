@@ -13,7 +13,7 @@ set -euo pipefail
 # =============================================================================
 
 ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
-WEB_PORT=3678
+WEB_PORT="${CONDUCTOR_PORT:-3678}"
 PID_FILE="$ROOT_DIR/.dev-server.pid"
 LOG_FILE="$ROOT_DIR/.dev-server.log"
 BACKEND_FILE="$ROOT_DIR/.dev-server.backend"
@@ -152,10 +152,10 @@ cmd_start() {
   warn "Starting dev server on port $WEB_PORT..."
   # Detach the process session as well as stdio so agent command cleanup cannot
   # terminate the server when the launching shell exits.
-  python3 - "$LOG_FILE" "$PID_FILE" "$ROOT_DIR" <<'PY_START'
+  python3 - "$LOG_FILE" "$PID_FILE" "$ROOT_DIR" "$WEB_PORT" <<'PY_START'
 import pathlib, subprocess, sys
 with open(sys.argv[1], 'ab') as log:
-    process = subprocess.Popen(['pnpm', '--filter', '@captuto/web', 'dev'], cwd=sys.argv[3],
+    process = subprocess.Popen(['pnpm', '--filter', '@captuto/web', 'exec', 'next', 'dev', '-p', sys.argv[4]], cwd=sys.argv[3],
         stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True)
 pathlib.Path(sys.argv[2]).write_text(str(process.pid))
 PY_START
@@ -184,9 +184,47 @@ PY_START
   die "Timeout (${max_wait}s). Logs:\n$(tail -30 "$LOG_FILE")"
 }
 
+cmd_start_foreground() {
+  cd "$ROOT_DIR"
+
+  # Foreground mode `exec`s into next dev so a supervisor (e.g. Conductor's `run`)
+  # watches that exact PID. If the port is busy we always reclaim it — handing
+  # control to a pre-existing process would leave the supervisor watching this
+  # shell, not the server.
+  if is_port_listening; then
+    warn "Port $WEB_PORT already occupied — reclaiming for foreground supervision..."
+    kill_server
+  fi
+
+  # --- Clean stale PID file (background-mode artifact) ---
+  if [ -f "$PID_FILE" ]; then
+    rm -f "$PID_FILE"
+  fi
+
+  # --- Check pnpm ---
+  command -v pnpm &>/dev/null || die "pnpm not found. Install: npm i -g pnpm@9"
+  info "pnpm $(pnpm --version)"
+
+  # --- Check env files ---
+  if [ ! -f "$ROOT_DIR/.env.local" ] && [ ! -f "$ROOT_DIR/apps/web/.env.local" ]; then
+    die "No .env.local found. Copy apps/web/.env.example to .env.local and fill in values."
+  fi
+  info "Environment config found"
+
+  # --- Install deps (pnpm is idempotent — instant if nothing changed) ---
+  info "Checking dependencies..."
+  pnpm install --frozen-lockfile 2>&1 | tail -3
+  info "Dependencies OK"
+
+  # --- Replace this shell with the dev server so the supervisor sees it directly ---
+  warn "Starting dev server on port $WEB_PORT (foreground)..."
+  exec pnpm --filter web exec next dev -p "$WEB_PORT" -H 0.0.0.0
+}
+
 # --------------- main ---------------
 
 case "${1:-}" in
+  --foreground) cmd_start_foreground ;;
   --stop)   cmd_stop   ;;
   --status) cmd_status ;;
   --local)  BACKEND_MODE="local"; cmd_start ;;

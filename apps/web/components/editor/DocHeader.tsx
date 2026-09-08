@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Link from 'next/link';
 import { Loader2, Share2, Sparkles } from 'lucide-react';
 import {
   Tooltip,
@@ -10,7 +11,6 @@ import {
 } from '@/components/ui/tooltip';
 import { Button } from '@/components/ui/button';
 import { ShareDialog } from '@/components/dashboard/ShareDialog';
-import { PageHeader } from '@/components/shared/PageHeader';
 import type { SaveStatus } from './EditorClient';
 import { cn } from '@/lib/utils';
 
@@ -37,43 +37,64 @@ export function DocHeader({
 
   return (
     <>
-      <PageHeader
-        breadcrumbs={[
-          { label: 'Dashboard', href: '/dashboard' },
-          { label: 'Tutorials', href: '/dashboard' },
-          { label: tutorialTitle || 'Editor' },
-        ]}
-        actions={
-          <div className="flex items-center gap-2">
-            <SaveStatusDot status={saveStatus} />
+      <header className="sticky top-0 z-40 flex h-16 items-center gap-4 border-b border-stone-200/60 bg-white/85 px-6 backdrop-blur-xl backdrop-saturate-150">
+        {/* Brand + breadcrumbs */}
+        <nav className="flex min-w-0 items-center gap-1.5 font-sans text-[13px]">
+          <Link
+            href="/dashboard"
+            className="mr-1 flex flex-shrink-0 items-center"
+            aria-label="Home"
+          >
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/captuto-mark.svg"
+              alt=""
+              className="h-7 w-7 rounded-md"
+            />
+          </Link>
+          <span className="font-mono text-stone-300">/</span>
+          <Link
+            href="/dashboard"
+            className="text-stone-500 transition-colors hover:text-stone-900"
+          >
+            Tutorials
+          </Link>
+          <span className="font-mono text-stone-300">/</span>
+          <span className="max-w-[280px] truncate font-semibold text-stone-900">
+            {tutorialTitle || 'Editor'}
+          </span>
+        </nav>
 
-            {onGenerateClick && hasSourcesForGeneration && (
-              <Button
-                size="sm"
-                onClick={onGenerateClick}
-                disabled={isGenerating}
-                className="gap-2 bg-gradient-to-r from-violet-600 to-indigo-600 text-white shadow-sm hover:from-violet-700 hover:to-indigo-700 border-0"
-              >
-                {isGenerating ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                ) : (
-                  <Sparkles className="h-3.5 w-3.5" />
-                )}
-                <span className="text-xs font-medium">Generate with AI</span>
-              </Button>
-            )}
+        {/* Right side */}
+        <div className="ml-auto flex items-center gap-2">
+          <SaveStatusDot status={saveStatus} />
+
+          {onGenerateClick && hasSourcesForGeneration && (
             <Button
-              variant="outline"
               size="sm"
-              onClick={() => setShareDialogOpen(true)}
-              className="gap-2"
+              onClick={onGenerateClick}
+              disabled={isGenerating}
+              className="ml-1 h-9 gap-2 border-0 bg-brand-600 px-3.5 text-[13px] font-medium text-white shadow-brand transition-all hover:bg-brand-500 hover:shadow-brand-lg"
             >
-              <Share2 className="h-3.5 w-3.5" />
-              <span className="text-xs">Share</span>
+              {isGenerating ? (
+                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+              ) : (
+                <Sparkles className="h-3.5 w-3.5" />
+              )}
+              <span>Generate with AI</span>
             </Button>
-          </div>
-        }
-      />
+          )}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShareDialogOpen(true)}
+            className="h-9 gap-2 border-stone-200 bg-white text-[13px] text-stone-700 hover:border-stone-300 hover:bg-stone-50"
+          >
+            <Share2 className="h-3.5 w-3.5" />
+            Share
+          </Button>
+        </div>
+      </header>
 
       <ShareDialog
         open={shareDialogOpen}
@@ -91,29 +112,29 @@ function SaveStatusDot({ status }: { status: SaveStatus }) {
     <TooltipProvider delayDuration={0}>
       <Tooltip>
         <TooltipTrigger asChild>
-          <div className="flex items-center gap-1.5 px-2 py-1">
+          <div className="flex items-center gap-1.5 rounded-md px-2.5 py-1.5">
             {status === 'saving' ? (
-              <Loader2 className="h-3 w-3 animate-spin text-muted-foreground" />
+              <Loader2 className="h-3 w-3 animate-spin text-stone-400" />
             ) : (
               <div
                 className={cn(
                   'h-2 w-2 rounded-full transition-colors duration-300',
                   status === 'saved' && 'bg-emerald-500',
                   status === 'error' && 'bg-red-500',
-                  status === 'unsaved' && 'bg-amber-500 animate-pulse'
+                  status === 'unsaved' && 'animate-pulse bg-amber-500',
                 )}
               />
             )}
             <span
               className={cn(
-                'text-xs font-medium transition-colors duration-200',
-                status === 'saved' && 'text-emerald-600 dark:text-emerald-400',
-                status === 'saving' && 'text-muted-foreground',
-                status === 'error' && 'text-red-600 dark:text-red-400',
-                status === 'unsaved' && 'text-amber-600 dark:text-amber-400'
+                'font-mono text-[11px] font-medium uppercase tracking-[0.06em] transition-colors duration-200',
+                status === 'saved' && 'text-emerald-700',
+                status === 'saving' && 'text-stone-500',
+                status === 'error' && 'text-red-700',
+                status === 'unsaved' && 'text-amber-700',
               )}
             >
-              {status === 'saving' && 'Saving...'}
+              {status === 'saving' && 'Saving…'}
               {status === 'saved' && 'Saved'}
               {status === 'error' && 'Error'}
               {status === 'unsaved' && 'Unsaved'}
@@ -121,8 +142,8 @@ function SaveStatusDot({ status }: { status: SaveStatus }) {
           </div>
         </TooltipTrigger>
         <TooltipContent side="bottom" className="text-xs">
-          {status === 'saving' && 'Saving in progress...'}
-          {status === 'saved' && 'All changes are saved'}
+          {status === 'saving' && 'Saving in progress…'}
+          {status === 'saved' && 'All changes saved'}
           {status === 'error' && 'Error saving. Please try again.'}
           {status === 'unsaved' && 'Unsaved changes'}
         </TooltipContent>

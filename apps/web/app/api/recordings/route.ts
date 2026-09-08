@@ -15,6 +15,9 @@ const stepSchema = z.object({
 const recordingSchema = z.object({
   recording:z.object({client_id:z.string().uuid().optional(),title:z.string().max(300).optional(),duration:z.number().finite().min(0),started_at:z.string()}),
   steps:z.array(stepSchema).min(1).max(500),
+  audio_data:z.string().max(70_000_000).nullable().optional(),
+  audio_key:z.string().max(500).nullable().optional(),
+  audio_content_type:z.enum(["audio/mp4","audio/webm","audio/m4a","audio/x-m4a"]).nullable().optional(),
 });
 
 /** Stable UUID per capture, so retries upsert sources instead of duplicating them. */
@@ -66,6 +69,13 @@ export async function POST(request:Request) {
     }
     const {error} = await supabase.from('sources').upsert(inserts,{onConflict:'id'});
     if (error) return Response.json({error:'Could not save capture sources; retry the recording'},{status:500});
+    // Retain narration from already released recorders that upload it inline.
+    if (body.audio_data) {
+      const audio = Buffer.from(body.audio_data, 'base64');
+      if (!audio.length || audio.length > 50 * 1024 * 1024) return Response.json({error:'Invalid audio size'},{status:413});
+      const {error:audioError} = await supabase.storage.from('recordings').upload(`${userId}/${id}.webm`,audio,{contentType:body.audio_content_type || (body.audio_key?.endsWith('.m4a') ? 'audio/mp4' : 'audio/webm'),upsert:true});
+      if (audioError) return Response.json({error:'Could not store narration; retry the recording'},{status:500});
+    }
     return Response.json({tutorialId:id,recordingId:id,status:'processing',sourcesCreated:inserts.length,editorUrl:`/editor/${id}`});
   } catch(error) {
     return Response.json({error:error instanceof SyntaxError ? 'Invalid JSON' : 'Recording upload failed'},{status:error instanceof SyntaxError ? 400 : 500});

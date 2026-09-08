@@ -1,5 +1,59 @@
 # Changelog
 
+## [0.1.18](https://github.com/The-Vibe-Company/captuto/compare/v0.1.17...v0.1.18) (2026-05-04)
+
+
+### Features
+
+* **web:** apply CapTuto design system across landing, dashboard, editor & share viewer ([#102](https://github.com/The-Vibe-Company/captuto/issues/102)) ([80f3b62](https://github.com/The-Vibe-Company/captuto/commit/80f3b6218bbe1a6696962df933b099ed179aba49))
+
+## [0.1.17](https://github.com/The-Vibe-Company/captuto/compare/v0.1.16...v0.1.17) (2026-05-04)
+
+
+### Features
+
+* **desktop:** simplify mac app design ([#98](https://github.com/The-Vibe-Company/captuto/issues/98)) ([14f595a](https://github.com/The-Vibe-Company/captuto/commit/14f595ad260f7917ba7812f4ff409e095b26ea83))
+
+
+### Bug Fixes
+
+* **dx:** keep Next dev server attached for Conductor `run` ([#101](https://github.com/The-Vibe-Company/captuto/issues/101)) ([ebffb29](https://github.com/The-Vibe-Company/captuto/commit/ebffb29d7b4fe2b11ea031bc777d96446eeda7a1))
+
+## [0.1.16](https://github.com/The-Vibe-Company/captuto/compare/v0.1.15...v0.1.16) (2026-05-04)
+
+
+### Features
+
+* **web:** add desktop binary download button on landing and dashboard ([#95](https://github.com/The-Vibe-Company/captuto/issues/95)) ([4620801](https://github.com/The-Vibe-Company/captuto/commit/4620801c8e60f1b6f6838c3deec96569fc27d69c))
+
+## [0.1.15](https://github.com/The-Vibe-Company/captuto/compare/v0.1.14...v0.1.15) (2026-05-04)
+
+
+### Features
+
+* **web:** bake annotations into flattened images for public share links ([#96](https://github.com/The-Vibe-Company/captuto/issues/96)) ([fa0b7d9](https://github.com/The-Vibe-Company/captuto/commit/fa0b7d9ee8b89ab30f9e42ce60da3483b9a2e98e))
+
+## [0.1.14](https://github.com/The-Vibe-Company/captuto/compare/v0.1.13...v0.1.14) (2026-05-04)
+
+
+### Features
+
+* **dev:** support Conductor parallel workspaces via CONDUCTOR_PORT ([#92](https://github.com/The-Vibe-Company/captuto/issues/92)) ([b7c210b](https://github.com/The-Vibe-Company/captuto/commit/b7c210bba3fc3db27e61c7405734c7a4771b9a5f))
+
+
+### Bug Fixes
+
+* **editor:** make Preview/Reader modes actually render the tutorial ([#93](https://github.com/The-Vibe-Company/captuto/issues/93)) ([d205fbd](https://github.com/The-Vibe-Company/captuto/commit/d205fbd69bdef4585efd67768a5431d88b33e22a))
+
+## [0.1.13](https://github.com/The-Vibe-Company/captuto/compare/v0.1.12...v0.1.13) (2026-05-04)
+
+
+### Features
+
+* **desktop:** improve mac recorder reliability ([#89](https://github.com/The-Vibe-Company/captuto/issues/89)) ([71f724f](https://github.com/The-Vibe-Company/captuto/commit/71f724fd65d6d078172ef4a1b89f0c73ce1a2c8e))
+* **desktop:** unify floating panel and preferences into single tabbed window ([#87](https://github.com/The-Vibe-Company/captuto/issues/87)) ([709db97](https://github.com/The-Vibe-Company/captuto/commit/709db9708ac4297f1760cf79f704e0c641211a5f))
+* **editor:** redesign editor as Studio workbench (timeline + canvas + inspector) ([#90](https://github.com/The-Vibe-Company/captuto/issues/90)) ([fab795b](https://github.com/The-Vibe-Company/captuto/commit/fab795baaedd1ac603675f1ecd00b0f6b3638b70))
+
 ## [0.1.12](https://github.com/The-Vibe-Company/captuto/compare/v0.1.11...v0.1.12) (2026-04-01)
 
 

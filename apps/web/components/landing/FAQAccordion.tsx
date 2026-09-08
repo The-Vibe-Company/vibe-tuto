@@ -44,11 +44,21 @@ export function FAQAccordion() {
           viewport={{ once: true }}
           className="mb-12 text-center"
         >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-indigo-500">
-            FAQ
-          </p>
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <span className="h-px w-8 bg-brand-300" />
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-brand-600">
+              FAQ
+            </p>
+            <span className="h-px w-8 bg-brand-300" />
+          </div>
           <h2 className="font-heading text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-            Frequently Asked Questions
+            Frequently asked{" "}
+            <span
+              className="font-serif italic font-normal bg-clip-text text-transparent"
+              style={{ backgroundImage: "var(--brand-gradient)" }}
+            >
+              questions.
+            </span>
           </h2>
         </motion.div>
 

@@ -4,31 +4,45 @@ import Foundation
 /// merging related actions, and generating auto-captions.
 final class StepDetector: @unchecked Sendable {
     /// Minimum time (seconds) between two actions to be considered separate steps.
-    private let minimumStepInterval: TimeInterval = 0.5
+    private var minimumStepInterval: TimeInterval = 0.5
 
     /// Actions below this confidence score are considered noise.
-    private let confidenceThreshold: Double = 0.3
+    private var confidenceThreshold: Double = 0.3
 
     private var lastStepTime: TimeInterval = -1
+    private var lastURL: String?
+
+    init() {
+        reloadPreferences()
+    }
 
     /// Process a raw action and determine if it constitutes a meaningful step.
     /// Returns a DetectedStep if the action is significant, nil otherwise.
     func processAction(_ action: CapturedAction, orderIndex: Int) -> DetectedStep? {
-        let confidence = calculateConfidence(action)
+        let effectiveActionType = effectiveActionType(for: action)
+        let confidence = calculateConfidence(action, effectiveActionType: effectiveActionType)
         guard confidence >= confidenceThreshold else { return nil }
 
         // Debounce: skip actions that are too close in time to the last step
-        guard action.relativeTime - lastStepTime >= minimumStepInterval else { return nil }
+        guard action.relativeTime - lastStepTime >= minimumStepInterval else {
+            if let url = action.url {
+                lastURL = url
+            }
+            return nil
+        }
 
         lastStepTime = action.relativeTime
 
-        let caption = generateCaption(for: action)
+        let caption = generateCaption(for: action, actionType: effectiveActionType)
         let screenshotKey = "step-\(orderIndex).jpg"
+        if let url = action.url {
+            lastURL = url
+        }
 
         return DetectedStep(
             orderIndex: orderIndex,
             timestamp: action.relativeTime,
-            actionType: action.actionType,
+            actionType: effectiveActionType,
             screenshotKey: screenshotKey,
             clickX: action.clickX,
             clickY: action.clickY,
@@ -45,13 +59,43 @@ final class StepDetector: @unchecked Sendable {
 
     /// Reset the detector state for a new recording session.
     func reset() {
+        reloadPreferences()
         lastStepTime = -1
+        lastURL = nil
+    }
+
+    func configure(sensitivity: Int, groupingDelayMS: Double) {
+        minimumStepInterval = max(0.1, groupingDelayMS / 1000)
+        switch sensitivity {
+        case 0:
+            confidenceThreshold = 0.55
+        case 2:
+            confidenceThreshold = 0.2
+        default:
+            confidenceThreshold = 0.3
+        }
+    }
+
+    private func reloadPreferences() {
+        let sensitivity = UserDefaults.standard.object(forKey: "detectionSensitivity") as? Int ?? 1
+        let groupingDelay = UserDefaults.standard.object(forKey: "groupingDelay") as? Double ?? 500.0
+        configure(sensitivity: sensitivity, groupingDelayMS: groupingDelay)
     }
 
     // MARK: - Confidence Scoring
 
-    private func calculateConfidence(_ action: CapturedAction) -> Double {
-        switch action.actionType {
+    private func effectiveActionType(for action: CapturedAction) -> ActionType {
+        guard let url = action.url, !url.isEmpty else {
+            return action.actionType
+        }
+        guard lastURL != nil, lastURL != url else {
+            return action.actionType
+        }
+        return .urlNavigation
+    }
+
+    private func calculateConfidence(_ action: CapturedAction, effectiveActionType: ActionType) -> Double {
+        switch effectiveActionType {
         case .click:
             // Clicks with element info are high confidence
             if action.elementInfo != nil {
@@ -111,7 +155,11 @@ final class StepDetector: @unchecked Sendable {
 
     /// Generate a human-readable auto-caption based on the action type and context.
     func generateCaption(for action: CapturedAction) -> String {
-        switch action.actionType {
+        generateCaption(for: action, actionType: effectiveActionType(for: action))
+    }
+
+    private func generateCaption(for action: CapturedAction, actionType: ActionType) -> String {
+        switch actionType {
         case .click:
             return generateClickCaption(action)
         case .keyboardShortcut:

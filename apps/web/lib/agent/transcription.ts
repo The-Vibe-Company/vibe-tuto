@@ -7,7 +7,8 @@ export async function transcribeTutorial(auth: RequestUser, tutorialId: string) 
   const path = `${auth.userId}/${tutorialId}`;
   const { data: cached } = await auth.supabase.storage.from('recordings').download(`${path}.transcript.json`);
   if (cached) { try { return JSON.parse(await cached.text()); } catch { /* Regenerate corrupt cache. */ } }
-  const {data:audio} = await auth.supabase.storage.from('recordings').download(`${path}.webm`);
+  let {data:audio} = await auth.supabase.storage.from('recordings').download(`${path}.webm`);
+  if (!audio) ({data:audio} = await auth.supabase.storage.from('recordings').download(`${path}.m4a`));
   if (!audio) throw new AgentError('Audio has not been uploaded',404);
   if (audio.size > 50 * 1024 * 1024) throw new AgentError('Audio exceeds 50 MB',413);
   // Send bytes: an external speech provider cannot fetch a localhost storage URL.

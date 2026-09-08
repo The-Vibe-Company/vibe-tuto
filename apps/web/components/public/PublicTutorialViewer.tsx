@@ -79,7 +79,7 @@ export function PublicTutorialViewer({ tutorial, steps, shareUrl }: PublicTutori
             {numberedSteps.map(({ step, number }, index) => {
               const previous = [...steps.slice(0, index)].reverse().find(item => item.step_type === 'image' || item.step_type === 'text');
               return <section key={step.id} id={`step-${step.id}`} aria-label={number ? `Step ${number}` : undefined} className="scroll-mt-8 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
-                <DocStepCard step={step} stepNumber={number} previousStepUrl={previous?.url || previous?.source?.url || null} readOnly />
+                <DocStepCard step={step} stepNumber={number} previousStepUrl={previous?.url || previous?.source?.url || null} readOnly flattened={Boolean(tutorial.publicToken)} />
               </section>;
             })}
             {steps.length === 0 && <p className="rounded-xl border border-dashed border-stone-300 px-8 py-16 text-center text-stone-600">This guide is being prepared. Check back soon.</p>}

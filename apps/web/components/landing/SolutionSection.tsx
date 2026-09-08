@@ -13,12 +13,15 @@ export function SolutionSection() {
           viewport={{ once: true }}
           transition={{ duration: 0.5 }}
         >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-indigo-500">
+          <p className="mb-3 text-xs font-medium uppercase tracking-[0.18em] text-brand-600">
             The solution
           </p>
           <h2 className="font-heading text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-            <span className="block">What if documentation</span>
-            <span className="block bg-gradient-to-r from-indigo-600 via-violet-500 to-purple-500 bg-clip-text text-transparent">
+            What if documentation{" "}
+            <span
+              className="font-serif italic font-normal bg-clip-text text-transparent"
+              style={{ backgroundImage: "var(--brand-gradient-hero)" }}
+            >
               wrote itself?
             </span>
           </h2>
@@ -40,8 +43,8 @@ export function SolutionSection() {
             <div className="flex items-center justify-center gap-3 sm:gap-4">
               {/* Record */}
               <div className="flex flex-col items-center gap-2">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-indigo-50 border border-indigo-100 shadow-sm shadow-indigo-100/50">
-                  <MousePointer2 className="h-6 w-6 text-indigo-600" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-brand-50 border border-brand-100 shadow-sm shadow-brand-100/50">
+                  <MousePointer2 className="h-6 w-6 text-brand-600" />
                 </div>
                 <span className="text-xs font-medium text-stone-500">
                   Record
@@ -50,14 +53,14 @@ export function SolutionSection() {
 
               {/* Arrow */}
               <div className="flex items-center">
-                <div className="h-px w-6 sm:w-10 bg-gradient-to-r from-indigo-300 to-violet-300" />
-                <ArrowRight className="h-3 w-3 -ml-1 text-violet-400" />
+                <div className="h-px w-6 sm:w-10 bg-gradient-to-r from-brand-300 to-teal-300" />
+                <ArrowRight className="h-3 w-3 -ml-1 text-teal-400" />
               </div>
 
               {/* AI Process */}
               <div className="flex flex-col items-center gap-2">
-                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-violet-50 border border-violet-100 shadow-sm shadow-violet-100/50">
-                  <Wand2 className="h-6 w-6 text-violet-600" />
+                <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-teal-50 border border-teal-100 shadow-sm">
+                  <Wand2 className="h-6 w-6 text-teal-600" />
                 </div>
                 <span className="text-xs font-medium text-stone-500">
                   Draft
@@ -66,7 +69,7 @@ export function SolutionSection() {
 
               {/* Arrow */}
               <div className="flex items-center">
-                <div className="h-px w-6 sm:w-10 bg-gradient-to-r from-violet-300 to-emerald-300" />
+                <div className="h-px w-6 sm:w-10 bg-gradient-to-r from-teal-300 to-emerald-300" />
                 <ArrowRight className="h-3 w-3 -ml-1 text-emerald-400" />
               </div>
 

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@/lib/supabase/server';
 import { nanoid } from 'nanoid';
+import { flattenTutorial } from '@/lib/flatten/cache';
 
 export type TutorialVisibility = 'private' | 'link_only' | 'public';
 
@@ -163,6 +164,17 @@ export async function POST(
       { error: 'Failed to update sharing settings' },
       { status: 500 }
     );
+  }
+
+  // When publishing, eagerly bake annotations into flattened images so the
+  // public viewer never needs to reach for the raw bucket. Failures here
+  // are non-fatal — the public route will retry lazily on first view.
+  if (isPublic) {
+    try {
+      await flattenTutorial(tutorialId);
+    } catch (err) {
+      console.error('Error flattening tutorial on publish:', err);
+    }
   }
 
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';

@@ -19,11 +19,18 @@ const badges = [
 
 export function FinalCTA() {
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-500 to-indigo-600 py-24">
+    <section className="relative overflow-hidden bg-gradient-to-br from-brand-600 via-teal-500 to-brand-600 py-24">
+      {/* Floating orbs */}
       <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute inset-x-0 top-0 h-px bg-white/30" />
-        <div className="absolute inset-0 bg-[linear-gradient(135deg,rgba(255,255,255,0.16),rgba(255,255,255,0)_35%,rgba(255,255,255,0.12))]" />
-        <div className="absolute -left-12 top-12 h-32 w-[120%] rotate-[-6deg] bg-white/5" />
+        <div className="absolute -left-40 -top-40 h-80 w-80 rounded-full bg-white/10 blur-3xl animate-float" />
+        <div
+          className="absolute -right-40 -bottom-40 h-80 w-80 rounded-full bg-cyan-300/30 blur-3xl animate-float"
+          style={{ animationDelay: "2s" }}
+        />
+        <div
+          className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 h-60 w-60 rounded-full bg-white/5 blur-3xl animate-float"
+          style={{ animationDelay: "4s" }}
+        />
       </div>
 
       {/* Subtle grid */}
@@ -43,9 +50,10 @@ export function FinalCTA() {
           viewport={{ once: true }}
         >
           <h2 className="mb-6 font-heading text-3xl font-semibold tracking-tight text-white sm:text-4xl md:text-5xl">
-            Ready to publish
-            <br />
-            clearer tutorials?
+            Your tutorials,{" "}
+            <span className="font-serif italic font-normal text-teal-100">
+              finally written.
+            </span>
           </h2>
 
           <p className="mx-auto mb-10 max-w-lg text-lg text-white/70">
@@ -83,7 +91,7 @@ export function FinalCTA() {
             <Link href="/login">
               <Button
                 size="lg"
-                className="group cursor-pointer h-14 bg-white px-10 text-lg font-semibold text-indigo-600 shadow-2xl hover:bg-stone-50 transition-all duration-200"
+                className="group cursor-pointer h-14 bg-white px-10 text-lg font-semibold text-brand-700 shadow-2xl hover:bg-stone-50 transition-all duration-200"
               >
                 Open Captuto
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />

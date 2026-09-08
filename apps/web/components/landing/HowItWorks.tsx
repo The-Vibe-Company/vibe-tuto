@@ -10,10 +10,10 @@ const steps = [
     title: "Install",
     headline: "Add our Chrome extension",
     description: "One click install, 2MB, done in 30 seconds.",
-    color: "bg-indigo-600",
-    shadow: "shadow-indigo-500/25",
-    iconBg: "bg-indigo-50",
-    iconColor: "text-indigo-600",
+    color: "bg-brand-600",
+    shadow: "shadow-brand",
+    iconBg: "bg-brand-50",
+    iconColor: "text-brand-600",
   },
   {
     number: 2,
@@ -22,10 +22,10 @@ const steps = [
     headline: "Do your workflow",
     description:
       "Click Record, then navigate normally. We capture everything.",
-    color: "bg-violet-600",
-    shadow: "shadow-violet-500/25",
-    iconBg: "bg-violet-50",
-    iconColor: "text-violet-600",
+    color: "bg-teal-600",
+    shadow: "shadow-lg shadow-teal-500/25",
+    iconBg: "bg-teal-50",
+    iconColor: "text-teal-600",
   },
   {
     number: 3,
@@ -34,10 +34,10 @@ const steps = [
     headline: "AI writes your tutorial",
     description:
       "AI analyzes your actions and creates polished step-by-step instructions.",
-    color: "bg-purple-600",
-    shadow: "shadow-purple-500/25",
-    iconBg: "bg-purple-50",
-    iconColor: "text-purple-600",
+    color: "bg-cyan-600",
+    shadow: "shadow-lg shadow-cyan-500/25",
+    iconBg: "bg-cyan-50",
+    iconColor: "text-cyan-600",
   },
 ];
 
@@ -51,23 +51,33 @@ export function HowItWorks() {
           viewport={{ once: true }}
           className="mb-16 text-center"
         >
-          <p className="mb-3 text-xs font-medium uppercase tracking-widest text-indigo-500">
-            How it works
-          </p>
+          <div className="mb-4 flex items-center justify-center gap-3">
+            <span className="h-px w-8 bg-brand-300" />
+            <p className="text-xs font-medium uppercase tracking-[0.18em] text-brand-600">
+              How it works
+            </p>
+            <span className="h-px w-8 bg-brand-300" />
+          </div>
           <h2 className="font-heading text-3xl font-semibold tracking-tight text-stone-900 sm:text-4xl">
-            Three steps. That&apos;s all.
+            Three steps.{" "}
+            <span
+              className="font-serif italic font-normal bg-clip-text text-transparent"
+              style={{ backgroundImage: "var(--brand-gradient)" }}
+            >
+              That&apos;s all.
+            </span>
           </h2>
         </motion.div>
 
         <div className="relative">
           {/* Connecting line - desktop only */}
           <div className="absolute left-0 right-0 top-[56px] hidden md:block">
-            <div className="mx-auto h-0.5 max-w-2xl bg-gradient-to-r from-indigo-200 via-violet-200 to-purple-200" />
+            <div className="mx-auto h-0.5 max-w-2xl bg-gradient-to-r from-brand-200 via-teal-200 to-cyan-200" />
           </div>
 
           {/* Vertical connecting line - mobile only */}
           <div className="absolute left-[35px] top-[56px] bottom-[56px] md:hidden">
-            <div className="h-full w-0.5 bg-gradient-to-b from-indigo-200 via-violet-200 to-purple-200" />
+            <div className="h-full w-0.5 bg-gradient-to-b from-brand-200 via-teal-200 to-cyan-200" />
           </div>
 
           <div className="grid gap-12 md:grid-cols-3 md:gap-8">

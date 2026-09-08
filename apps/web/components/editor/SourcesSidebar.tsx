@@ -50,15 +50,15 @@ const ACTION_CONFIG = {
   click: {
     icon: MousePointerClick,
     label: 'Click',
-    dotColor: 'bg-violet-500',
-    dotGlow: 'shadow-violet-500/40',
-    badgeBg: 'bg-violet-500/10 dark:bg-violet-500/20',
-    badgeText: 'text-violet-600 dark:text-violet-400',
-    badgeBorder: 'border-violet-200/60 dark:border-violet-500/30',
-    cardBorder: 'border-violet-100 dark:border-violet-900/40',
-    cardHoverBorder: 'hover:border-violet-300 dark:hover:border-violet-700/60',
-    cardBg: 'bg-violet-50/30 dark:bg-violet-950/20',
-    addBtnBg: 'bg-violet-500 hover:bg-violet-600',
+    dotColor: 'bg-brand-500',
+    dotGlow: 'shadow-brand-500/40',
+    badgeBg: 'bg-brand-500/10 dark:bg-brand-500/20',
+    badgeText: 'text-brand-600 dark:text-brand-400',
+    badgeBorder: 'border-brand-200/60 dark:border-brand-500/30',
+    cardBorder: 'border-brand-100 dark:border-brand-900/40',
+    cardHoverBorder: 'hover:border-brand-300 dark:hover:border-brand-700/60',
+    cardBg: 'bg-brand-50/30 dark:bg-brand-950/20',
+    addBtnBg: 'bg-brand-500 hover:bg-brand-600',
   },
   navigation: {
     icon: Globe,
@@ -222,14 +222,14 @@ function TimelineItemComponent({
             <ActionIcon className="h-3 w-3" strokeWidth={2} />
             {config.label}
           </div>
-          <span className="text-[10px] font-medium tabular-nums text-muted-foreground/60">
+          <span className="text-[10px] font-medium tabular-nums text-stone-500/60">
             #{index + 1}
           </span>
         </div>
 
         {/* Thumbnail */}
         {source.signedScreenshotUrl && (
-          <div className="relative mx-2 mb-2 overflow-hidden rounded-lg border border-border/40 bg-muted/50">
+          <div className="relative mx-2 mb-2 overflow-hidden rounded-lg border border-stone-200/40 bg-stone-100/50">
             <div className="relative h-[120px] w-full overflow-hidden">
               <Image
                 unoptimized
@@ -261,9 +261,9 @@ function TimelineItemComponent({
                   }}
                 >
                   {/* Outer ring */}
-                  <div className="absolute inset-0 -m-2.5 rounded-full border-2 border-violet-400/50 bg-violet-400/10" />
+                  <div className="absolute inset-0 -m-2.5 rounded-full border-2 border-brand-400/50 bg-brand-400/10" />
                   {/* Inner dot */}
-                  <div className="h-2.5 w-2.5 rounded-full bg-violet-500 shadow-lg shadow-violet-500/50 ring-2 ring-white/80" />
+                  <div className="h-2.5 w-2.5 rounded-full bg-brand-500 shadow-lg shadow-brand-500/50 ring-2 ring-white/80" />
                 </div>
               )}
           </div>
@@ -273,28 +273,28 @@ function TimelineItemComponent({
         <div className="space-y-1 px-3 pb-2">
           {/* Auto caption for desktop sources */}
           {source.auto_caption && (
-            <p className="truncate text-xs font-medium text-foreground/80">
+            <p className="truncate text-xs font-medium text-stone-900/">
               {source.auto_caption}
             </p>
           )}
 
           {/* Element text for clicks (extension sources without auto_caption) */}
           {!source.auto_caption && actionType === 'click' && elementInfo?.text && (
-            <p className="truncate text-xs font-medium text-foreground/80">
+            <p className="truncate text-xs font-medium text-stone-900/">
               {elementInfo.text}
             </p>
           )}
 
           {/* Tab title for tab changes */}
           {!source.auto_caption && actionType === 'tab_change' && elementInfo?.tabTitle && (
-            <p className="truncate text-xs font-medium text-foreground/80">
+            <p className="truncate text-xs font-medium text-stone-900/">
               {elementInfo.tabTitle}
             </p>
           )}
 
           {/* App context for desktop sources */}
           {source.app_name && (
-            <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
+            <div className="flex items-center gap-1.5 text-[11px] text-stone-500/70">
               <Monitor className="h-3 w-3 flex-shrink-0" />
               <span className="truncate">{source.app_name}</span>
             </div>
@@ -304,7 +304,7 @@ function TimelineItemComponent({
           {source.window_title && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <p className="truncate text-[11px] text-muted-foreground/50">
+                <p className="truncate text-[11px] text-stone-500/50">
                   {source.window_title}
                 </p>
               </TooltipTrigger>
@@ -318,7 +318,7 @@ function TimelineItemComponent({
           {(actionType === 'navigation' || actionType === 'tab_change') && source.url && (
             <Tooltip>
               <TooltipTrigger asChild>
-                <div className="flex items-center gap-1.5 text-[11px] text-muted-foreground/70">
+                <div className="flex items-center gap-1.5 text-[11px] text-stone-500/70">
                   <ExternalLink className="h-3 w-3 flex-shrink-0" />
                   <span className="truncate">{formatSourceUrl(source.url)}</span>
                 </div>
@@ -331,7 +331,7 @@ function TimelineItemComponent({
         </div>
 
         {/* Hover action bar */}
-        <div className="flex items-center gap-1 border-t border-transparent px-2 pb-2 pt-0 opacity-0 transition-all duration-200 group-hover:border-border/30 group-hover:pt-2 group-hover:opacity-100">
+        <div className="flex items-center gap-1 border-t border-transparent px-2 pb-2 pt-0 opacity-0 transition-all duration-200 group-hover:border-stone-200/30 group-hover:pt-2 group-hover:opacity-100">
           {source.signedScreenshotUrl && (
             <Tooltip>
               <TooltipTrigger asChild>
@@ -343,7 +343,7 @@ function TimelineItemComponent({
                     'h-7 w-7 rounded-lg transition-all',
                     isCopied
                       ? 'bg-emerald-500/10 text-emerald-600 hover:bg-emerald-500/20 hover:text-emerald-600'
-                      : 'text-muted-foreground hover:text-foreground'
+                      : 'text-stone-500 hover:text-stone-900'
                   )}
                 >
                   {isCopied ? (
@@ -483,9 +483,9 @@ export function SourcesSidebar({
         isCollapsed ? 'w-14' : 'w-[280px]'
       )}
     >
-      <div className="overflow-hidden rounded-2xl border border-border/60 bg-card shadow-sm">
+      <div className="overflow-hidden rounded-2xl border border-stone-200/60 bg-white shadow-sm shadow-stone-200/40">
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-border/40 px-3 py-2.5">
+        <div className="flex items-center justify-between border-b border-stone-200/60 px-3 py-2.5">
           <AnimatePresence mode="wait">
             {!isCollapsed && (
               <motion.div
@@ -495,13 +495,15 @@ export function SourcesSidebar({
                 transition={{ duration: 0.15 }}
                 className="flex items-center gap-2.5"
               >
-                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-primary/10">
-                  <Clock className="h-3.5 w-3.5 text-primary" />
+                <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-brand-50">
+                  <Clock className="h-3.5 w-3.5 text-brand-600" />
                 </div>
-                <span className="text-sm font-semibold text-foreground">Timeline</span>
+                <span className="font-mono text-[11px] font-medium uppercase tracking-[0.06em] text-stone-500">
+                  Timeline
+                </span>
                 <Badge
-                  variant="secondary"
-                  className="h-5 min-w-[20px] justify-center rounded-full px-1.5 text-[10px] font-bold"
+                  variant="outline"
+                  className="h-5 min-w-[20px] justify-center rounded-full border-stone-200 bg-stone-50 px-1.5 font-mono text-[10px] font-medium text-stone-600"
                 >
                   {allSources.length}
                 </Badge>
@@ -515,7 +517,7 @@ export function SourcesSidebar({
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsCollapsed(!isCollapsed)}
-                className="h-7 w-7 rounded-lg text-muted-foreground hover:text-foreground"
+                className="h-7 w-7 rounded-lg text-stone-500 hover:text-stone-900"
               >
                 {isCollapsed ? (
                   <ChevronLeft className="h-4 w-4" />

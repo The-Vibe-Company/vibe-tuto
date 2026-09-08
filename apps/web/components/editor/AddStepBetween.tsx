@@ -41,8 +41,8 @@ export function AddStepBetween({ onAddStep }: AddStepBetweenProps) {
         className={cn(
           'absolute inset-x-8 h-px transition-all duration-200',
           visible
-            ? 'bg-gradient-to-r from-transparent via-border to-transparent'
-            : 'bg-transparent'
+            ? 'bg-gradient-to-r from-transparent via-brand-200 to-transparent'
+            : 'bg-transparent',
         )}
       />
 
@@ -53,10 +53,10 @@ export function AddStepBetween({ onAddStep }: AddStepBetweenProps) {
             variant="outline"
             size="icon"
             className={cn(
-              'relative z-10 h-6 w-6 rounded-full border transition-all duration-200',
+              'relative z-10 h-6 w-6 rounded-full border transition-all duration-200 ease-out-expo',
               visible
-                ? 'scale-100 border-primary/40 bg-primary/5 text-primary opacity-100 hover:bg-primary/10 hover:border-primary'
-                : 'scale-75 border-transparent text-muted-foreground opacity-0'
+                ? 'scale-100 border-brand-300 bg-white text-brand-600 opacity-100 shadow-sm hover:border-brand-500 hover:bg-brand-50'
+                : 'scale-75 border-transparent text-stone-400 opacity-0',
             )}
           >
             <Plus className="h-3 w-3" />
@@ -69,12 +69,12 @@ export function AddStepBetween({ onAddStep }: AddStepBetweenProps) {
               onClick={() => onAddStep(type)}
               className="flex items-start gap-3 py-2"
             >
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-muted">
-                <Icon className="h-4 w-4 text-muted-foreground" />
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-md bg-brand-50 text-brand-600">
+                <Icon className="h-4 w-4" />
               </div>
               <div className="flex flex-col">
-                <span className="font-medium">{label}</span>
-                <span className="text-xs text-muted-foreground">{description}</span>
+                <span className="text-sm font-medium text-stone-900">{label}</span>
+                <span className="text-xs text-stone-500">{description}</span>
               </div>
             </DropdownMenuItem>
           ))}

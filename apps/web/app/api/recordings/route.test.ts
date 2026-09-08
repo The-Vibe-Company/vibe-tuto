@@ -15,7 +15,11 @@ function auth(options:{existing?:unknown;uploadError?:unknown;sourceError?:unkno
 }
 beforeEach(()=>vi.resetAllMocks());
 describe('human recording ingestion',()=>{
- it('requires authentication',async()=>{vi.mocked(resolveRequestUser).mockResolvedValue(null);expect((await POST(request(payload))).status).toBe(401);});
+ it('preserves inline narration from released desktop versions',async()=>{
+  const db=auth();expect((await POST(request({...payload,audio_data:'YXVkaW8=',audio_key:'voice.m4a'}))).status).toBe(200);
+  expect(db.upload).toHaveBeenCalledWith(`owner/${id}.webm`,Buffer.from('audio'),expect.objectContaining({contentType:'audio/mp4'}));
+ });
+ it('requires authentication' ,async()=>{vi.mocked(resolveRequestUser).mockResolvedValue(null);expect((await POST(request(payload))).status).toBe(401);});
  it('rejects malformed JSON and incomplete recordings',async()=>{
   auth();expect((await POST(new Request('http://localhost',{method:'POST',body:'{'}))).status).toBe(400);
   for(const body of [{},{...payload,steps:[]},{...payload,recording:{...payload.recording,duration:-1}}])expect((await POST(request(body))).status).toBe(400);

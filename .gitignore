@@ -53,6 +53,9 @@ __pycache__/
 *.swo
 supabase/.temp/
 
+# Claude Code
+.claude/scheduled_tasks.lock
+
 # Swift / Xcode
 .build/
 .swiftpm/

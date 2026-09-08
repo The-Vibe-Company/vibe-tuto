@@ -83,11 +83,15 @@ struct RecordingPayload: Codable, Sendable {
     let recording: RecordingMetadata
     let steps: [UploadStep]
     let audioKey: String?
+    let audioData: String? = nil
+    let audioContentType: String? = nil
 
     enum CodingKeys: String, CodingKey {
         case recording
         case steps
         case audioKey = "audio_key"
+        case audioData = "audio_data"
+        case audioContentType = "audio_content_type"
     }
 }
 

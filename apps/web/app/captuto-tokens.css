@@ -1,0 +1,87 @@
+/* ============================================================
+   CapTuto — Colors & Type Tokens
+   Sourced from the CapTuto Design System bundle.
+   Fonts are loaded via next/font in app/layout.tsx; --font-sans
+   and --font-mono below alias those next/font CSS vars.
+   ============================================================ */
+
+:root {
+  /* Brand — indigo */
+  --brand-50:#eef2ff; --brand-100:#e0e7ff; --brand-200:#c7d2fe; --brand-300:#a5b4fc;
+  --brand-400:#818cf8; --brand-500:#6366f1; --brand-600:#4f46e5; --brand-700:#4338ca;
+  --brand-800:#3730a3; --brand-900:#312e81;
+
+  /* Teal — mid gradient stop, cool & fresh */
+  --teal-50:#f0fdfa; --teal-100:#ccfbf1; --teal-200:#99f6e4;
+  --teal-300:#5eead4; --teal-400:#2dd4bf; --teal-500:#14b8a6; --teal-600:#0d9488;
+  --teal-700:#0f766e;
+
+  /* Cyan — final gradient stop */
+  --cyan-50:#ecfeff; --cyan-100:#cffafe; --cyan-200:#a5f3fc;
+  --cyan-300:#67e8f9; --cyan-400:#22d3ee; --cyan-500:#06b6d4; --cyan-600:#0891b2;
+
+  /* Brand gradients */
+  --brand-gradient: linear-gradient(135deg, var(--brand-600) 0%, var(--teal-500) 50%, var(--cyan-500) 100%);
+  --brand-gradient-soft: linear-gradient(135deg, var(--brand-50) 0%, var(--teal-50) 100%);
+  --brand-gradient-hero: linear-gradient(90deg, var(--brand-600), var(--teal-500), var(--cyan-500));
+
+  /* Stone neutrals */
+  --stone-50:#fafaf9; --stone-100:#f5f5f4; --stone-200:#e7e5e4; --stone-300:#d6d3d1;
+  --stone-400:#a8a29e; --stone-500:#78716c; --stone-600:#57534e; --stone-700:#44403c;
+  --stone-800:#292524; --stone-900:#1c1917; --stone-950:#0c0a09;
+
+  /* Semantic */
+  --success-50:#ecfdf5; --success-500:#10b981; --success-600:#059669; --success-700:#047857;
+  --warn-50:#fffbeb; --warn-500:#f59e0b;
+  --danger-50:#fef2f2; --danger-500:#ef4444; --danger-600:#dc2626;
+  --record:#ef4444;
+
+  /* Companion tokens to shadcn HSL set in globals.css */
+  --captuto-bg:#ffffff;
+  --captuto-bg-muted:var(--stone-50);
+  --captuto-border:rgba(231,229,228,0.6);
+  --captuto-border-strong:var(--stone-300);
+  --captuto-border-brand:rgba(199,210,254,0.5);
+
+  /* Shadows */
+  --shadow-xs:0 1px 2px 0 rgba(28,25,23,.04);
+  --shadow-soft-sm:0 1px 3px 0 rgba(28,25,23,.06),0 1px 2px -1px rgba(28,25,23,.04);
+  --shadow-soft-md:0 4px 6px -1px rgba(28,25,23,.06),0 2px 4px -2px rgba(28,25,23,.04);
+  --shadow-soft-lg:0 10px 15px -3px rgba(28,25,23,.07),0 4px 6px -4px rgba(28,25,23,.05);
+  --shadow-soft-xl:0 20px 25px -5px rgba(28,25,23,.08),0 8px 10px -6px rgba(28,25,23,.04);
+  --shadow-soft-2xl:0 25px 50px -12px rgba(28,25,23,.12);
+  --shadow-brand:0 10px 15px -3px rgba(99,102,241,.25),0 4px 6px -4px rgba(99,102,241,.15);
+  --shadow-brand-lg:0 20px 25px -5px rgba(99,102,241,.30),0 8px 10px -6px rgba(99,102,241,.15);
+  --ring-brand:0 0 0 3px rgba(99,102,241,.18);
+
+  /* Radii (CapTuto bundle) */
+  --r-xs:4px; --r-sm:6px; --r-md:8px; --r-lg:12px; --r-xl:16px; --r-2xl:20px; --r-3xl:28px; --r-full:9999px;
+
+  /* Spacing (4px base) */
+  --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:20px;
+  --space-6:24px; --space-8:32px; --space-10:40px; --space-12:48px; --space-16:64px;
+  --space-20:80px; --space-24:96px;
+
+  /* Type families — alias next/font CSS vars from layout.tsx */
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --font-mono: var(--font-jetbrains-mono), ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  /* --font-heading and --font-display-serif already defined by next/font */
+
+  /* Type sizes */
+  --text-xs:12px; --text-sm:14px; --text-base:16px; --text-lg:18px; --text-xl:20px;
+  --text-2xl:24px; --text-3xl:30px; --text-4xl:36px; --text-5xl:48px; --text-6xl:60px; --text-7xl:72px;
+  --leading-tight:1.08; --leading-snug:1.25; --leading-normal:1.5; --leading-relaxed:1.65;
+  --tracking-tight:-0.02em; --tracking-tighter:-0.03em; --tracking-widest:0.18em;
+
+  /* Motion */
+  --ease-out-expo:cubic-bezier(0.16,1,0.3,1);
+  --ease-in-out:cubic-bezier(0.65,0,0.35,1);
+  --dur-fast:150ms; --dur-base:250ms; --dur-slow:400ms;
+
+  --container:1152px; --container-narrow:768px; --nav-height:64px;
+}
+
+/* Helper utility classes */
+.serif-accent { font-family: var(--font-display-serif); font-style: italic; font-weight: 400; letter-spacing: var(--tracking-tight); }
+.gradient-text { background: var(--brand-gradient-hero); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.brand-eyebrow { font-weight: 500; font-size: var(--text-xs); letter-spacing: var(--tracking-widest); text-transform: uppercase; color: var(--brand-500); }

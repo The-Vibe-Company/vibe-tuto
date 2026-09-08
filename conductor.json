@@ -1,0 +1,8 @@
+{
+  "scripts": {
+    "setup": "cp -n \"$CONDUCTOR_ROOT_PATH/.env.local\" .env.local 2>/dev/null || true; cp -n \"$CONDUCTOR_ROOT_PATH/apps/web/.env.local\" apps/web/.env.local 2>/dev/null || true; for f in .env.local apps/web/.env.local; do [ -f \"$f\" ] && sed -i.bak \"s|^NEXT_PUBLIC_APP_URL=.*|NEXT_PUBLIC_APP_URL=http://localhost:${CONDUCTOR_PORT:-3678}|\" \"$f\" && rm -f \"$f.bak\"; done; pnpm install --frozen-lockfile",
+    "run": "./scripts/dev-start.sh --foreground",
+    "archive": "./scripts/dev-start.sh --stop"
+  },
+  "runScriptMode": "concurrent"
+}

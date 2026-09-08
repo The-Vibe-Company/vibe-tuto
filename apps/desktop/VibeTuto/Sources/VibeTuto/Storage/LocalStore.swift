@@ -7,9 +7,17 @@ final class LocalStore: @unchecked Sendable {
     private let fileManager = FileManager.default
 
     init(directory: URL? = nil) {
-        let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        storageDirectory = directory ?? appSupport.appendingPathComponent("VibeTuto/recordings", isDirectory: true)
+        if let directory {
+            storageDirectory = directory
+        } else {
+            let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
+            storageDirectory = appSupport.appendingPathComponent("VibeTuto/recordings", isDirectory: true)
+        }
         try? fileManager.createDirectory(at: storageDirectory, withIntermediateDirectories: true)
+    }
+
+    convenience init(storageDirectory: URL?) {
+        self.init(directory: storageDirectory)
     }
 
     /// Save a recording session locally for later upload.
@@ -32,9 +40,12 @@ final class LocalStore: @unchecked Sendable {
         }
 
         if let audioFile {
-            let destination = sessionDir.appendingPathComponent("narration.m4a")
-            if audioFile != destination {
-                try Data(contentsOf: audioFile).write(to: destination, options: .atomic)
+            let audioKey = session.audioKey ?? "narration.m4a"
+            let targetURL = sessionDir.appendingPathComponent(audioKey)
+            let parentDir = targetURL.deletingLastPathComponent()
+            try fileManager.createDirectory(at: parentDir, withIntermediateDirectories: true)
+            if audioFile.standardizedFileURL != targetURL.standardizedFileURL {
+                try Data(contentsOf: audioFile).write(to: targetURL, options: .atomic)
             }
         }
         return sessionDir
@@ -64,6 +75,25 @@ final class LocalStore: @unchecked Sendable {
         let decoder = JSONDecoder()
         decoder.dateDecodingStrategy = .iso8601
         return try decoder.decode(RecordingSession.self, from: data)
+    }
+
+    /// Build the screenshot file map expected by UploadManager for a saved session.
+    func screenshotFiles(for session: RecordingSession, at directory: URL) -> [String: URL] {
+        var files: [String: URL] = [:]
+        for step in session.steps {
+            let url = directory.appendingPathComponent(step.screenshotKey)
+            if fileManager.fileExists(atPath: url.path) {
+                files[step.screenshotKey] = url
+            }
+        }
+        return files
+    }
+
+    /// Find a locally saved narration file for a session if present.
+    func audioFile(for session: RecordingSession, at directory: URL) -> URL? {
+        guard let audioKey = session.audioKey else { return nil }
+        let url = directory.appendingPathComponent(audioKey)
+        return fileManager.fileExists(atPath: url.path) ? url : nil
     }
 
     /// Remove a session after successful upload.
