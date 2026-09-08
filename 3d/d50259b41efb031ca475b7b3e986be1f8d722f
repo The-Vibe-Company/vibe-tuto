@@ -1,0 +1,38 @@
+apps/web/app/api/billing/checkout/route.test.ts
+  s_1930cc3a6b228d::t_e8870b2b7cfb5d 61-105
+apps/web/app/api/billing/checkout/route.ts
+  s_1930cc3a6b228d::t_e8870b2b7cfb5d 6,9,35,67,87-97,119,122
+apps/web/app/api/desktop/connect/route.ts
+  s_1930cc3a6b228d::t_37b96fec3a06e9 1,8-12,14-25
+apps/web/lib/desktop/connect.test.ts
+  s_1930cc3a6b228d::t_29f1b4b8b758d6 23,34-42
+apps/web/lib/supabase/types.ts
+  s_1930cc3a6b228d::t_6afa993a6dd2ed 237
+docs/captuto/development.md
+  s_1930cc3a6b228d::t_301cad36774ebc 95-105
+scripts/check-desktop-pairing.mjs
+  s_1930cc3a6b228d::t_55693fe4a25b27 49-63
+supabase/migrations/20260908232000_bound_desktop_pairing.sql
+  s_1930cc3a6b228d::t_d4d5fc9368b655 1-26
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "3dd50259b41efb031ca475b7b3e986be1f8d722f",
+  "prompts": {},
+  "humans": {
+    "h_42fad98ca714c8": {
+      "author": "StanGirard"
+    }
+  },
+  "sessions": {
+    "s_1930cc3a6b228d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08264-1a3c-7973-8ac1-d1503c6b7118",
+        "model": "gpt-5.6-luna"
+      },
+      "human_author": "StanGirard <stan@quivr.app>"
+    }
+  }
+}
