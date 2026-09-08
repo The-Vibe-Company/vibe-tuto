@@ -46,3 +46,18 @@ try {
   if (issuedId) await rest(`/rest/v1/api_tokens?id=eq.${issuedId}`, 'DELETE');
   await rest(`/rest/v1/desktop_connections?id=eq.${connection.id}`, 'DELETE');
 }
+
+// Admission limits must hold across concurrent serverless requests, not just one process.
+const requester = randomBytes(32).toString('hex');
+const floodRequester = randomBytes(32).toString('hex');
+try {
+  const attempts = await Promise.all(Array.from({ length: 16 }, () => rest('/rest/v1/rpc/begin_desktop_connection', 'POST', { code_challenge: randomBytes(32).toString('hex'), requester })));
+  assert.equal(attempts.filter(result => result.status === 'created').length, 10);
+  assert.equal(attempts.filter(result => result.status === 'limited').length, 6);
+  await rest('/rest/v1/desktop_connections', 'POST', Array.from({ length: 2000 }, () => ({ challenge: randomBytes(32).toString('hex'), requester_hash: floodRequester })));
+  const capped = await rest('/rest/v1/rpc/begin_desktop_connection', 'POST', { code_challenge: challenge, requester: randomBytes(32).toString('hex') });
+  assert.equal(capped.status, 'limited', 'Global capacity must also reject new identities.');
+  console.log('Pairing admission passed: 16 concurrent starts admit10; global capacity rejects additional identities.');
+} finally {
+  await rest(`/rest/v1/desktop_connections?requester_hash=in.(${requester},${floodRequester})`, 'DELETE');
+}

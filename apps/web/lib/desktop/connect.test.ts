@@ -20,6 +20,7 @@ beforeEach(() => {
   mocks.cleanup.mockResolvedValue({ error: null });
   mocks.insert.mockReturnValue({ select: () => ({ single: mocks.single }) });
   mocks.single.mockResolvedValue({ data: { id }, error: null });
+  mocks.rpc.mockResolvedValue({data:{status:'created',id},error:null});
 });
 
 describe('desktop connection start', () => {
@@ -30,7 +31,15 @@ describe('desktop connection start', () => {
     expect(data).toEqual({ id, connectUrl: `${origin}/connect/desktop?id=${id}`, expiresIn: 300 });
     expect(response.headers.get('cache-control')).toBe('no-store');
   });
-  it('rejects missing or invalid challenges before writing', async () => {
+  it('returns retryable429 when the shared admission quota is exhausted', async () => {
+    mocks.rpc.mockResolvedValue({data:{status:'limited'},error:null});
+    const response = await begin(request({codeChallenge:'f'.repeat(64)}));
+    expect(response.status).toBe(429);
+    expect(response.headers.get('retry-after')).toBe('60');
+    expect(mocks.insert).not.toHaveBeenCalled();
+    expect(mocks.cleanup).not.toHaveBeenCalled();
+  });
+  it('rejects missing or invalid challenges before writing' , async () => {
     expect((await begin(request({ codeChallenge: 'invalid' }))).status).toBe(400);
     expect(mocks.insert).not.toHaveBeenCalled();
   });

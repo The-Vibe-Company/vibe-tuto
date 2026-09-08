@@ -92,3 +92,14 @@ restore anonymous raw screenshot policies as a recovery shortcut: that reopens
 access to content hidden by blur. Existing owner editing and stored captures
 remain available. Pairing can be disabled by withholding its new routes; its
 expired requests and tokens do not require dropping data.
+
+Pairing admission is limited in PostgreSQL to ten requests per requester within
+five minutes and 2,000 outstanding records overall. Cleanup deletes at most100
+expired records per request. Configure trusted `x-vercel-forwarded-for` or
+`x-real-ip` headers at the hosting proxy; without either, requests share one
+anonymous bucket. Raw addresses are not stored. Ship the admission migration
+with the updated route.
+
+Checkout uses stable Stripe idempotency keys and checks existing subscriptions
+at the provider before creating a subscription session, including while webhooks
+are delayed. See [Stripe Checkout](https://docs.stripe.com/api/checkout/sessions/create).
