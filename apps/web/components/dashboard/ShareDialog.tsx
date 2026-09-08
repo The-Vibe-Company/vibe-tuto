@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useCallback, useState, useEffect } from 'react';
 import { Copy, Check, ExternalLink, Link2, Globe, Lock, Code, Loader2 } from 'lucide-react';
 import {
   Dialog,
@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { cn } from '@/lib/utils';
+import { DownloadPdfButton } from '@/components/public/DownloadPdfButton';
 
 type Visibility = 'private' | 'link_only' | 'public';
 
@@ -38,37 +39,44 @@ export function ShareDialog({
   onOpenChange,
   tutorialId,
   tutorialTitle,
-  tutorialSlug,
 }: ShareDialogProps) {
   const [settings, setSettings] = useState<ShareSettings | null>(null);
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [saving, setSaving] = useState(false);
   const [copiedField, setCopiedField] = useState<string | null>(null);
 
-  // Fetch current share settings
-  useEffect(() => {
-    if (open && tutorialId) {
-      fetchSettings();
-    }
-  }, [open, tutorialId]);
-
-  const fetchSettings = async () => {
+  const fetchSettings = useCallback(async (signal?: AbortSignal) => {
     setLoading(true);
+    setSettings(null);
+    setError(null);
     try {
-      const response = await fetch(`/api/tutorials/${tutorialId}/share`);
+      const response = await fetch(`/api/tutorials/${tutorialId}/share`, { signal });
+      if (!response.ok) throw new Error('Sharing settings could not be saved or loaded. Please try again.');
       if (response.ok) {
         const data = await response.json();
         setSettings(data);
       }
     } catch (error) {
-      console.error('Failed to fetch share settings:', error);
+      if (signal?.aborted) return;
+      setError(error instanceof Error ? error.message : 'Could not load sharing settings.');
     } finally {
-      setLoading(false);
+      if (!signal?.aborted) setLoading(false);
     }
-  };
+  }, [tutorialId]);
+
+  // Fetch current share settings
+  useEffect(() => {
+    if (open && tutorialId) {
+      const controller = new AbortController();
+      fetchSettings(controller.signal);
+      return () => controller.abort();
+    }
+  }, [fetchSettings, open, tutorialId]);
 
   const updateVisibility = async (visibility: Visibility) => {
     setSaving(true);
+    setError(null);
     try {
       const response = await fetch(`/api/tutorials/${tutorialId}/share`, {
         method: 'POST',
@@ -76,12 +84,13 @@ export function ShareDialog({
         body: JSON.stringify({ visibility }),
       });
 
+      if (!response.ok) throw new Error('Sharing settings could not be saved or loaded. Please try again.');
       if (response.ok) {
         const data = await response.json();
         setSettings(data);
       }
     } catch (error) {
-      console.error('Failed to update visibility:', error);
+      setError(error instanceof Error ? error.message : 'Could not save sharing settings.');
     } finally {
       setSaving(false);
     }
@@ -129,6 +138,11 @@ export function ShareDialog({
           </DialogDescription>
         </DialogHeader>
 
+        {error && <div role="alert" className="rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-800">{error}{!settings && <Button variant="ghost" size="sm" onClick={() => fetchSettings()}>Retry</Button>}</div>}
+        <div className="flex items-center justify-between gap-4 rounded-lg border border-stone-200 bg-stone-50 p-4">
+          <div><p className="text-sm font-medium">Take your guide with you</p><p className="mt-1 text-xs text-stone-600">Steps and annotated captures, ready to read.</p></div>
+          <DownloadPdfButton url={`/api/tutorials/${tutorialId}/export/pdf`} title={tutorialTitle} />
+        </div>
         {loading ? (
           <div className="flex items-center justify-center py-8">
             <Loader2 className="h-6 w-6 animate-spin text-stone-400" />
@@ -141,7 +155,7 @@ export function ShareDialog({
               <RadioGroup
                 value={visibility}
                 onValueChange={(value) => updateVisibility(value as Visibility)}
-                disabled={saving}
+                disabled={saving || !settings}
                 className="space-y-2"
               >
                 {/* Private */}
@@ -150,7 +164,7 @@ export function ShareDialog({
                   className={cn(
                     'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                     visibility === 'private'
-                      ? 'border-brand-500 bg-brand-50'
+                      ? 'border-[#bd402d] bg-orange-50'
                       : 'border-stone-200 hover:bg-stone-50'
                   )}
                 >
@@ -170,7 +184,7 @@ export function ShareDialog({
                   className={cn(
                     'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                     visibility === 'link_only'
-                      ? 'border-brand-500 bg-brand-50'
+                      ? 'border-[#bd402d] bg-orange-50'
                       : 'border-stone-200 hover:bg-stone-50'
                   )}
                 >
@@ -190,23 +204,19 @@ export function ShareDialog({
                   className={cn(
                     'flex cursor-pointer items-center gap-3 rounded-lg border p-3 transition-colors',
                     visibility === 'public'
-                      ? 'border-brand-500 bg-brand-50'
-                      : 'border-stone-200 hover:bg-stone-50',
-                    !tutorialSlug && 'cursor-not-allowed opacity-50'
+                      ? 'border-[#bd402d] bg-orange-50'
+                      : 'border-stone-200 hover:bg-stone-50'
                   )}
                 >
                   <RadioGroupItem
                     value="public"
                     id="visibility-public"
-                    disabled={!tutorialSlug}
                   />
                   <Globe className="h-4 w-4 text-stone-500" />
                   <div className="flex-1">
                     <p className="text-sm font-medium">Public</p>
                     <p className="text-xs text-stone-500">
-                      {tutorialSlug
-                        ? 'Accessible via custom URL'
-                        : 'Requires a slug to be public'}
+                      Anyone can discover and read this guide
                     </p>
                   </div>
                 </label>
@@ -228,6 +238,7 @@ export function ShareDialog({
                     <Button
                       variant="outline"
                       size="icon"
+                      aria-label="Copy or open share link"
                       onClick={() => copyToClipboard(settings.tokenUrl!, 'token')}
                     >
                       {copiedField === 'token' ? (
@@ -239,6 +250,7 @@ export function ShareDialog({
                     <Button
                       variant="outline"
                       size="icon"
+                      aria-label="Copy or open share link"
                       asChild
                     >
                       <a href={settings.tokenUrl} target="_blank" rel="noopener noreferrer">
@@ -259,6 +271,7 @@ export function ShareDialog({
                       <Button
                         variant="outline"
                         size="icon"
+                      aria-label="Copy or open share link"
                         onClick={() => copyToClipboard(settings.slugUrl!, 'slug')}
                       >
                         {copiedField === 'slug' ? (
@@ -270,6 +283,7 @@ export function ShareDialog({
                       <Button
                         variant="outline"
                         size="icon"
+                      aria-label="Copy or open share link"
                         asChild
                       >
                         <a href={settings.slugUrl} target="_blank" rel="noopener noreferrer">

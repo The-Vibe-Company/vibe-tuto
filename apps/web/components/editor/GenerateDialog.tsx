@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import Image from 'next/image';
 import { Sparkles, Loader2, Check, AlertCircle, ChevronDown, ChevronUp } from 'lucide-react';
 import {
   Dialog,
@@ -361,9 +362,12 @@ export function GenerateDialog({
                           >
                             {/* Thumbnail */}
                             {source?.signedScreenshotUrl && (
-                              <img
+                              <Image
+                unoptimized
                                 src={source.signedScreenshotUrl}
                                 alt={`Step ${index + 1}`}
+                                width={64}
+                                height={48}
                                 className="h-12 w-16 rounded border border-stone-200 object-cover"
                               />
                             )}

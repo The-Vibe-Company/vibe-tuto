@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useCallback, memo } from 'react';
+import { useState, useCallback, memo, useMemo } from 'react';
 import Image from 'next/image';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
@@ -71,7 +71,7 @@ function DocStepCardComponent({
   const displayUrl = step.url || step.source?.url || null;
   const isTabChange = step.source ? getSourceActionType(step.source) === 'tab_change' : false;
   const [editedUrl, setEditedUrl] = useState(displayUrl || '');
-  const annotations = step.annotations || [];
+  const annotations = useMemo(() => step.annotations || [], [step.annotations]);
 
   // URL is redundant if it matches the previous step's URL
   const isUrlRedundant = displayUrl != null && previousStepUrl != null && displayUrl === previousStepUrl;
@@ -572,6 +572,7 @@ function DocStepCardComponent({
                     className="group relative aspect-video overflow-hidden rounded-lg border border-stone-200/60 bg-stone-100 transition-all hover:border-brand-500 hover:ring-2 hover:ring-brand-500/20"
                   >
                     <Image
+                unoptimized
                       src={source.signedScreenshotUrl!}
                       alt="Source thumbnail"
                       fill

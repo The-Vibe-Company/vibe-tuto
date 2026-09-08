@@ -1,7 +1,7 @@
+export const dynamic = 'force-dynamic';
+import { publicPresentationSteps } from '@/lib/queries/public-presentation';
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
-import { getFlattenedSignedUrl } from '@/lib/flatten/cache';
-import type { Annotation } from '@/lib/types/editor';
+import { createAdminClient } from '@/lib/supabase/admin';
 
 // GET /api/public/tutorials/slug/[slug] - Get public tutorial by slug
 // No authentication required - only returns tutorials with visibility = 'public'
@@ -11,7 +11,7 @@ export async function GET(
 ) {
   try {
     const { slug } = await params;
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Fetch tutorial by slug - must be fully public
     // Note: Using type assertion as visibility column is added by migration
@@ -37,6 +37,9 @@ export async function GET(
         source_id,
         order_index,
         text_content,
+        description,
+        url,
+        show_url,
         step_type,
         annotations,
         created_at,
@@ -63,33 +66,15 @@ export async function GET(
       );
     }
 
-    // Public viewers only ever see flattened (annotations-baked-in) images.
+    // Prepare screenshot presence; only flattened previews are returned below
     const stepsWithUrls = await Promise.all(
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (steps || []).map(async (step: any) => {
+        let signedScreenshotUrl: string | null = null;
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
         const source = (step as any).sources;
 
-        // Parse annotations if it's a string
-        let annotations = step.annotations;
-        if (typeof annotations === 'string') {
-          try {
-            annotations = JSON.parse(annotations);
-          } catch {
-            annotations = null;
-          }
-        }
-        const annotationArray: Annotation[] = Array.isArray(annotations)
-          ? (annotations as Annotation[])
-          : [];
-
-        let signedScreenshotUrl: string | null = null;
-        if (source?.screenshot_url) {
-          signedScreenshotUrl = await getFlattenedSignedUrl({
-            originalPath: source.screenshot_url,
-            annotations: annotationArray,
-          });
-        }
+        if (source?.screenshot_url) signedScreenshotUrl = 'captured-image';
 
         // Parse element_info if it's a string
         let elementInfo = source?.element_info;
@@ -101,15 +86,26 @@ export async function GET(
           }
         }
 
+        // Parse annotations if it's a string
+        let annotations = step.annotations;
+        if (typeof annotations === 'string') {
+          try {
+            annotations = JSON.parse(annotations);
+          } catch {
+            annotations = null;
+          }
+        }
+
         return {
           id: step.id,
           tutorial_id: step.tutorial_id,
           source_id: step.source_id,
           order_index: step.order_index,
           text_content: step.text_content,
+          description: step.description,
+          show_url: step.show_url,
           step_type: step.step_type,
-          // Do NOT ship raw annotations: see token route for rationale.
-          annotations: null,
+          annotations,
           created_at: step.created_at,
           signedScreenshotUrl,
           // Legacy fields for compatibility
@@ -118,7 +114,7 @@ export async function GET(
           viewport_width: source?.viewport_width ?? null,
           viewport_height: source?.viewport_height ?? null,
           element_info: elementInfo ?? null,
-          url: source?.url ?? null,
+          url: step.url ?? source?.url ?? null,
         };
       })
     );
@@ -135,7 +131,7 @@ export async function GET(
         createdAt: tutorial.created_at,
         updatedAt: tutorial.updated_at,
       },
-      steps: stepsWithUrls,
+      steps: publicPresentationSteps(stepsWithUrls, tutorial.public_token),
     });
   } catch (error) {
     console.error('Error fetching public tutorial:', error);

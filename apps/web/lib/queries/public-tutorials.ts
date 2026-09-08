@@ -1,12 +1,13 @@
-import { createClient } from '@/lib/supabase/server';
-import type { Annotation, StepWithSignedUrl, StepType } from '@/lib/types/editor';
-import { getFlattenedSignedUrl } from '@/lib/flatten/cache';
+import { publicPresentationSteps } from './public-presentation';
+import { createAdminClient } from '@/lib/supabase/admin';
+import type { StepWithSignedUrl, StepType } from '@/lib/types/editor';
 
 export interface PublicTutorial {
   id: string;
   title: string;
   description: string | null;
   slug: string | null;
+  publicToken: string | null;
   status: string;
   visibility: string;
   publishedAt: string | null;
@@ -17,39 +18,24 @@ export interface PublicTutorial {
 export interface PublicTutorialData {
   tutorial: PublicTutorial;
   steps: StepWithSignedUrl[];
+  previewImageUrl: string | null;
+}
+
+function getPreviewImageUrl(steps: StepWithSignedUrl[]) {
+  return steps.find((step) => step.signedScreenshotUrl)?.signedScreenshotUrl ?? null;
 }
 
 async function processSteps(
-  _supabase: Awaited<ReturnType<typeof createClient>>,
+  _supabase: Awaited<ReturnType<typeof createAdminClient>>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   steps: any[]
 ): Promise<StepWithSignedUrl[]> {
   return Promise.all(
     steps.map(async (step) => {
+      let signedScreenshotUrl: string | null = null;
       const source = step.sources;
 
-      // Parse annotations if it's a string
-      let annotations = step.annotations;
-      if (typeof annotations === 'string') {
-        try {
-          annotations = JSON.parse(annotations);
-        } catch {
-          annotations = null;
-        }
-      }
-      const annotationArray: Annotation[] = Array.isArray(annotations)
-        ? (annotations as Annotation[])
-        : [];
-
-      // Public viewers only ever see the flattened (annotations-baked-in) image.
-      // The raw screenshot URL is intentionally NOT exposed.
-      let signedScreenshotUrl: string | null = null;
-      if (source?.screenshot_url) {
-        signedScreenshotUrl = await getFlattenedSignedUrl({
-          originalPath: source.screenshot_url,
-          annotations: annotationArray,
-        });
-      }
+      if (source?.screenshot_url) signedScreenshotUrl = 'captured-image';
 
       // Parse element_info if it's a string
       let elementInfo = source?.element_info;
@@ -61,6 +47,16 @@ async function processSteps(
         }
       }
 
+      // Parse annotations if it's a string
+      let annotations = step.annotations;
+      if (typeof annotations === 'string') {
+        try {
+          annotations = JSON.parse(annotations);
+        } catch {
+          annotations = null;
+        }
+      }
+
       return {
         id: step.id,
         tutorial_id: step.tutorial_id,
@@ -69,9 +65,7 @@ async function processSteps(
         text_content: step.text_content,
         description: step.description ?? null,
         step_type: step.step_type as StepType,
-        // Annotations are baked into signedScreenshotUrl; do not ship them
-        // to the client, as that would let viewers reconstruct the raw image.
-        annotations: null,
+        annotations,
         created_at: step.created_at,
         signedScreenshotUrl,
         source: source ? {
@@ -95,7 +89,7 @@ export async function getPublicTutorialByToken(
   token: string
 ): Promise<PublicTutorialData | null> {
   try {
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Fetch tutorial by public token
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -112,7 +106,7 @@ export async function getPublicTutorialByToken(
     }
 
     // Check visibility (should already be enforced by RLS)
-    if (tutorial.visibility === 'private') {
+    if (!['public', 'link_only'].includes(tutorial.visibility)) {
       return null;
     }
 
@@ -159,7 +153,7 @@ export async function getPublicTutorialByToken(
       return null;
     }
 
-    const stepsWithUrls = await processSteps(supabase, steps || []);
+    const stepsWithUrls = publicPresentationSteps(await processSteps(supabase, steps || []), tutorial.public_token);
 
     return {
       tutorial: {
@@ -167,6 +161,7 @@ export async function getPublicTutorialByToken(
         title: tutorial.title,
         description: tutorial.description,
         slug: tutorial.slug,
+        publicToken: tutorial.public_token,
         status: tutorial.status,
         visibility: tutorial.visibility,
         publishedAt: tutorial.published_at,
@@ -174,6 +169,7 @@ export async function getPublicTutorialByToken(
         updatedAt: tutorial.updated_at,
       },
       steps: stepsWithUrls,
+      previewImageUrl: getPreviewImageUrl(stepsWithUrls),
     };
   } catch (error) {
     console.error('Error fetching public tutorial by token:', error);
@@ -185,7 +181,7 @@ export async function getPublicTutorialBySlug(
   slug: string
 ): Promise<PublicTutorialData | null> {
   try {
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Fetch tutorial by slug (only public tutorials)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -245,7 +241,7 @@ export async function getPublicTutorialBySlug(
       return null;
     }
 
-    const stepsWithUrls = await processSteps(supabase, steps || []);
+    const stepsWithUrls = publicPresentationSteps(await processSteps(supabase, steps || []), tutorial.public_token);
 
     return {
       tutorial: {
@@ -253,6 +249,7 @@ export async function getPublicTutorialBySlug(
         title: tutorial.title,
         description: tutorial.description,
         slug: tutorial.slug,
+        publicToken: tutorial.public_token,
         status: tutorial.status,
         visibility: tutorial.visibility,
         publishedAt: tutorial.published_at,
@@ -260,6 +257,7 @@ export async function getPublicTutorialBySlug(
         updatedAt: tutorial.updated_at,
       },
       steps: stepsWithUrls,
+      previewImageUrl: getPreviewImageUrl(stepsWithUrls),
     };
   } catch (error) {
     console.error('Error fetching public tutorial by slug:', error);

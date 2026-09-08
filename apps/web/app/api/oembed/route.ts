@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { createClient } from '@/lib/supabase/server';
+import { getPublicTutorialBySlug, getPublicTutorialByToken } from '@/lib/queries/public-tutorials';
 
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
@@ -36,45 +36,45 @@ export async function GET(request: NextRequest) {
     );
   }
 
-  // Fetch tutorial metadata (lightweight - no steps)
-  const supabase = await createClient();
+  const data = token
+    ? await getPublicTutorialByToken(token)
+    : slug
+      ? await getPublicTutorialBySlug(slug)
+      : null;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  let query = (supabase as any)
-    .from('tutorials')
-    .select('id, title, description, visibility, public_token, slug');
-
-  if (token) {
-    query = query.eq('public_token', token);
-  } else if (slug) {
-    query = query.eq('slug', slug).eq('visibility', 'public');
-  }
-
-  const { data: tutorial, error } = await query.single();
-
-  if (error || !tutorial || tutorial.visibility === 'private') {
+  if (!data) {
     return NextResponse.json({ error: 'Tutorial not found' }, { status: 404 });
   }
 
-  // Build the embed URL using the token
+  const { tutorial, steps, previewImageUrl } = data;
+  if (!tutorial.publicToken) {
+    return NextResponse.json({ error: 'Tutorial is not embeddable' }, { status: 404 });
+  }
+
   const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3678';
-  const embedToken = tutorial.public_token;
+  const embedToken = tutorial.publicToken;
   const embedUrl = `${baseUrl}/t/${embedToken}/embed`;
+  const thumbnailUrl =
+    previewImageUrl ||
+    `${baseUrl}/api/og/tutorial?title=${encodeURIComponent(tutorial.title)}&steps=${steps.length}`;
 
   const width = Math.min(maxwidth, 800);
   const height = Math.min(maxheight, 600);
+  const description = tutorial.description || `Step-by-step tutorial: ${tutorial.title}`;
 
   const oembedResponse = {
     type: 'rich',
     version: '1.0',
     title: tutorial.title,
-    description: tutorial.description || undefined,
+    description,
     provider_name: 'CapTuto',
-    provider_url: 'https://captuto.com',
+    provider_url: baseUrl,
     html: `<iframe src="${embedUrl}" width="${width}" height="${height}" frameborder="0" allow="fullscreen" style="border:none;border-radius:8px;" title="${tutorial.title.replace(/"/g, '&quot;')}"></iframe>`,
     width,
     height,
-    thumbnail_url: null,
+    thumbnail_url: thumbnailUrl,
+    thumbnail_width: 1200,
+    thumbnail_height: 630,
   };
 
   return NextResponse.json(oembedResponse, {

@@ -1,10 +1,187 @@
 'use client';
+import { AgentConnection } from '@/components/settings-agent';
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
-import { ArrowLeft, User, Bell, Shield, Palette, Key, Copy, Check, Trash2, Plus, Monitor } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
+import {
+  AlertCircle,
+  ArrowLeft,
+  Check,
+  CheckCircle2,
+  Copy,
+  CreditCard,
+  ExternalLink,
+  Key,
+  Loader2,
+  Monitor,
+  Plus,
+  Trash2,
+} from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+
+interface BillingStatus {
+  configured: boolean;
+  hasCustomer: boolean;
+  isActive: boolean;
+  subscriptionStatus: string | null;
+  currentPeriodEnd: string | null;
+  cancelAtPeriodEnd: boolean;
+}
+
+function BillingSection() {
+  const searchParams = useSearchParams();
+  const [status, setStatus] = useState<BillingStatus | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+
+  const fetchStatus = useCallback(async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('/api/billing/status');
+      const data = await res.json();
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to load billing status');
+      }
+      setStatus(data);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load billing status');
+    } finally {
+      setLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchStatus();
+  }, [fetchStatus]);
+
+  const openBillingUrl = async (endpoint: '/api/billing/checkout' | '/api/billing/portal') => {
+    setActionLoading(true);
+    setError(null);
+    try {
+      const res = await fetch(endpoint, { method: 'POST' });
+      const data = await res.json();
+      if (!res.ok || !data.url) {
+        throw new Error(data.error || 'Failed to open Stripe');
+      }
+      window.location.href = data.url;
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to open Stripe');
+      setActionLoading(false);
+    }
+  };
+
+  const billingResult = searchParams.get('billing');
+  const activeLabel = status?.subscriptionStatus
+    ? status.subscriptionStatus.replace(/_/g, ' ')
+    : 'No active subscription';
+
+  return (
+    <Card>
+      <CardHeader>
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-indigo-100">
+            <CreditCard className="h-5 w-5 text-indigo-600" />
+          </div>
+          <div>
+            <CardTitle className="text-base">Billing</CardTitle>
+            <CardDescription>
+              Manage your Captuto subscription with Stripe
+            </CardDescription>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent className="space-y-4">
+        {billingResult === 'success' && (
+          <div className="flex items-start gap-2 rounded-lg border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-800">
+            <CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0" />
+            Checkout completed. Stripe will update your subscription status shortly.
+          </div>
+        )}
+
+        {billingResult === 'cancelled' && (
+          <div className="flex items-start gap-2 rounded-lg border border-amber-200 bg-amber-50 p-3 text-sm text-amber-800">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            Checkout was cancelled. No changes were made.
+          </div>
+        )}
+
+        {error && (
+          <div className="flex items-start gap-2 rounded-lg border border-red-200 bg-red-50 p-3 text-sm text-red-700">
+            <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+            {error}
+          </div>
+        )}
+
+        {loading ? (
+          <div className="flex items-center gap-2 text-sm text-stone-500">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            Loading billing status...
+          </div>
+        ) : status?.configured === false ? (
+          <div className="rounded-lg border border-amber-200 bg-amber-50 p-4">
+            <p className="text-sm font-medium text-amber-900">
+              Stripe is not configured yet.
+            </p>
+            <p className="mt-1 text-sm text-amber-700">
+              Add STRIPE_SECRET_KEY, STRIPE_PRICE_ID, and STRIPE_WEBHOOK_SECRET
+              to enable paid subscriptions.
+            </p>
+          </div>
+        ) : (
+          <>
+            <div className="rounded-lg border bg-stone-50 p-4">
+              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm font-medium capitalize text-stone-900">
+                    {activeLabel}
+                  </p>
+                  <p className="mt-1 text-xs text-stone-500">
+                    {status?.isActive
+                      ? status.cancelAtPeriodEnd
+                        ? 'Your subscription remains active until the end of the billing period.'
+                        : 'Your subscription is active.'
+                      : 'Start a subscription to enable paid features.'}
+                  </p>
+                </div>
+                {status?.isActive && (
+                  <span className="inline-flex w-fit items-center gap-1.5 rounded-full bg-emerald-100 px-2.5 py-1 text-xs font-medium text-emerald-700">
+                    <CheckCircle2 className="h-3.5 w-3.5" />
+                    Active
+                  </span>
+                )}
+              </div>
+              {status?.currentPeriodEnd && (
+                <p className="mt-3 text-xs text-stone-500">
+                  Current period ends{' '}
+                  {new Date(status.currentPeriodEnd).toLocaleDateString()}
+                </p>
+              )}
+            </div>
+
+            <Button
+              onClick={() =>
+                openBillingUrl(status?.isActive ? '/api/billing/portal' : '/api/billing/checkout')
+              }
+              disabled={actionLoading}
+              className="w-full gap-2"
+            >
+              {actionLoading ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <ExternalLink className="h-4 w-4" />
+              )}
+              {status?.isActive ? 'Manage billing' : 'Start subscription'}
+            </Button>
+          </>
+        )}
+      </CardContent>
+    </Card>
+  );
+}
 
 interface ApiToken {
   id: string;
@@ -183,37 +360,6 @@ function ApiTokensSection() {
 }
 
 export default function SettingsPage() {
-  const settingsSections = [
-    {
-      id: 'profile',
-      icon: User,
-      title: 'Profile',
-      description: 'Manage your personal information',
-      comingSoon: true,
-    },
-    {
-      id: 'notifications',
-      icon: Bell,
-      title: 'Notifications',
-      description: 'Configure your notification preferences',
-      comingSoon: true,
-    },
-    {
-      id: 'security',
-      icon: Shield,
-      title: 'Security',
-      description: 'Password and authentication',
-      comingSoon: true,
-    },
-    {
-      id: 'appearance',
-      icon: Palette,
-      title: 'Appearance',
-      description: 'Theme and customization',
-      comingSoon: true,
-    },
-  ];
-
   return (
     <div>
       {/* Back link */}
@@ -233,43 +379,10 @@ export default function SettingsPage() {
         </p>
       </div>
 
-      {/* API Tokens Section - Desktop App */}
-      <div className="mb-8">
+      <AgentConnection />
+      <div className="mb-8 grid gap-6 lg:grid-cols-2">
+        <BillingSection />
         <ApiTokensSection />
-      </div>
-
-      {/* Settings Grid */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        {settingsSections.map((section) => {
-          const Icon = section.icon;
-          return (
-            <Card
-              key={section.id}
-              className={`relative overflow-hidden transition-all hover:shadow-md ${
-                section.comingSoon ? 'opacity-75' : 'cursor-pointer'
-              }`}
-            >
-              {section.comingSoon && (
-                <div className="absolute right-2 top-2">
-                  <span className="rounded-full bg-brand-100 px-2 py-1 text-xs font-medium text-brand-600">
-                    Coming soon
-                  </span>
-                </div>
-              )}
-              <CardHeader className="flex flex-row items-center gap-4 pb-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-stone-100">
-                  <Icon className="h-5 w-5 text-stone-600" />
-                </div>
-                <div>
-                  <CardTitle className="text-base">{section.title}</CardTitle>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <CardDescription>{section.description}</CardDescription>
-              </CardContent>
-            </Card>
-          );
-        })}
       </div>
     </div>
   );

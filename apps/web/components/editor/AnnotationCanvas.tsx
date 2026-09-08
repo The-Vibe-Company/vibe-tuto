@@ -3,7 +3,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react';
 import type { Annotation, AnnotationType } from '@/lib/types/editor';
 import { findAnnotationAtPoint, moveAnnotation, getAnnotationBounds, hitTestCorner, type ResizeCorner } from '@/lib/utils/annotation-hit-test';
-import { getStrokePx, DEFAULT_ANNOTATION_STYLE } from '@/lib/constants/annotation-styles';
+import { getStrokePx, DEFAULT_ANNOTATION_STYLE, annotationScale } from '@/lib/constants/annotation-styles';
 import { getImageBounds } from '@/lib/utils/image-bounds';
 import type { AnnotationStyle } from './AnnotationToolbar';
 
@@ -208,13 +208,15 @@ export function AnnotationCanvas({
     imageBoundsRef.current = { ...bounds, canvasWidth: canvas.width, canvasHeight: canvas.height };
 
     const animTime = animationTimeRef.current;
+    const styleScale = annotationScale(dw);
+    const fontFamily = getComputedStyle(canvas).getPropertyValue('--font-annotation').trim() || 'sans-serif';
 
     annotations.forEach((ann) => {
       const x = oX + ann.x * dw;
       const y = oY + ann.y * dh;
       const annColor = ann.color || DEFAULT_ANNOTATION_STYLE.color;
-      const annStroke = getStrokePx(ann.strokeWidth);
-      const annFontSize = ann.fontSize || DEFAULT_ANNOTATION_STYLE.fontSize;
+      const annStroke = getStrokePx(ann.strokeWidth) * styleScale;
+      const annFontSize = Math.min(64, Math.max(10, ann.fontSize || DEFAULT_ANNOTATION_STYLE.fontSize)) * styleScale;
       const annOpacity = ann.opacity ?? DEFAULT_ANNOTATION_STYLE.opacity;
       const annTextBg = ann.textBackground || DEFAULT_ANNOTATION_STYLE.textBackground;
 
@@ -227,7 +229,7 @@ export function AnnotationCanvas({
 
           ctx.save();
           ctx.shadowColor = annColor;
-          ctx.shadowBlur = 6;
+          ctx.shadowBlur = 0;
           ctx.shadowOffsetX = 0;
           ctx.shadowOffsetY = 0;
           ctx.strokeStyle = annColor;
@@ -241,19 +243,19 @@ export function AnnotationCanvas({
           break;
         }
         case 'arrow': {
-          const endX = oX + (ann.endX || ann.x + 0.1) * dw;
-          const endY = oY + (ann.endY || ann.y) * dh;
-          drawArrow(ctx, x, y, endX, endY, annColor, annStroke, false);
+          const endX = oX + (ann.endX ?? ann.x + 0.1) * dw;
+          const endY = oY + (ann.endY ?? ann.y) * dh;
+          drawArrow(ctx, x, y, endX, endY, annColor, annStroke, false, styleScale);
           break;
         }
         case 'text': {
           const scaledFont = annFontSize;
-          ctx.font = `600 ${scaledFont}px Inter, system-ui, sans-serif`;
+          ctx.font = `400 ${scaledFont}px ${fontFamily}`;
           const text = ann.content || 'Text';
           const metrics = ctx.measureText(text);
           const textHeight = scaledFont;
-          const padX = 8;
-          const padY = 4;
+          const padX = 8 * styleScale;
+          const padY = 4 * styleScale;
 
           if (annTextBg !== 'none') {
             const bgX = x - padX;
@@ -263,7 +265,7 @@ export function AnnotationCanvas({
 
             ctx.save();
             ctx.shadowColor = 'rgba(0, 0, 0, 0.12)';
-            ctx.shadowBlur = 4;
+            ctx.shadowBlur = 0;
             ctx.shadowOffsetY = 1;
 
             ctx.fillStyle = annColor;
@@ -271,7 +273,7 @@ export function AnnotationCanvas({
             if (annTextBg === 'pill') {
               ctx.roundRect(bgX, bgY, bgW, bgH, bgH / 2);
             } else {
-              ctx.roundRect(bgX, bgY, bgW, bgH, 4);
+              ctx.roundRect(bgX, bgY, bgW, bgH, 4 * styleScale);
             }
             ctx.fill();
             ctx.restore();
@@ -281,7 +283,7 @@ export function AnnotationCanvas({
           } else {
             ctx.save();
             ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-            ctx.shadowBlur = 3;
+            ctx.shadowBlur = 0;
             ctx.shadowOffsetX = 0;
             ctx.shadowOffsetY = 1;
             ctx.fillStyle = annColor;
@@ -292,11 +294,11 @@ export function AnnotationCanvas({
         }
         case 'numbered-callout': {
           const num = ann.calloutNumber || 1;
-          const radius = Math.max((ann.fontSize || 16), 16);
+          const radius = Math.max(annFontSize, 16 * styleScale);
 
           ctx.save();
           ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
-          ctx.shadowBlur = 6;
+          ctx.shadowBlur = 0;
           ctx.shadowOffsetY = 2;
 
           ctx.beginPath();
@@ -308,29 +310,36 @@ export function AnnotationCanvas({
           ctx.beginPath();
           ctx.arc(x, y, radius, 0, Math.PI * 2);
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.9)';
-          ctx.lineWidth = 2;
+          ctx.lineWidth = 2 * styleScale;
           ctx.stroke();
 
           const numStr = String(num);
-          ctx.font = `700 ${radius}px Inter, system-ui, sans-serif`;
+          ctx.font = `400 ${radius}px ${fontFamily}`;
           ctx.textAlign = 'center';
-          ctx.textBaseline = 'middle';
+          ctx.textBaseline = 'alphabetic';
           ctx.fillStyle = '#ffffff';
-          ctx.fillText(numStr, x, y + 1);
+          ctx.fillText(numStr, x, y + radius * 0.35);
           ctx.textAlign = 'start';
           ctx.textBaseline = 'alphabetic';
           break;
         }
+        case 'rectangle':
         case 'highlight': {
           const w = (ann.width || 0.1) * dw;
           const h = (ann.height || 0.05) * dh;
 
           ctx.save();
-          ctx.globalAlpha = annOpacity;
+          ctx.globalAlpha = ann.type === 'rectangle' ? 1 : annOpacity;
           ctx.fillStyle = annColor;
           ctx.beginPath();
-          ctx.roundRect(x, y, w, h, 4);
-          ctx.fill();
+          ctx.roundRect(x, y, w, h, 4 * styleScale);
+          if (ann.type === 'rectangle') {
+            ctx.strokeStyle = annColor;
+            ctx.lineWidth = annStroke;
+            ctx.stroke();
+          } else {
+            ctx.fill();
+          }
           ctx.restore();
           break;
         }
@@ -343,10 +352,10 @@ export function AnnotationCanvas({
             try {
               ctx.save();
               ctx.beginPath();
-              ctx.roundRect(x, y, w, h, 6);
+              ctx.roundRect(x, y, w, h, 6 * styleScale);
               ctx.clip();
 
-              const blockSize = PIXELATE_BLOCK_SIZE;
+              const blockSize = PIXELATE_BLOCK_SIZE * styleScale;
               const smallW = Math.max(1, Math.ceil(w / blockSize));
               const smallH = Math.max(1, Math.ceil(h / blockSize));
 
@@ -373,7 +382,7 @@ export function AnnotationCanvas({
               ctx.save();
               ctx.fillStyle = 'rgba(180, 180, 180, 0.9)';
               ctx.beginPath();
-              ctx.roundRect(x, y, w, h, 6);
+              ctx.roundRect(x, y, w, h, 6 * styleScale);
               ctx.fill();
               ctx.restore();
             }
@@ -381,15 +390,15 @@ export function AnnotationCanvas({
             ctx.save();
             ctx.fillStyle = 'rgba(180, 180, 180, 0.9)';
             ctx.beginPath();
-            ctx.roundRect(x, y, w, h, 6);
+            ctx.roundRect(x, y, w, h, 6 * styleScale);
             ctx.fill();
             ctx.restore();
           }
 
           ctx.strokeStyle = 'rgba(160, 160, 160, 0.3)';
-          ctx.lineWidth = 1;
+          ctx.lineWidth = 1 * styleScale;
           ctx.beginPath();
-          ctx.roundRect(x, y, w, h, 6);
+          ctx.roundRect(x, y, w, h, 6 * styleScale);
           ctx.stroke();
           break;
         }
@@ -399,7 +408,7 @@ export function AnnotationCanvas({
 
           // --- Animated ripple rings ---
           const RIPPLE_DURATION = 2000;
-          const MAX_RADIUS = 28;
+          const MAX_RADIUS = 28 * styleScale;
           const NUM_RIPPLES = 3;
 
           for (let i = 0; i < NUM_RIPPLES; i++) {
@@ -411,29 +420,29 @@ export function AnnotationCanvas({
             ctx.beginPath();
             ctx.arc(x, y, radius, 0, Math.PI * 2);
             ctx.strokeStyle = `rgba(${r}, ${g}, ${b}, ${opacity})`;
-            ctx.lineWidth = 2 * (1 - phase * 0.5);
+            ctx.lineWidth = 2 * styleScale * (1 - phase * 0.5);
             ctx.stroke();
             ctx.restore();
           }
 
           // --- Outer glow (radial gradient) ---
           ctx.save();
-          const gradient = ctx.createRadialGradient(x, y, 0, x, y, 14);
+          const gradient = ctx.createRadialGradient(x, y, 0, x, y, 14 * styleScale);
           gradient.addColorStop(0, `rgba(${r}, ${g}, ${b}, 0.3)`);
           gradient.addColorStop(1, `rgba(${r}, ${g}, ${b}, 0)`);
           ctx.fillStyle = gradient;
           ctx.beginPath();
-          ctx.arc(x, y, 14, 0, Math.PI * 2);
+          ctx.arc(x, y, 14 * styleScale, 0, Math.PI * 2);
           ctx.fill();
           ctx.restore();
 
           // --- Center dot with pulse ---
           const dotPulse = 1 + 0.15 * Math.sin(animTime * 0.004);
-          const dotRadius = 5 * dotPulse;
+          const dotRadius = 5 * styleScale * dotPulse;
 
           ctx.save();
           ctx.shadowColor = `rgba(${r}, ${g}, ${b}, 0.5)`;
-          ctx.shadowBlur = 10;
+          ctx.shadowBlur = 0;
 
           ctx.beginPath();
           ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
@@ -444,7 +453,7 @@ export function AnnotationCanvas({
           ctx.beginPath();
           ctx.arc(x, y, dotRadius, 0, Math.PI * 2);
           ctx.strokeStyle = 'rgba(255, 255, 255, 0.85)';
-          ctx.lineWidth = 1.5;
+          ctx.lineWidth = 1.5 * styleScale;
           ctx.stroke();
           ctx.restore();
           break;
@@ -485,9 +494,10 @@ export function AnnotationCanvas({
           break;
         }
         case 'arrow': {
-          drawArrow(ctx, startX, startY, currX, currY, style.color, getStrokePx(style.strokeWidth), true);
+          drawArrow(ctx, startX, startY, currX, currY, style.color, getStrokePx(style.strokeWidth) * styleScale, true, styleScale);
           break;
         }
+        case 'rectangle':
         case 'highlight':
         case 'blur': {
           ctx.beginPath();
@@ -504,7 +514,7 @@ export function AnnotationCanvas({
         case 'numbered-callout': {
           ctx.setLineDash([]);
           ctx.beginPath();
-          ctx.arc(startX, startY, Math.max(style.fontSize, 16), 0, Math.PI * 2);
+          ctx.arc(startX, startY, Math.max(style.fontSize, 16) * styleScale, 0, Math.PI * 2);
           ctx.strokeStyle = style.color;
           ctx.lineWidth = 2;
           ctx.stroke();
@@ -553,6 +563,13 @@ export function AnnotationCanvas({
   useEffect(() => {
     drawAnnotations();
   }, [drawAnnotations]);
+
+  useEffect(() => {
+    const canvas = canvasRef.current;
+    if (!canvas || !document.fonts) return;
+    const family = getComputedStyle(canvas).getPropertyValue('--font-annotation').trim();
+    if (family) document.fonts.load(`16px ${family}`).then(() => drawAnnotationsRef.current());
+  }, []);
 
   // Redraw when underlying image loads (needed for offset calculation + blur)
   useEffect(() => {
@@ -798,6 +815,7 @@ export function AnnotationCanvas({
           annotation.width = Math.abs(currentPos.x - startPos.x);
           annotation.height = Math.abs(currentPos.y - startPos.y);
           break;
+        case 'rectangle':
         case 'highlight':
           annotation.width = Math.abs(currentPos.x - startPos.x);
           annotation.height = Math.abs(currentPos.y - startPos.y);
@@ -935,10 +953,11 @@ function drawArrow(
   toY: number,
   color: string,
   strokePx: number,
-  dashed = false
+  dashed = false,
+  styleScale = 1
 ) {
   const lineLength = Math.sqrt((toX - fromX) ** 2 + (toY - fromY) ** 2);
-  const headLength = Math.min(Math.max(lineLength * 0.2, 10), 20);
+  const headLength = Math.min(Math.max(lineLength * 0.2, 10 * styleScale), 20 * styleScale);
   const headWidth = headLength * 0.6;
   const angle = Math.atan2(toY - fromY, toX - fromX);
 
@@ -949,7 +968,7 @@ function drawArrow(
 
   if (!dashed) {
     ctx.shadowColor = 'rgba(0, 0, 0, 0.15)';
-    ctx.shadowBlur = 3;
+    ctx.shadowBlur = 0;
     ctx.shadowOffsetY = 1;
   }
 

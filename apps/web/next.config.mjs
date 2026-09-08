@@ -4,7 +4,15 @@ import withBundleAnalyzer from '@next/bundle-analyzer';
 const nextConfig = {
   reactStrictMode: true,
   images: {
+    // Local screenshots are already compressed and need no second image proxy.
+    unoptimized: process.env.CAPTUTO_DEV_BACKEND === 'local',
     remotePatterns: [
+      // The isolated local Supabase backend serves the same signed storage URLs.
+      ...(process.env.NEXT_PUBLIC_SUPABASE_URL?.startsWith('http://127.0.0.1:') ? [{
+        protocol: 'http', hostname: '127.0.0.1',
+        port: new URL(process.env.NEXT_PUBLIC_SUPABASE_URL).port,
+        pathname: '/storage/v1/object/sign/**',
+      }] : []),
       {
         protocol: 'https',
         hostname: '*.supabase.co',
@@ -14,6 +22,8 @@ const nextConfig = {
   },
   // Enable experimental features for better performance
   experimental: {
+    outputFileTracingIncludes: { '/api/**/*': ['./lib/render/fonts/**/*'] },
+    serverComponentsExternalPackages: ['sharp', '@pdf-lib/fontkit'],
     // Optimize package imports for common libraries
     optimizePackageImports: [
       'lucide-react',
@@ -65,8 +75,8 @@ const nextConfig = {
           },
         ],
       },
-      {
-        // Cache static assets
+      ...(process.env.NODE_ENV === 'production' ? [{
+        // Development chunks have stable filenames and must never be immutable.
         source: '/_next/static/(.*)',
         headers: [
           {
@@ -74,7 +84,7 @@ const nextConfig = {
             value: 'public, max-age=31536000, immutable',
           },
         ],
-      },
+      }] : []),
     ];
   },
 };

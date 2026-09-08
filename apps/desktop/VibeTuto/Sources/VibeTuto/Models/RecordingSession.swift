@@ -83,8 +83,8 @@ struct RecordingPayload: Codable, Sendable {
     let recording: RecordingMetadata
     let steps: [UploadStep]
     let audioKey: String?
-    let audioData: String?
-    let audioContentType: String?
+    let audioData: String? = nil
+    let audioContentType: String? = nil
 
     enum CodingKeys: String, CodingKey {
         case recording
@@ -96,6 +96,7 @@ struct RecordingPayload: Codable, Sendable {
 }
 
 struct RecordingMetadata: Codable, Sendable {
+    var clientID: String? = nil
     let duration: TimeInterval
     let startedAt: String
     let macosVersion: String
@@ -103,6 +104,7 @@ struct RecordingMetadata: Codable, Sendable {
     let appsUsed: [String]
 
     enum CodingKeys: String, CodingKey {
+        case clientID = "client_id"
         case duration
         case startedAt = "started_at"
         case macosVersion = "macos_version"

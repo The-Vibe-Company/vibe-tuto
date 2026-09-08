@@ -139,7 +139,7 @@ export interface StepWithSignedUrl {
 }
 
 // Annotation types for screenshot markup
-export type AnnotationType = 'circle' | 'arrow' | 'text' | 'blur' | 'highlight' | 'click-indicator' | 'numbered-callout';
+export type AnnotationType = 'circle' | 'rectangle' | 'arrow' | 'text' | 'blur' | 'highlight' | 'click-indicator' | 'numbered-callout';
 
 export interface Annotation {
   id: string;

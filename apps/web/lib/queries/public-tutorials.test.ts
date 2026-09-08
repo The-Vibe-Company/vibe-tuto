@@ -1,19 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn(),
 }));
 
-vi.mock('@/lib/flatten/cache', () => ({
-  getFlattenedSignedUrl: vi.fn(),
-}));
-
-import { createClient } from '@/lib/supabase/server';
-import { getFlattenedSignedUrl } from '@/lib/flatten/cache';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { getPublicTutorialByToken, getPublicTutorialBySlug } from './public-tutorials';
 
-const mockCreateClient = createClient as ReturnType<typeof vi.fn>;
-const mockGetFlattenedSignedUrl = getFlattenedSignedUrl as ReturnType<typeof vi.fn>;
+const mockCreateClient = createAdminClient as ReturnType<typeof vi.fn>;
 
 function createMockClient({
   tutorialResult = { data: null, error: null },
@@ -96,7 +90,6 @@ const mockStep = {
 describe('getPublicTutorialByToken', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetFlattenedSignedUrl.mockResolvedValue('https://signed.url/flat.png');
   });
 
   it('returns null when tutorial is not found', async () => {
@@ -154,25 +147,21 @@ describe('getPublicTutorialByToken', () => {
     expect(result!.tutorial.title).toBe('Test Tutorial');
   });
 
-  it('serves flattened (annotations-baked-in) URLs for step screenshots', async () => {
-    mockGetFlattenedSignedUrl.mockResolvedValue('https://signed.url/flat-image.png');
+  it('returns flattened previews for step screenshots', async () => {
     mockCreateClient.mockResolvedValue(
       createMockClient({
         tutorialResult: { data: mockTutorial, error: null },
         stepsResult: { data: [mockStep], error: null },
+        signedUrl: { data: { signedUrl: 'https://signed.url/image.png' }, error: null },
       })
     );
 
     const result = await getPublicTutorialByToken('token-abc');
     expect(result).not.toBeNull();
-    expect(result!.steps[0].signedScreenshotUrl).toBe('https://signed.url/flat-image.png');
-    expect(mockGetFlattenedSignedUrl).toHaveBeenCalledWith({
-      originalPath: 'path/to/image.png',
-      annotations: [],
-    });
+    expect(result!.steps[0].signedScreenshotUrl).toBe('/api/public/tutorials/token-abc/steps/step-1/preview');
   });
 
-  it('parses string element_info as JSON', async () => {
+  it('omits captured element metadata', async () => {
     const stepWithStringInfo = {
       ...mockStep,
       sources: {
@@ -190,14 +179,13 @@ describe('getPublicTutorialByToken', () => {
 
     const result = await getPublicTutorialByToken('token-abc');
     expect(result).not.toBeNull();
-    expect(result!.steps[0].element_info).toEqual({ tag: 'button', text: 'Submit' });
+    expect(result!.steps[0].element_info).toBeNull();
   });
 
-  it('parses string annotations and forwards them to the flatten pipeline', async () => {
-    const annotations = [{ id: 'a', type: 'highlight', x: 0.1, y: 0.2 }];
+  it('omits annotations already flattened into previews', async () => {
     const stepWithStringAnnotations = {
       ...mockStep,
-      annotations: JSON.stringify(annotations),
+      annotations: JSON.stringify([{ type: 'highlight', x: 10, y: 20 }]),
     };
 
     mockCreateClient.mockResolvedValue(
@@ -209,12 +197,7 @@ describe('getPublicTutorialByToken', () => {
 
     const result = await getPublicTutorialByToken('token-abc');
     expect(result).not.toBeNull();
-    // Annotations are baked into the image; they are NOT shipped to clients.
-    expect(result!.steps[0].annotations).toBeNull();
-    expect(mockGetFlattenedSignedUrl).toHaveBeenCalledWith({
-      originalPath: 'path/to/image.png',
-      annotations,
-    });
+    expect(result!.steps[0].annotations).toEqual([]);
   });
 
   it('returns null when steps query fails', async () => {
@@ -233,7 +216,6 @@ describe('getPublicTutorialByToken', () => {
 describe('getPublicTutorialBySlug', () => {
   beforeEach(() => {
     vi.clearAllMocks();
-    mockGetFlattenedSignedUrl.mockResolvedValue('https://signed.url/flat.png');
   });
 
   it('returns null when tutorial is not found', async () => {
@@ -261,11 +243,10 @@ describe('getPublicTutorialBySlug', () => {
     expect(result!.steps).toHaveLength(1);
   });
 
-  it('parses string element_info and bakes annotations into the flattened image', async () => {
-    const annotations = [{ id: 'a', type: 'arrow' }];
+  it('omits raw metadata and annotation overlays', async () => {
     const stepWithStrings = {
       ...mockStep,
-      annotations: JSON.stringify(annotations),
+      annotations: JSON.stringify([{ type: 'arrow' }]),
       sources: {
         ...mockStep.sources,
         element_info: JSON.stringify({ tag: 'a', text: 'Link' }),
@@ -281,12 +262,8 @@ describe('getPublicTutorialBySlug', () => {
 
     const result = await getPublicTutorialBySlug('test-tutorial');
     expect(result).not.toBeNull();
-    expect(result!.steps[0].element_info).toEqual({ tag: 'a', text: 'Link' });
-    expect(result!.steps[0].annotations).toBeNull();
-    expect(mockGetFlattenedSignedUrl).toHaveBeenCalledWith({
-      originalPath: 'path/to/image.png',
-      annotations,
-    });
+    expect(result!.steps[0].element_info).toBeNull();
+    expect(result!.steps[0].annotations).toEqual([]);
   });
 
   it('returns null when steps query fails', async () => {

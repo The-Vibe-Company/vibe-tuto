@@ -1,6 +1,6 @@
 'use client';
 
-import { useMemo, useRef, useState } from 'react';
+import { useMemo, useState } from 'react';
 import type {
   Annotation,
   AnnotationType,
@@ -11,6 +11,7 @@ import type {
 import type { SaveStatus } from '../EditorClient';
 import type { NewStepType } from '../DocEditor';
 import './studio.css';
+import { Button } from '@/components/ui/button';
 import { StudioTopBar, type StudioMode } from './StudioTopBar';
 import { Timeline } from './Timeline';
 import { Canvas } from './Canvas';
@@ -37,6 +38,8 @@ interface StudioEditorProps {
   onAddStep: (type: NewStepType, afterStepId?: string | null) => void;
   onGenerateClick?: () => void;
   isGenerating?: boolean;
+  errorMessage?: string | null;
+  onRetrySave?: () => void;
 }
 
 export function StudioEditor({
@@ -57,6 +60,8 @@ export function StudioEditor({
   onAddStep,
   onGenerateClick,
   isGenerating,
+  errorMessage,
+  onRetrySave,
 }: StudioEditorProps) {
   const [activeTool, setActiveTool] = useState<AnnotationType | null>(null);
   const [selectedAnnotationId, setSelectedAnnotationId] = useState<string | null>(
@@ -64,7 +69,6 @@ export function StudioEditor({
   );
   const [focusOpen, setFocusOpen] = useState(false);
   const [mode, setMode] = useState<StudioMode>('edit');
-  const previewScrollRef = useRef<HTMLDivElement>(null);
 
   const screenshots = useMemo(() => playheadSteps(steps), [steps]);
   const step = useMemo(
@@ -105,6 +109,10 @@ export function StudioEditor({
         hasSourcesForGeneration={sources.length > 0}
       />
 
+      {errorMessage && <div role="alert" className="flex items-center justify-between gap-3 border-b border-red-200 bg-red-50 px-4 py-2 text-sm text-red-700">
+        <span>{errorMessage}</span>
+        {onRetrySave && <Button size="sm" variant="outline" onClick={onRetrySave}>Retry save</Button>}
+      </div>}
       {mode === 'edit' ? (
         <div style={{ flex: 1, display: 'flex', overflow: 'hidden', position: 'relative' }}>
           <Timeline
@@ -160,7 +168,6 @@ export function StudioEditor({
         </div>
       ) : (
         <div
-          ref={previewScrollRef}
           style={{
             flex: 1,
             position: 'relative',
@@ -181,7 +188,6 @@ export function StudioEditor({
               updatedAt: tutorial.updated_at,
             }}
             steps={steps}
-            scrollContainerRef={previewScrollRef}
           />
         </div>
       )}

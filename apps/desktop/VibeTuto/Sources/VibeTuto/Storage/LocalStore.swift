@@ -6,14 +6,18 @@ final class LocalStore: @unchecked Sendable {
     private let storageDirectory: URL
     private let fileManager = FileManager.default
 
-    init(storageDirectory: URL? = nil) {
-        if let storageDirectory {
-            self.storageDirectory = storageDirectory
+    init(directory: URL? = nil) {
+        if let directory {
+            storageDirectory = directory
         } else {
             let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-            self.storageDirectory = appSupport.appendingPathComponent("VibeTuto/recordings", isDirectory: true)
+            storageDirectory = appSupport.appendingPathComponent("VibeTuto/recordings", isDirectory: true)
         }
-        try? fileManager.createDirectory(at: self.storageDirectory, withIntermediateDirectories: true)
+        try? fileManager.createDirectory(at: storageDirectory, withIntermediateDirectories: true)
+    }
+
+    convenience init(storageDirectory: URL?) {
+        self.init(directory: storageDirectory)
     }
 
     /// Save a recording session locally for later upload.
@@ -25,7 +29,7 @@ final class LocalStore: @unchecked Sendable {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let metadataData = try encoder.encode(session)
-        try metadataData.write(to: sessionDir.appendingPathComponent("session.json"))
+        try metadataData.write(to: sessionDir.appendingPathComponent("session.json"), options: .atomic)
 
         // Save screenshots (keys may contain '/' so create parent dirs)
         for (key, data) in screenshots {
@@ -35,16 +39,15 @@ final class LocalStore: @unchecked Sendable {
             try data.write(to: fileURL)
         }
 
-        if let audioFile, let audioKey = session.audioKey {
+        if let audioFile {
+            let audioKey = session.audioKey ?? "narration.m4a"
             let targetURL = sessionDir.appendingPathComponent(audioKey)
             let parentDir = targetURL.deletingLastPathComponent()
             try fileManager.createDirectory(at: parentDir, withIntermediateDirectories: true)
-            if fileManager.fileExists(atPath: targetURL.path) {
-                try fileManager.removeItem(at: targetURL)
+            if audioFile.standardizedFileURL != targetURL.standardizedFileURL {
+                try Data(contentsOf: audioFile).write(to: targetURL, options: .atomic)
             }
-            try fileManager.copyItem(at: audioFile, to: targetURL)
         }
-
         return sessionDir
     }
 

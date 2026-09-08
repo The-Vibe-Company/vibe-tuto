@@ -32,7 +32,7 @@ export interface TutorialCardProps {
   thumbnailUrl?: string;
   createdAt: string;
   onEdit: () => void;
-  onDelete: () => void;
+  onDelete: () => void | Promise<void>;
   onShare?: () => void;
 }
 
@@ -80,9 +80,9 @@ function TutorialCardComponent({
     setIsDeleting(true);
     try {
       await onDelete();
+      setDeleteDialogOpen(false);
     } finally {
       setIsDeleting(false);
-      setDeleteDialogOpen(false);
     }
   };
 
@@ -106,7 +106,7 @@ function TutorialCardComponent({
               <div className="rounded-xl bg-stone-200/50 p-4">
                 <ImageIcon className="h-10 w-10" />
               </div>
-              <span className="mt-2 text-xs text-stone-400">No preview</span>
+              <span className="mt-2 text-xs text-stone-400">Awaiting capture</span>
             </div>
           )}
 
@@ -138,7 +138,7 @@ function TutorialCardComponent({
               size="sm"
             >
               <Share2 className="h-4 w-4" />
-              Publish
+              Share
             </Button>
           </div>
 

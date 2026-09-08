@@ -5,6 +5,7 @@ set -euo pipefail
 # dev-start.sh — Idempotent dev environment bootstrap
 #
 # Usage: ./scripts/dev-start.sh          Start/verify dev server
+#        ./scripts/dev-start.sh --local  Start with isolated local Supabase
 #        ./scripts/dev-start.sh --stop   Stop the dev server
 #        ./scripts/dev-start.sh --status Check if running
 #
@@ -15,6 +16,8 @@ ROOT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 WEB_PORT="${CONDUCTOR_PORT:-3678}"
 PID_FILE="$ROOT_DIR/.dev-server.pid"
 LOG_FILE="$ROOT_DIR/.dev-server.log"
+BACKEND_FILE="$ROOT_DIR/.dev-server.backend"
+BACKEND_MODE="configured"
 
 RED='\033[0;31m'
 GREEN='\033[0;32m'
@@ -65,6 +68,7 @@ kill_server() {
 
 cmd_stop() {
   kill_server
+  rm -f "$BACKEND_FILE"
   info "Dev server stopped"
 }
 
@@ -84,9 +88,18 @@ cmd_status() {
 cmd_start() {
   cd "$ROOT_DIR"
 
+  # Backend changes are explicit even if the current frontend is unhealthy.
+  if is_port_listening; then
+    local running_mode="configured"
+    [ -f "$BACKEND_FILE" ] && running_mode=$(cat "$BACKEND_FILE")
+    if [ "$running_mode" != "$BACKEND_MODE" ]; then
+      die "Server uses $running_mode backend. Stop it first with ./scripts/dev-start.sh --stop, then start the desired backend (use --local for Docker Supabase)."
+    fi
+  fi
+
   # --- Fast path: already running and healthy? Do nothing. ---
   if is_port_listening && is_server_healthy; then
-    info "Dev server already running on http://localhost:$WEB_PORT"
+    info "Dev server already running on http://localhost:$WEB_PORT ($BACKEND_MODE backend)"
     exit 0
   fi
 
@@ -109,11 +122,26 @@ cmd_start() {
   command -v pnpm &>/dev/null || die "pnpm not found. Install: npm i -g pnpm@9"
   info "pnpm $(pnpm --version)"
 
+  # --- Bring up isolated backend only when explicitly requested ---
+  if [ "$BACKEND_MODE" = "local" ]; then
+    "$ROOT_DIR/scripts/dev-backend.sh"
+  fi
+
   # --- Check env files ---
-  if [ ! -f "$ROOT_DIR/.env.local" ] && [ ! -f "$ROOT_DIR/apps/web/.env.local" ]; then
+  if [ "$BACKEND_MODE" != "local" ] && [ ! -f "$ROOT_DIR/.env.local" ] && [ ! -f "$ROOT_DIR/apps/web/.env.local" ]; then
     die "No .env.local found. Copy apps/web/.env.example to .env.local and fill in values."
   fi
   info "Environment config found"
+
+  # Next.js loads env files from the app directory. Export root env values too,
+  # because this repo keeps shared local configuration at the workspace root.
+  set -a
+  [ -f "$ROOT_DIR/.env.local" ] && source "$ROOT_DIR/.env.local"
+  [ -f "$ROOT_DIR/apps/web/.env.local" ] && source "$ROOT_DIR/apps/web/.env.local"
+  if [ "$BACKEND_MODE" = "local" ]; then
+    source "$ROOT_DIR/.env.supabase.local"
+  fi
+  set +a
 
   # --- Install deps (pnpm is idempotent — instant if nothing changed) ---
   info "Checking dependencies..."
@@ -122,8 +150,16 @@ cmd_start() {
 
   # --- Start dev server ---
   warn "Starting dev server on port $WEB_PORT..."
-  nohup pnpm --filter web exec next dev -p "$WEB_PORT" > "$LOG_FILE" 2>&1 &
-  echo $! > "$PID_FILE"
+  # Detach the process session as well as stdio so agent command cleanup cannot
+  # terminate the server when the launching shell exits.
+  python3 - "$LOG_FILE" "$PID_FILE" "$ROOT_DIR" "$WEB_PORT" <<'PY_START'
+import pathlib, subprocess, sys
+with open(sys.argv[1], 'ab') as log:
+    process = subprocess.Popen(['pnpm', '--filter', '@captuto/web', 'exec', 'next', 'dev', '-p', sys.argv[4]], cwd=sys.argv[3],
+        stdin=subprocess.DEVNULL, stdout=log, stderr=log, start_new_session=True)
+pathlib.Path(sys.argv[2]).write_text(str(process.pid))
+PY_START
+  echo "$BACKEND_MODE" > "$BACKEND_FILE"
 
   # --- Wait for healthy response ---
   local waited=0
@@ -188,8 +224,10 @@ cmd_start_foreground() {
 # --------------- main ---------------
 
 case "${1:-}" in
-  --stop)       cmd_stop              ;;
-  --status)     cmd_status            ;;
-  --foreground) cmd_start_foreground  ;;
-  *)            cmd_start             ;;
+  --foreground) cmd_start_foreground ;;
+  --stop)   cmd_stop   ;;
+  --status) cmd_status ;;
+  --local)  BACKEND_MODE="local"; cmd_start ;;
+  '')       cmd_start ;;
+  *)        die "Usage: ./scripts/dev-start.sh [--local|--stop|--status]" ;;
 esac

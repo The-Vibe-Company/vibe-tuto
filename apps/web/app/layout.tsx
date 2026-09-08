@@ -1,8 +1,15 @@
 import type { Metadata } from "next";
+import localFont from "next/font/local";
 import { Inter, Sora, Instrument_Serif, JetBrains_Mono } from "next/font/google";
 import { QueryProvider } from "@/components/providers/QueryProvider";
 
 import "./globals.css";
+
+const annotationFont = localFont({
+  src: '../lib/render/fonts/NotoSans-Regular.ttf',
+  display: 'swap',
+  variable: '--font-annotation',
+});
 
 const inter = Inter({
   subsets: ["latin"],
@@ -44,7 +51,7 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body className={`${inter.variable} ${sora.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans`}>
+      <body className={`${inter.variable} ${sora.variable} ${annotationFont.variable} ${instrumentSerif.variable} ${jetbrainsMono.variable} font-sans`}>
         <QueryProvider>{children}</QueryProvider>
       </body>
     </html>

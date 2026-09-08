@@ -26,8 +26,8 @@ export function SolutionSection() {
             </span>
           </h2>
           <p className="mx-auto mt-4 max-w-lg text-lg text-stone-500 leading-relaxed">
-            Record your workflow once, and let AI transform your clicks into
-            polished, shareable tutorials. Automatically.
+            Record your workflow once, then edit the AI draft into a polished,
+            shareable tutorial.
           </p>
         </motion.div>
 
@@ -63,7 +63,7 @@ export function SolutionSection() {
                   <Wand2 className="h-6 w-6 text-teal-600" />
                 </div>
                 <span className="text-xs font-medium text-stone-500">
-                  AI magic
+                  Draft
                 </span>
               </div>
 

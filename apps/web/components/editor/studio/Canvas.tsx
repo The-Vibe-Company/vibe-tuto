@@ -34,7 +34,8 @@ const TOOLS: ToolDef[] = [
   { d: ICON.cursor, k: 'V', tool: 'select' },
   { d: ICON.hand, k: 'H', tool: 'hand' },
   { divider: true },
-  { d: ICON.rect, k: 'R', tool: 'circle' },
+  { d: ICON.rect, k: 'R', tool: 'rectangle' },
+  { d: 'M12 3a9 9 0 1 0 0 18a9 9 0 1 0 0-18', k: 'C', tool: 'circle' },
   { d: ICON.arrowAnno, k: 'A', tool: 'arrow' },
   { d: ICON.text, k: 'T', tool: 'text' },
   { d: ICON.hl, k: 'L', tool: 'highlight' },
@@ -45,6 +46,7 @@ const TOOLS: ToolDef[] = [
 
 const ANNOTATION_TOOLS: AnnotationType[] = [
   'circle',
+  'rectangle',
   'arrow',
   'text',
   'highlight',

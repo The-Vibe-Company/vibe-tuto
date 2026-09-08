@@ -1,272 +1,83 @@
-import { createClient } from '@/lib/supabase/server';
-import { createClient as createServiceClient } from '@supabase/supabase-js';
-import { NextResponse } from 'next/server';
-import type { Json } from '@/lib/supabase/types';
-import type { DesktopActionType } from '@/lib/types/editor';
-import { validateApiToken } from '@/lib/auth/api-token';
+import { resolveRequestUser } from '@/lib/auth/request';
+import { z } from 'zod';
+import { createHash } from 'node:crypto';
 
-interface DesktopElementInfo {
-  role?: string;
-  title?: string;
-  parent_chain?: string[];
+const stepSchema = z.object({
+  order_index:z.number().int().min(0).optional(), timestamp:z.number().finite().min(0),
+  action_type:z.string().max(50), screenshot_key:z.string().max(500),
+  screenshot_data:z.string().max(15_000_000).nullable().optional(),
+  click_x:z.number().min(0).max(1).nullable().optional(), click_y:z.number().min(0).max(1).nullable().optional(),
+  viewport_width:z.number().int().min(0).max(20000).nullable().optional(), viewport_height:z.number().int().min(0).max(20000).nullable().optional(),
+  app_bundle_id:z.string().nullable().optional(), app_name:z.string().nullable().optional(),
+  window_title:z.string().nullable().optional(), url:z.string().nullable().optional(),
+  element_info:z.record(z.unknown()).nullable().optional(), auto_caption:z.string().nullable().optional(),
+});
+const recordingSchema = z.object({
+  recording:z.object({client_id:z.string().uuid().optional(),title:z.string().max(300).optional(),duration:z.number().finite().min(0),started_at:z.string()}),
+  steps:z.array(stepSchema).min(1).max(500),
+  audio_data:z.string().max(70_000_000).nullable().optional(),
+  audio_key:z.string().max(500).nullable().optional(),
+  audio_content_type:z.enum(["audio/mp4","audio/webm","audio/m4a","audio/x-m4a"]).nullable().optional(),
+});
+
+/** Stable UUID per capture, so retries upsert sources instead of duplicating them. */
+function sourceId(tutorialId:string,index:number) {
+  const hex = createHash('sha256').update(`${tutorialId}:${index}`).digest('hex');
+  return `${hex.slice(0,8)}-${hex.slice(8,12)}-4${hex.slice(13,16)}-a${hex.slice(17,20)}-${hex.slice(20,32)}`;
 }
-
-interface DesktopStep {
-  order_index: number;
-  timestamp: number;
-  action_type: DesktopActionType;
-  screenshot_key: string;
-  screenshot_data?: string | null; // base64-encoded JPEG from desktop app
-  click_x?: number | null;
-  click_y?: number | null;
-  viewport_width?: number | null;
-  viewport_height?: number | null;
-  app_bundle_id?: string | null;
-  app_name?: string | null;
-  window_title?: string | null;
-  url?: string | null;
-  element_info?: DesktopElementInfo | null;
-  auto_caption?: string | null;
-}
-
-interface DesktopRecordingPayload {
-  recording: {
-    title?: string;
-    duration: number;
-    started_at: string;
-    macos_version?: string;
-    screen_resolution?: string;
-    apps_used?: string[];
-  };
-  steps: DesktopStep[];
-  audio_key?: string | null;
-  audio_data?: string | null;
-  audio_content_type?: string | null;
-}
-
-export async function POST(request: Request) {
+export const maxDuration = 120;
+export async function POST(request:Request) {
   try {
-    // 1. Verify authentication (Supabase session OR API token)
-    let userId: string | null = null;
-    let supabase = await createClient();
-
-    // Try Supabase session auth first
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (user) {
-      userId = user.id;
-    } else {
-      // Fall back to API token auth (desktop app)
-      // Token validation uses RPC (no service role key needed)
-      userId = await validateApiToken(request);
-
-      // For data operations, we need a service role client since the
-      // cookie-based client has no user session for desktop requests
-      if (userId) {
-        supabase = createServiceClient(
-          process.env.NEXT_PUBLIC_SUPABASE_URL!,
-          process.env.SUPABASE_SERVICE_ROLE_KEY!,
-        );
-      }
+    const auth = await resolveRequestUser(request);
+    if (!auth) return Response.json({error:'Unauthorized'},{status:401});
+    const parsed = recordingSchema.safeParse(await request.json());
+    if (!parsed.success) return Response.json({error:'Invalid recording',details:parsed.error.flatten()},{status:400});
+    const body = parsed.data;
+    const id = body.recording.client_id ?? crypto.randomUUID();
+    const {supabase,userId} = auth;
+    const {data:existing,error:lookupError} = await supabase.from('tutorials').select('id,user_id').eq('id',id).maybeSingle();
+    if (lookupError) return Response.json({error:'Could not check recording'},{status:500});
+    if (existing && existing.user_id !== userId) return Response.json({error:'Recording ID unavailable'},{status:409});
+    if (!existing) {
+      const {error} = await supabase.from('tutorials').insert({id,user_id:userId,title:body.recording.title || 'Desktop recording',status:'processing'});
+      if (error) return Response.json({error:'Could not create recording; retry with the same client_id'},{status:409});
     }
-
-    if (!userId) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    // 2. Parse JSON body
-    let body: DesktopRecordingPayload;
-    try {
-      body = await request.json();
-    } catch {
-      return NextResponse.json({ error: 'Invalid JSON body' }, { status: 400 });
-    }
-
-    // 3. Validate payload
-    if (!body.recording) {
-      return NextResponse.json({ error: 'Missing recording metadata' }, { status: 400 });
-    }
-
-    if (!body.steps || body.steps.length === 0) {
-      return NextResponse.json({ error: 'No steps provided' }, { status: 400 });
-    }
-
-    if (typeof body.recording.duration !== 'number' || body.recording.duration < 0) {
-      return NextResponse.json({ error: 'Invalid recording duration' }, { status: 400 });
-    }
-
-    // Limit steps count to prevent abuse (500 steps ≈ ~8 min recording at 1 step/sec)
-    if (body.steps.length > 500) {
-      return NextResponse.json({ error: 'Too many steps (max 500)' }, { status: 413 });
-    }
-
-    // 4. Generate a recording_id to group all sources from this session
-    const recordingId = crypto.randomUUID();
-
-    // 5. Create tutorial in DB
-    const { data: tutorial, error: tutorialError } = await supabase
-      .from('tutorials')
-      .insert({
-        user_id: userId,
-        title: body.recording.title || 'Desktop Recording',
-        status: 'processing',
-      })
-      .select()
-      .single();
-
-    if (tutorialError || !tutorial) {
-      console.error('Failed to create tutorial:', tutorialError);
-      return NextResponse.json(
-        {
-          error: 'Failed to create tutorial',
-          details: tutorialError?.message || 'Unknown error',
-        },
-        { status: 500 }
-      );
-    }
-
-    // 6. Upload screenshots to Storage and create sources for each step
-    const sourceInserts = [];
-    for (let i = 0; i < body.steps.length; i++) {
+    const inserts = [];
+    for (let i=0;i<body.steps.length;i++) {
       const step = body.steps[i];
-      let screenshotPath: string | null = null;
-
-      // Upload base64 screenshot to Supabase Storage if provided
+      const index = step.order_index ?? i;
+      const path = `${userId}/${id}/${index}.jpg`;
       if (step.screenshot_data) {
-        try {
-          const buffer = Buffer.from(step.screenshot_data, 'base64');
-          const path = `${userId}/${tutorial.id}/${i}.jpg`;
-
-          const { error: screenshotError } = await supabase.storage
-            .from('screenshots')
-            .upload(path, buffer, {
-              contentType: 'image/jpeg',
-              upsert: false,
-            });
-
-          if (screenshotError) {
-            console.error(`Failed to upload screenshot ${i}:`, screenshotError);
-          } else {
-            screenshotPath = path;
-          }
-        } catch (e) {
-          console.error(`Failed to process screenshot ${i}:`, e);
-        }
+        const buffer = Buffer.from(step.screenshot_data,'base64');
+        if (!buffer.length || buffer.length > 10*1024*1024) return Response.json({error:'Invalid screenshot size'},{status:413});
+        const {error} = await supabase.storage.from('screenshots').upload(path,buffer,{contentType:'image/jpeg',upsert:true});
+        if (error) return Response.json({error:`Capture ${i+1} could not be stored; retry the recording`},{status:500});
+      } else {
+        return Response.json({error:`Capture ${i+1} is missing its image; recording remains recoverable`},{status:400});
       }
-
-      // Desktop app sends normalized coordinates (0-1), DB expects pixel integers.
-      // If viewport dimensions are missing/zero, coordinates are meaningless — store null.
-      const vw = step.viewport_width ?? 0;
-      const vh = step.viewport_height ?? 0;
-      const clickX = step.click_x != null && vw > 0
-        ? Math.round(step.click_x * vw)
-        : null;
-      const clickY = step.click_y != null && vh > 0
-        ? Math.round(step.click_y * vh)
-        : null;
-
-      sourceInserts.push({
-        tutorial_id: tutorial.id,
-        order_index: step.order_index ?? i,
-        screenshot_url: screenshotPath || step.screenshot_key || null,
-        click_x: clickX,
-        click_y: clickY,
-        viewport_width: step.viewport_width ?? null,
-        viewport_height: step.viewport_height ?? null,
-        click_type: step.action_type || 'click',
-        url: step.url ?? null,
-        timestamp_start: step.timestamp ?? null,
-        element_info: (step.element_info as Json) ?? null,
-        app_bundle_id: step.app_bundle_id ?? null,
-        app_name: step.app_name ?? null,
-        window_title: step.window_title ?? null,
-        action_type: step.action_type ?? null,
-        auto_caption: step.auto_caption ?? null,
-        recording_id: recordingId,
+      const vw=step.viewport_width || 0, vh=step.viewport_height || 0;
+      inserts.push({
+        id:sourceId(id,index),tutorial_id:id,order_index:index,screenshot_url:path,
+        click_x:step.click_x != null && vw ? Math.round(step.click_x*vw) : null,
+        click_y:step.click_y != null && vh ? Math.round(step.click_y*vh) : null,
+        viewport_width:vw || null,viewport_height:vh || null,click_type:step.action_type,
+        url:step.url ?? null,timestamp_start:step.timestamp,
+        element_info:(step.element_info ?? null) as import('@/lib/supabase/types').Json,
+        app_bundle_id:step.app_bundle_id,app_name:step.app_name,window_title:step.window_title,
+        action_type:step.action_type,auto_caption:step.auto_caption,recording_id:id,
       });
     }
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { error: sourcesError } = await (supabase as any)
-      .from('sources')
-      .insert(sourceInserts);
-
-    if (sourcesError) {
-      console.error('Failed to create sources:', sourcesError);
-      // Don't fail the whole request - tutorial is created
+    const {error} = await supabase.from('sources').upsert(inserts,{onConflict:'id'});
+    if (error) return Response.json({error:'Could not save capture sources; retry the recording'},{status:500});
+    // Retain narration from already released recorders that upload it inline.
+    if (body.audio_data) {
+      const audio = Buffer.from(body.audio_data, 'base64');
+      if (!audio.length || audio.length > 50 * 1024 * 1024) return Response.json({error:'Invalid audio size'},{status:413});
+      const {error:audioError} = await supabase.storage.from('recordings').upload(`${userId}/${id}.webm`,audio,{contentType:body.audio_content_type || (body.audio_key?.endsWith('.m4a') ? 'audio/mp4' : 'audio/webm'),upsert:true});
+      if (audioError) return Response.json({error:'Could not store narration; retry the recording'},{status:500});
     }
-
-    // 7. Store desktop narration audio and trigger transcription when present.
-    let audioPath: string | null = null;
-    if (body.audio_key && body.audio_data) {
-      try {
-        const audioBuffer = Buffer.from(body.audio_data, 'base64');
-        const extension = body.audio_key.endsWith('.m4a') ? 'm4a' : 'webm';
-        const contentType = body.audio_content_type || (extension === 'm4a' ? 'audio/mp4' : 'audio/webm');
-        audioPath = `${userId}/${tutorial.id}.${extension}`;
-
-        const { error: audioUploadError } = await supabase.storage
-          .from('recordings')
-          .upload(audioPath, audioBuffer, {
-            contentType,
-            upsert: true,
-          });
-
-        if (audioUploadError) {
-          console.error('Failed to upload desktop audio:', audioUploadError);
-          audioPath = null;
-        }
-      } catch (err) {
-        console.error('Failed to decode desktop audio:', err);
-        audioPath = null;
-      }
-    }
-
-    if (audioPath) {
-      const { data: audioCheck } = await supabase.storage
-        .from('recordings')
-        .createSignedUrl(audioPath, 10);
-      if (!audioCheck?.signedUrl) {
-        console.warn('Audio key provided but file not found in storage, skipping transcription');
-      } else {
-        try {
-          const transcribeHeaders: Record<string, string> = {
-            'Content-Type': 'application/json',
-            Cookie: request.headers.get('cookie') || '',
-          };
-          const authHeader = request.headers.get('authorization');
-          if (authHeader) {
-            transcribeHeaders['Authorization'] = authHeader;
-          }
-          const transcribeResponse = await fetch(new URL('/api/transcribe', request.url), {
-            method: 'POST',
-            headers: transcribeHeaders,
-            body: JSON.stringify({ tutorialId: tutorial.id, audioPath }),
-          });
-
-          if (!transcribeResponse.ok) {
-            console.error('Transcription trigger failed:', await transcribeResponse.text());
-            // Don't fail - transcription is optional
-          }
-        } catch (err) {
-          console.error('Failed to trigger transcription:', err);
-          // Don't fail - transcription is optional
-        }
-      }
-    }
-
-    // 8. Return response
-    return NextResponse.json({
-      tutorialId: tutorial.id,
-      recordingId,
-      status: 'processing',
-      sourcesCreated: sourceInserts.length,
-      editorUrl: `/editor/${tutorial.id}`,
-    });
-  } catch (error) {
-    console.error('Recording upload error:', error);
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 });
+    return Response.json({tutorialId:id,recordingId:id,status:'processing',sourcesCreated:inserts.length,editorUrl:`/editor/${id}`});
+  } catch(error) {
+    return Response.json({error:error instanceof SyntaxError ? 'Invalid JSON' : 'Recording upload failed'},{status:error instanceof SyntaxError ? 400 : 500});
   }
 }

@@ -9,6 +9,13 @@ export type Json =
 export type Database = {
   public: {
     Tables: {
+      desktop_connections: {
+        Row: { id: string; challenge: string; user_id: string | null; token_id: string | null; issued_at: string | null; expires_at: string; created_at: string };
+        Insert: { id?: string; challenge: string; user_id?: string | null; token_id?: string | null; issued_at?: string | null; expires_at?: string; created_at?: string };
+        Update: { user_id?: string | null; token_id?: string | null; issued_at?: string | null };
+        Relationships: [];
+      };
+
       sources: {
         Row: {
           id: string;
@@ -99,6 +106,10 @@ export type Database = {
           title: string;
           description: string | null;
           slug: string | null;
+          visibility: string;
+          public_token: string | null;
+          published_at: string | null;
+          is_public: boolean;
           status: string;
           created_at: string;
           updated_at: string;
@@ -109,6 +120,10 @@ export type Database = {
           title: string;
           description?: string | null;
           slug?: string | null;
+          visibility?: string;
+          public_token?: string | null;
+          published_at?: string | null;
+          is_public?: boolean;
           status?: string;
           created_at?: string;
           updated_at?: string;
@@ -119,6 +134,10 @@ export type Database = {
           title?: string;
           description?: string | null;
           slug?: string | null;
+          visibility?: string;
+          public_token?: string | null;
+          published_at?: string | null;
+          is_public?: boolean;
           status?: string;
           created_at?: string;
           updated_at?: string;
@@ -137,6 +156,8 @@ export type Database = {
         Row: {
           id: string;
           tutorial_id: string | null;
+          source_id?: string | null;
+          step_type?: string;
           order_index: number;
           screenshot_url: string | null;
           text_content: string | null;
@@ -157,6 +178,8 @@ export type Database = {
         Insert: {
           id?: string;
           tutorial_id?: string | null;
+          source_id?: string | null;
+          step_type?: string;
           order_index: number;
           screenshot_url?: string | null;
           text_content?: string | null;
@@ -177,6 +200,8 @@ export type Database = {
         Update: {
           id?: string;
           tutorial_id?: string | null;
+          source_id?: string | null;
+          step_type?: string;
           order_index?: number;
           screenshot_url?: string | null;
           text_content?: string | null;
@@ -209,6 +234,9 @@ export type Database = {
       [_ in never]: never;
     };
     Functions: {
+      begin_desktop_connection: { Args: { code_challenge: string; requester: string }; Returns: Json };
+      approve_desktop_connection: { Args: { connection_id: string; approving_user_id: string }; Returns: string };
+      exchange_desktop_connection: { Args: { connection_id: string; verifier: string }; Returns: Json };
       get_user_dashboard_tutorials: {
         Args: {
           p_limit?: number;

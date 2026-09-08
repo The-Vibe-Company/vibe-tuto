@@ -14,16 +14,16 @@
       <feGaussianBlur stdDeviation="0.4"></feGaussianBlur>
     </filter>
   </defs>
-  
+
   <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#ct-grad)"></rect>
   <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#ct-shine)"></rect>
-  
+
   <g transform="translate(32 32)">
-    
+
     <circle r="18" fill="none" stroke="#ffffff" stroke-opacity="0.22" stroke-width="1.5"></circle>
-    
+
     <path d="M -7 -10 L 13 0 L -7 10 Z" fill="#ffffff" filter="url(#ct-soft)"></path>
-    
+
     <circle cx="13" cy="-13" r="3" fill="#ffffff"></circle>
     <circle cx="13" cy="-13" r="5" fill="#ffffff" fill-opacity="0.25"></circle>
   </g>

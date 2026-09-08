@@ -17,7 +17,7 @@ import {
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
 } from '@dnd-kit/sortable';
-import { Plus, FileText, Heading, Minus, Sparkles, Layers } from 'lucide-react';
+import { AlertCircle, Plus, FileText, Heading, Minus, Sparkles, Layers, RefreshCw } from 'lucide-react';
 import type { Tutorial, StepWithSignedUrl, SourceWithSignedUrl, Annotation } from '@/lib/types/editor';
 import type { SaveStatus } from './EditorClient';
 import { DocHeader } from './DocHeader';
@@ -56,6 +56,8 @@ interface DocEditorProps {
   // AI Generation props
   onGenerateClick?: () => void;
   isGenerating?: boolean;
+  errorMessage?: string | null;
+  onRetrySave?: () => void;
 }
 
 export function DocEditor({
@@ -77,6 +79,8 @@ export function DocEditor({
   onSetStepImage,
   onGenerateClick,
   isGenerating,
+  errorMessage,
+  onRetrySave,
 }: DocEditorProps) {
   const sensors = useSensors(
     useSensor(PointerSensor, {
@@ -132,7 +136,26 @@ export function DocEditor({
               'linear-gradient(180deg, #000 0%, #000 220px, transparent 480px)',
           }}
         >
-          <div className="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8">
+          <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+            {errorMessage && (
+              <div className="mb-6 flex items-start justify-between gap-3 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+                <div className="flex items-start gap-2">
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                  <span>{errorMessage}</span>
+                </div>
+                {onRetrySave && (
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={onRetrySave}
+                    className="h-8 shrink-0 gap-2 border-red-200 bg-white text-red-700 hover:bg-red-50"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    Retry
+                  </Button>
+                )}
+              </div>
+            )}
             <div className="flex gap-8">
               {/* Main content area */}
               <main className="min-w-0 flex-1">

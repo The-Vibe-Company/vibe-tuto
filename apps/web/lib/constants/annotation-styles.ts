@@ -42,3 +42,7 @@ export function getStrokePx(strokeWidth: number | undefined): number {
   const found = STROKE_WIDTHS.find((s) => s.value === strokeWidth);
   return found ? found.px : 3; // default medium
 }
+
+// Styles are specified against a 1000px-wide screenshot, independent of display size.
+export const ANNOTATION_REFERENCE_WIDTH = 1000;
+export const annotationScale = (imageWidth: number) => imageWidth / ANNOTATION_REFERENCE_WIDTH;

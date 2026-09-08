@@ -27,6 +27,7 @@ struct AppPickerView: View {
                 TextField("Search apps", text: $searchText)
                     .textFieldStyle(.plain)
                     .font(.system(size: 12))
+                    .foregroundStyle(.primary)
                 if !searchText.isEmpty {
                     Button(action: { searchText = "" }) {
                         Image(systemName: "xmark.circle.fill")
@@ -74,7 +75,7 @@ struct AppPickerView: View {
                         }
                     }
                 }
-                .frame(maxHeight: 112)
+                .frame(maxHeight: 140)
             }
         }
         .task {
@@ -130,6 +131,7 @@ struct AppRow: View {
             }
             Text(app.name)
                 .font(.system(size: 13))
+                .foregroundStyle(.primary)
                 .lineLimit(1)
             Spacer()
             if isSelected {

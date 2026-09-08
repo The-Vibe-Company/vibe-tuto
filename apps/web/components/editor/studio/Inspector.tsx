@@ -133,6 +133,7 @@ function InspectorSelection({
   const accent = 'var(--studio-accent)';
   const kindLabel: Record<Annotation['type'], string> = {
     circle: 'Circle',
+    rectangle: 'Rectangle',
     arrow: 'Arrow',
     text: 'Text',
     blur: 'Blur strip',
@@ -142,6 +143,7 @@ function InspectorSelection({
   };
   const kindIcon: Record<Annotation['type'], string> = {
     circle: ICON.rect,
+    rectangle: ICON.rect,
     arrow: ICON.arrowAnno,
     text: ICON.text,
     blur: ICON.blur,

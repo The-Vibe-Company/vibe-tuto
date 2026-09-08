@@ -80,3 +80,7 @@ Package.resolved
 .*.log
 .*.pid
 *.workspace
+
+# Isolated local backend credentials and frontend mode
+.env.supabase.*
+.dev-server.backend

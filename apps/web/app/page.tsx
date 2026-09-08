@@ -5,7 +5,6 @@ import { ProblemSection } from "@/components/landing/ProblemSection";
 import { SolutionSection } from "@/components/landing/SolutionSection";
 import { HowItWorks } from "@/components/landing/HowItWorks";
 import { FeatureBento } from "@/components/landing/FeatureBento";
-import { PricingCard } from "@/components/landing/PricingCard";
 import { FAQAccordion } from "@/components/landing/FAQAccordion";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
@@ -20,7 +19,6 @@ export default function Home() {
       <SolutionSection />
       <HowItWorks />
       <FeatureBento />
-      <PricingCard />
       <FAQAccordion />
       <FinalCTA />
       <Footer />

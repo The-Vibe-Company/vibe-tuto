@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import {
   Circle,
+  Square,
   ArrowRight,
   Type,
   Highlighter,
@@ -56,6 +57,7 @@ interface AnnotationToolbarProps {
 
 const TOOLS: { type: AnnotationType; icon: typeof Circle; label: string }[] = [
   { type: 'circle', icon: Circle, label: 'Circle' },
+  { type: 'rectangle', icon: Square, label: 'Rectangle' },
   { type: 'arrow', icon: ArrowRight, label: 'Arrow' },
   { type: 'text', icon: Type, label: 'Text' },
   { type: 'numbered-callout', icon: Hash, label: 'Callout' },
@@ -93,7 +95,7 @@ export function AnnotationToolbar({
   const showTextOptions = activeTool === 'text' || activeTool === 'numbered-callout';
   const showHighlightOptions = activeTool === 'highlight';
   const showStrokeOptions =
-    activeTool === 'circle' || activeTool === 'arrow' || activeTool === 'numbered-callout';
+    activeTool === 'rectangle' || activeTool === 'circle' || activeTool === 'arrow' || activeTool === 'numbered-callout';
 
   return (
     <div className="flex items-center gap-1 rounded-xl border border-stone-200/50 bg-background/80 p-1.5 shadow-xl shadow-black/10 backdrop-blur-xl">
@@ -103,6 +105,7 @@ export function AnnotationToolbar({
           <Tooltip key={type}>
             <TooltipTrigger asChild>
               <Toggle
+                aria-label={label}
                 pressed={activeTool === type}
                 onPressedChange={() =>
                   onToolChange(activeTool === type ? null : type)

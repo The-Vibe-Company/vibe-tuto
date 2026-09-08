@@ -6,9 +6,9 @@ import { ChevronDown } from "lucide-react";
 
 const faqs = [
   {
-    question: "How much does it cost?",
+    question: "How is billing handled?",
     answer:
-      "CapTuto is $8/month with unlimited usage. No hidden fees, no hidden limits.",
+      "Paid plans are handled through Stripe Checkout and the Stripe customer portal. The active price is configured in Stripe, not hard-coded in the app.",
   },
   {
     question: "Do I need to install anything?",
@@ -28,7 +28,7 @@ const faqs = [
   {
     question: "Can I cancel at any time?",
     answer:
-      "Of course. No commitment, cancel anytime. You can delete your account and all your data in one click.",
+      "Yes. Subscription changes and cancellation are handled from the billing portal in your account settings.",
   },
 ];
 

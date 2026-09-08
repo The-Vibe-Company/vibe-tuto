@@ -31,7 +31,7 @@ final class RegionSelectorController {
         selectorWindow.acceptsMouseMovedEvents = true
         selectorWindow.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]
 
-        let selectorView = RegionSelectorView(frame: screen.frame)
+        let selectorView = RegionSelectorView(frame: CGRect(origin: .zero, size: screen.frame.size))
         selectorView.onSelectionComplete = { [weak self] rect in
             self?.handleSelection(rect, screenHeight: screen.frame.height)
         }

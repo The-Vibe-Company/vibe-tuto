@@ -3,68 +3,53 @@ import os
 
 private let logger = Logger(subsystem: "com.vibetuto.recorder", category: "UploadManager")
 
-/// Orchestrates the upload of recording data (screenshots, metadata, audio) to the web platform.
+/// Uploads one screenshot per idempotent request, then narration.
 final class UploadManager: @unchecked Sendable {
     private let supabaseClient: SupabaseClient
-
     var onProgress: ((Double) -> Void)?
 
     init(supabaseClient: SupabaseClient) {
         self.supabaseClient = supabaseClient
     }
 
-    /// Upload a complete recording session to the web platform.
-    /// Screenshots are embedded as base64 in the JSON payload.
     func uploadSession(
         steps: [DetectedStep],
         screenshotFiles: [String: URL],
         audioFile: URL?,
-        metadata: RecordingMetadata
+        metadata: RecordingMetadata,
+        existingTutorialID: String? = nil,
+        onCreated: ((String) throws -> Void)? = nil
     ) async throws -> String {
-        onProgress?(0.05)
-
-        // Build upload steps, encoding screenshots one at a time to avoid
-        // loading all base64 strings into memory simultaneously.
-        var uploadSteps: [UploadStep] = []
-        uploadSteps.reserveCapacity(steps.count)
+        guard !steps.isEmpty else { throw UploadError.uploadFailed("No captured steps") }
+        var tutorialID = existingTutorialID
+        let totalUnits = steps.count + (audioFile == nil ? 0 : 1)
         for (index, step) in steps.enumerated() {
-            var base64Data: String? = nil
-            if let fileURL = screenshotFiles[step.screenshotKey],
-               let data = try? Data(contentsOf: fileURL) {
-                base64Data = data.base64EncodedString()
+            guard let file = screenshotFiles[step.screenshotKey] else {
+                throw UploadError.uploadFailed("Missing screenshot for step \(index + 1)")
             }
-            uploadSteps.append(UploadStep(step: step, screenshotData: base64Data))
-
-            let screenshotProgress = steps.isEmpty ? 0.20 : (Double(index + 1) / Double(steps.count)) * 0.20
-            onProgress?(0.05 + screenshotProgress)
+            let encoded = try Data(contentsOf: file).base64EncodedString()
+            let payload = RecordingPayload(
+                recording: metadata,
+                steps: [UploadStep(step: step, screenshotData: encoded)],
+                audioKey: nil
+            )
+            let returnedID = try await supabaseClient.createRecording(payload: payload)
+            if let tutorialID, tutorialID != returnedID {
+                throw UploadError.recordingCreationFailed
+            }
+            if tutorialID == nil {
+                tutorialID = returnedID
+                try onCreated?(returnedID)
+            }
+            logger.info("Uploaded capture \(index + 1) of \(steps.count)")
+            onProgress?(Double(index + 1) / Double(totalUnits))
         }
-
-        logger.info("Uploading \(uploadSteps.count) steps (\(uploadSteps.filter { $0.screenshotData != nil }.count) with screenshots)")
-
-        onProgress?(0.30)
-
-        let audioKey: String? = audioFile != nil ? "narration.m4a" : nil
-        let audioData = try audioFile.flatMap { fileURL -> String? in
-            let data = try Data(contentsOf: fileURL)
-            return data.base64EncodedString()
+        guard let tutorialID else { throw UploadError.recordingCreationFailed }
+        if let audioFile {
+            try await supabaseClient.uploadAudio(tutorialID: tutorialID, file: audioFile)
+            onProgress?(1)
         }
-
-        // Single API call. Screenshots are still embedded for MVP compatibility;
-        // progress now accounts for local encoding and the server stores audio.
-        let payload = RecordingPayload(
-            recording: metadata,
-            steps: uploadSteps,
-            audioKey: audioKey,
-            audioData: audioData,
-            audioContentType: audioData == nil ? nil : "audio/mp4"
-        )
-
-        onProgress?(0.45)
-
-        let tutorialID = try await supabaseClient.createRecording(payload: payload)
-
-        onProgress?(1.0)
-
+        onProgress?(1)
         return tutorialID
     }
 }

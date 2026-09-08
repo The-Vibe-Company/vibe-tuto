@@ -9,6 +9,7 @@ interface PublicTutorial {
   title: string;
   description: string | null;
   slug: string | null;
+  publicToken?: string | null;
   status: string;
   visibility: string;
   publishedAt: string | null;

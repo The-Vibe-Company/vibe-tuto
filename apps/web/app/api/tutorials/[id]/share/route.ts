@@ -122,13 +122,8 @@ export async function POST(
     return NextResponse.json({ error: 'Access denied' }, { status: 403 });
   }
 
-  // For public visibility, check that slug exists
-  if (visibility === 'public' && !tutorial.slug) {
-    return NextResponse.json(
-      { error: 'Tutorial must have a slug to be made fully public' },
-      { status: 400 }
-    );
-  }
+  // A readable URL is generated automatically when publishing.
+  const slug = tutorial.slug || `guide-${nanoid(12)}`;
 
   // Prepare update data
   const isPublic = visibility !== 'private';
@@ -156,6 +151,7 @@ export async function POST(
     .from('tutorials')
     .update({
       visibility,
+      ...(visibility === 'public' ? { slug } : {}),
       is_public: isPublic,
       public_token: publicToken,
       published_at: publishedAt,
@@ -188,7 +184,7 @@ export async function POST(
     visibility,
     publicToken,
     tokenUrl: publicToken ? `${baseUrl}/t/${publicToken}` : null,
-    slugUrl: visibility === 'public' && tutorial.slug ? `${baseUrl}/tutorial/${tutorial.slug}` : null,
+    slugUrl: visibility === 'public' ? `${baseUrl}/tutorial/${slug}` : null,
     embedUrl: publicToken ? `${baseUrl}/t/${publicToken}/embed` : null,
   };
 

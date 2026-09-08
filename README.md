@@ -12,6 +12,7 @@ Create professional tutorials in seconds. Record your screen while talking, and 
 - **Storage**: Supabase Storage
 - **Transcription**: Deepgram
 - **Auth**: Supabase Auth
+- **Billing**: Stripe Checkout + Customer Portal
 
 ## Project Structure
 
@@ -57,6 +58,9 @@ cp apps/web/.env.example apps/web/.env.local
 | `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Supabase anonymous key (public) | Same as above |
 | `SUPABASE_SERVICE_ROLE_KEY` | Supabase service role key (secret) | Same as above |
 | `DEEPGRAM_API_KEY` | Deepgram API key | [Deepgram Console](https://console.deepgram.com) |
+| `STRIPE_SECRET_KEY` | Stripe server-side secret key | [Stripe Dashboard](https://dashboard.stripe.com/apikeys) |
+| `STRIPE_PRICE_ID` | Recurring Stripe Price used for Checkout | Stripe product price settings |
+| `STRIPE_WEBHOOK_SECRET` | Signing secret for `/api/billing/webhook` | Stripe webhook endpoint settings |
 | `NEXT_PUBLIC_APP_URL` | App URL | `http://localhost:3678` for dev |
 
 ### 3. Run the development server

@@ -10,10 +10,10 @@ final class SupabaseClient: @unchecked Sendable {
     private var accessToken: String?
     private let session: URLSession
 
-    init(baseURL: URL, apiKey: String) {
+    init(baseURL: URL, apiKey: String, session: URLSession = URLSession(configuration: .default)) {
         self.baseURL = baseURL
         self.apiKey = apiKey
-        self.session = URLSession(configuration: .default)
+        self.session = session
 
         // Load stored token
         if let storedToken = UserDefaults.standard.string(forKey: "apiToken"), !storedToken.isEmpty {
@@ -82,6 +82,23 @@ final class SupabaseClient: @unchecked Sendable {
 
         return tutorialID
     }
+    func uploadAudio(tutorialID: String, file: URL) async throws {
+        guard let token = accessToken else { throw UploadError.notAuthenticated }
+        let boundary = "Captuto-" + UUID().uuidString
+        var body = Data("--\(boundary)\r\nContent-Disposition: form-data; name=\"file\"; filename=\"narration.m4a\"\r\nContent-Type: audio/mp4\r\n\r\n".utf8)
+        body.append(try Data(contentsOf: file))
+        body.append(Data("\r\n--\(boundary)--\r\n".utf8))
+        var request = URLRequest(url: baseURL.appendingPathComponent("api/recordings/\(tutorialID)/audio"))
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(token)", forHTTPHeaderField: "Authorization")
+        request.setValue("multipart/form-data; boundary=\(boundary)", forHTTPHeaderField: "Content-Type")
+        request.httpBody = body
+        let (_, response) = try await session.data(for: request)
+        guard let response = response as? HTTPURLResponse, (200...299).contains(response.statusCode) else {
+            throw UploadError.uploadFailed("narration")
+        }
+    }
+
 }
 
 // MARK: - Errors

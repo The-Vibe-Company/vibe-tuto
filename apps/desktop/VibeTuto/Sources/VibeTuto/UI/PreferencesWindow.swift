@@ -47,13 +47,15 @@ struct GeneralPreferencesView: View {
                 Text("High").tag("high")
             }
 
-            SecureField("API token", text: $apiToken)
-                .textFieldStyle(.roundedBorder)
-
-            Button("Get token") {
-                let baseURL = UserDefaults.standard.string(forKey: "apiBaseURL") ?? "https://captuto.com"
-                if let url = URL(string: "\(baseURL)/settings") {
-                    NSWorkspace.shared.open(url)
+            Section("Workspace") {
+                if apiToken.isEmpty {
+                    DesktopConnectView()
+                } else {
+                    Label("Connected", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                    Button("Use another workspace") {
+                        apiToken = ""
+                    }
                 }
             }
         }

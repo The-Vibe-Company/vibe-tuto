@@ -1,0 +1,3 @@
+-- Application data is deliberately empty for deterministic local scenarios.
+-- scripts/dev-backend.sh seeds and verifies the local admin through Supabase Auth.
+-- Do not insert known development credentials into remotely deployed migrations.

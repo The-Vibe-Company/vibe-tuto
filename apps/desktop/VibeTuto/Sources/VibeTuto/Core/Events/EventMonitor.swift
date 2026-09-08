@@ -95,7 +95,7 @@ final class EventMonitor: @unchecked Sendable {
             return
         }
 
-        // Get accessibility info at click point
+        // Get accessibility info at click point.
         let frontApp = NSWorkspace.shared.frontmostApplication
         let windowTitle = accessibilityReader.frontWindowTitle()
         let pluginContext = pluginContext(

@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { EmbedTutorialViewer } from '@/components/public/EmbedTutorialViewer';

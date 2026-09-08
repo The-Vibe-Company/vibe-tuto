@@ -1,30 +1,20 @@
 'use client';
 
-import {
-  Share2,
-  Calendar,
-  Play,
-  Check,
-  ChevronDown,
-  Sparkles,
-  Globe,
-  ArrowRight,
-  Layers,
-} from 'lucide-react';
+import { useState } from 'react';
+import Link from 'next/link';
+import { Check, Copy, ArrowUpRight } from 'lucide-react';
 import { DocStepCard } from '@/components/editor/DocStepCard';
-import type { StepWithSignedUrl } from '@/lib/types/editor';
-import { formatSourceUrl, getSourceActionType } from '@/lib/types/editor';
 import { Button } from '@/components/ui/button';
 import { TooltipProvider } from '@/components/ui/tooltip';
-import { useState, useRef } from 'react';
-import { motion, useScroll, useTransform, useMotionValueEvent, AnimatePresence } from 'framer-motion';
-import Link from 'next/link';
+import { DownloadPdfButton } from './DownloadPdfButton';
+import type { StepWithSignedUrl } from '@/lib/types/editor';
 
 interface PublicTutorial {
   id: string;
   title: string;
   description: string | null;
   slug: string | null;
+  publicToken?: string | null;
   status: string;
   visibility: string;
   publishedAt: string | null;
@@ -36,581 +26,73 @@ interface PublicTutorialViewerProps {
   tutorial: PublicTutorial;
   steps: StepWithSignedUrl[];
   shareUrl?: string;
-  scrollContainerRef?: React.RefObject<HTMLElement>;
 }
 
-export function PublicTutorialViewer({
-  tutorial,
-  steps,
-  shareUrl,
-  scrollContainerRef,
-}: PublicTutorialViewerProps) {
+export function PublicTutorialViewer({ tutorial, steps, shareUrl }: PublicTutorialViewerProps) {
   const [copied, setCopied] = useState(false);
-  const [showFloatingHeader, setShowFloatingHeader] = useState(false);
-  const heroRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
-
-  // Hero parallax
-  const { scrollYProgress: heroProgress } = useScroll({
-    target: heroRef,
-    container: scrollContainerRef,
-    offset: ['start start', 'end start'],
-  });
-  const heroOpacity = useTransform(heroProgress, [0, 0.6], [1, 0]);
-  const heroY = useTransform(heroProgress, [0, 1], [0, 80]);
-
-  // Global reading progress
-  const { scrollYProgress: readingProgress } = useScroll({
-    container: scrollContainerRef,
-  });
-
-  // Show floating header after hero
-  useMotionValueEvent(heroProgress, 'change', (latest) => {
-    setShowFloatingHeader(latest > 0.4);
-  });
-
-  const handleShare = async () => {
-    const url = shareUrl || window.location.href;
+  const [copyError, setCopyError] = useState(false);
+  const count = steps.filter(step => step.step_type === 'image' || step.step_type === 'text').length;
+  let number = 0;
+  const numberedSteps = steps.map(step => ({ step, number: step.step_type === 'image' || step.step_type === 'text' ? ++number : 0 }));
+  async function copyLink() {
     try {
-      await navigator.clipboard.writeText(url);
+      await navigator.clipboard.writeText(shareUrl || window.location.href);
       setCopied(true);
+      setCopyError(false);
       setTimeout(() => setCopied(false), 2000);
-    } catch {
-      const input = document.createElement('input');
-      input.value = url;
-      document.body.appendChild(input);
-      input.select();
-      document.execCommand('copy');
-      document.body.removeChild(input);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    }
-  };
-
-  const visibleSteps = steps;
-  let stepCounter = 0;
-
-  const formatDate = (dateString: string | null) => {
-    if (!dateString) return null;
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric',
-    });
-  };
-
-  const totalSteps = steps.filter(
-    (s) => s.step_type === 'image' || s.step_type === 'text'
-  ).length;
-
-  return (
-    <TooltipProvider delayDuration={100}>
-      <div className="min-h-screen bg-stone-50">
-        {/* Reading Progress Bar - always visible at top */}
-        <motion.div
-          className="fixed top-0 left-0 right-0 z-[60] h-[3px]"
-          style={{ scaleX: readingProgress, transformOrigin: '0%' }}
-        >
-          <div className="h-full w-full bg-gradient-to-r from-brand-500 via-teal-500 to-cyan-500" />
-        </motion.div>
-
-        {/* Floating Header */}
-        <AnimatePresence>
-          {showFloatingHeader && (
-            <motion.header
-              initial={{ y: -80, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -80, opacity: 0 }}
-              transition={{ duration: 0.3, ease: [0.22, 1, 0.36, 1] }}
-              className="fixed top-[3px] left-0 right-0 z-50 border-b border-stone-200/60 bg-white/80 backdrop-blur-xl backdrop-saturate-150"
-            >
-              <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-3">
-                <div className="flex items-center gap-3 min-w-0">
-                  <Link href="/" className="flex-shrink-0">
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src="/brand/captuto-mark.svg"
-                      alt=""
-                      className="h-8 w-8 rounded-lg shadow-md shadow-brand-200/50"
-                    />
-                  </Link>
-                  <div className="h-5 w-px bg-stone-200" />
-                  <p className="truncate text-sm font-medium text-stone-700">
-                    {tutorial.title}
-                  </p>
-                </div>
-
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={handleShare}
-                  className="flex-shrink-0 gap-2 border-stone-200 bg-white hover:border-brand-300 hover:bg-teal-50"
-                >
-                  <AnimatePresence mode="wait">
-                    {copied ? (
-                      <motion.span
-                        key="copied"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="flex items-center gap-1.5 text-emerald-600"
-                      >
-                        <Check className="h-3.5 w-3.5" />
-                        Copied!
-                      </motion.span>
-                    ) : (
-                      <motion.span
-                        key="share"
-                        initial={{ opacity: 0, scale: 0.8 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        exit={{ opacity: 0, scale: 0.8 }}
-                        className="flex items-center gap-1.5"
-                      >
-                        <Share2 className="h-3.5 w-3.5" />
-                        Share
-                      </motion.span>
-                    )}
-                  </AnimatePresence>
-                </Button>
-              </div>
-            </motion.header>
-          )}
-        </AnimatePresence>
-
-        {/* Initial header (visible before scroll) */}
-        <div className="fixed top-[3px] left-0 right-0 z-40">
-          <div className="mx-auto flex max-w-5xl items-center justify-between px-6 py-4">
-            <Link href="/" className="flex items-center gap-2.5 group">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src="/brand/captuto-mark.svg"
-                alt=""
-                className="h-9 w-9 rounded-xl shadow-lg shadow-brand-200/50 transition-transform group-hover:scale-105"
-              />
-              <span className="text-lg font-semibold tracking-tight text-stone-800">
-                CapTuto
-              </span>
-            </Link>
-
-            <Button
-              variant="secondary"
-              size="sm"
-              onClick={handleShare}
-              className="gap-2 bg-white/80 backdrop-blur-sm hover:bg-white shadow-sm"
-            >
-              <AnimatePresence mode="wait">
-                {copied ? (
-                  <motion.span
-                    key="copied"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-center gap-1.5 text-emerald-600"
-                  >
-                    <Check className="h-4 w-4" />
-                    Copied!
-                  </motion.span>
-                ) : (
-                  <motion.span
-                    key="share"
-                    initial={{ opacity: 0, scale: 0.8 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.8 }}
-                    className="flex items-center gap-1.5"
-                  >
-                    <Share2 className="h-4 w-4" />
-                    Share
-                  </motion.span>
-                )}
-              </AnimatePresence>
-            </Button>
-          </div>
+    } catch { setCopyError(true); }
+  }
+  return <TooltipProvider delayDuration={100}>
+    <div className="min-h-screen bg-[#faf8f3] text-stone-900 selection:bg-orange-200">
+      <a href="#guide" className="sr-only focus:not-sr-only focus:absolute focus:z-50 focus:bg-white focus:p-4">Skip to guide</a>
+      <header className="border-b border-stone-200">
+        <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-5 py-5 sm:px-8">
+          <Link href="/" className="text-xl font-bold tracking-tight">captuto<span className="text-[#bd402d]">.</span></Link>
+          <span className="text-xs font-medium uppercase tracking-[0.16em] text-stone-600">A little clarity goes a long way</span>
         </div>
-
-        {/* Hero Section */}
-        <motion.section
-          ref={heroRef}
-          style={{ opacity: heroOpacity }}
-          className="relative overflow-hidden pt-24 pb-20 sm:pt-28 sm:pb-24"
-        >
-          {/* Animated mesh gradient background */}
-          <div className="absolute inset-0 -z-10 overflow-hidden">
-            {/* Base gradient */}
-            <div className="absolute inset-0 bg-gradient-to-br from-brand-50 via-white to-teal-50" />
-
-            {/* Animated orbs */}
-            <motion.div
-              animate={{
-                x: [0, 30, -20, 0],
-                y: [0, -40, 20, 0],
-              }}
-              transition={{ duration: 20, repeat: Infinity, ease: 'linear' }}
-              className="absolute -top-20 left-[15%] h-[500px] w-[500px] rounded-full bg-brand-200/40 blur-[120px]"
-            />
-            <motion.div
-              animate={{
-                x: [0, -40, 30, 0],
-                y: [0, 30, -20, 0],
-              }}
-              transition={{
-                duration: 25,
-                repeat: Infinity,
-                ease: 'linear',
-                delay: 5,
-              }}
-              className="absolute -bottom-20 right-[10%] h-[400px] w-[400px] rounded-full bg-cyan-200/30 blur-[100px]"
-            />
-            <motion.div
-              animate={{
-                x: [0, 20, -30, 0],
-                y: [0, -20, 40, 0],
-              }}
-              transition={{
-                duration: 22,
-                repeat: Infinity,
-                ease: 'linear',
-                delay: 10,
-              }}
-              className="absolute top-1/2 left-1/2 h-[300px] w-[300px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-blue-100/30 blur-[100px]"
-            />
-
-            {/* Subtle grid pattern */}
-            <div
-              className="absolute inset-0 opacity-[0.03]"
-              style={{
-                backgroundImage:
-                  'radial-gradient(circle, #6d28d9 1px, transparent 1px)',
-                backgroundSize: '32px 32px',
-              }}
-            />
-
-            {/* Decorative floating elements */}
-            <motion.div
-              animate={{ y: [0, -15, 0], rotate: [0, 5, 0] }}
-              transition={{ duration: 6, repeat: Infinity, ease: 'easeInOut' }}
-              className="absolute right-[20%] top-[20%] h-16 w-16 rounded-2xl border border-brand-200/50 bg-gradient-to-br from-white/80 to-teal-50/80 shadow-lg backdrop-blur-sm sm:h-20 sm:w-20"
-            />
-            <motion.div
-              animate={{ y: [0, 12, 0], rotate: [0, -3, 0] }}
-              transition={{
-                duration: 7,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: 2,
-              }}
-              className="absolute left-[12%] bottom-[25%] h-12 w-12 rounded-xl border border-teal-200/50 bg-gradient-to-br from-white/80 to-teal-50/80 shadow-lg backdrop-blur-sm sm:h-16 sm:w-16"
-            />
-            <motion.div
-              animate={{ y: [0, -10, 0], rotate: [0, 8, 0] }}
-              transition={{
-                duration: 8,
-                repeat: Infinity,
-                ease: 'easeInOut',
-                delay: 4,
-              }}
-              className="absolute right-[8%] bottom-[30%] hidden h-10 w-10 rounded-lg border border-cyan-200/50 bg-gradient-to-br from-white/80 to-cyan-50/80 shadow-md backdrop-blur-sm sm:block"
-            />
-          </div>
-
-          <motion.div style={{ y: heroY }} className="relative mx-auto max-w-4xl px-6">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center"
-            >
-              {/* Meta badges */}
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15, duration: 0.5 }}
-                className="mb-8 flex flex-wrap items-center justify-center gap-3"
-              >
-                <div className="inline-flex items-center gap-2 rounded-full border border-brand-100 bg-white/90 px-4 py-2 text-sm text-stone-600 shadow-sm backdrop-blur-sm">
-                  <Layers className="h-3.5 w-3.5 text-brand-500" />
-                  <span className="font-medium">
-                    {totalSteps} step{totalSteps !== 1 ? 's' : ''}
-                  </span>
-                </div>
-                {tutorial.publishedAt && (
-                  <div className="inline-flex items-center gap-2 rounded-full border border-stone-100 bg-white/90 px-4 py-2 text-sm text-stone-500 shadow-sm backdrop-blur-sm">
-                    <Calendar className="h-3.5 w-3.5 text-stone-400" />
-                    <span>{formatDate(tutorial.publishedAt)}</span>
-                  </div>
-                )}
-              </motion.div>
-
-              {/* Title with gradient */}
-              <motion.h1
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.25, duration: 0.7 }}
-                className="font-heading text-4xl font-bold tracking-tight leading-[1.1] text-stone-900 sm:text-5xl lg:text-6xl"
-              >
-                {tutorial.title}
-              </motion.h1>
-
-              {/* Description */}
-              {tutorial.description && (
-                <motion.p
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.35, duration: 0.6 }}
-                  className="mx-auto mt-6 max-w-2xl text-lg leading-relaxed text-stone-500 sm:text-xl"
-                >
-                  {tutorial.description}
-                </motion.p>
-              )}
-
-              {/* Scroll indicator */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 1 }}
-                className="mt-14"
-              >
-                <motion.div
-                  animate={{ y: [0, 8, 0] }}
-                  transition={{
-                    duration: 2.5,
-                    repeat: Infinity,
-                    ease: 'easeInOut',
-                  }}
-                  className="inline-flex flex-col items-center gap-2 text-stone-400"
-                >
-                  <span className="text-xs font-medium uppercase tracking-[0.2em]">
-                    Scroll to explore
-                  </span>
-                  <ChevronDown className="h-5 w-5" />
-                </motion.div>
-              </motion.div>
-            </motion.div>
-          </motion.div>
-        </motion.section>
-
-        {/* Main Content */}
-        <main ref={contentRef} className="relative pb-8">
-          <div className="relative mx-auto max-w-4xl px-4 sm:px-6">
-            {/* Steps with timeline */}
-            <div className="relative">
-              {/* Vertical timeline line */}
-              <div className="absolute left-6 top-0 bottom-0 hidden w-px sm:block">
-                <div className="h-full w-full bg-gradient-to-b from-brand-300/80 via-brand-200/50 to-transparent" />
-              </div>
-
-              <div className="space-y-6 sm:space-y-10">
-                {visibleSteps.map((step, index) => {
-                  const isCountedStep =
-                    step.step_type === 'image' || step.step_type === 'text';
-                  if (isCountedStep) stepCounter++;
-                  const currentStepNum = stepCounter;
-
-                  // Determine step metadata
-                  const stepUrl = step.url || step.source?.url || null;
-                  const actionType = step.source
-                    ? getSourceActionType(step.source)
-                    : null;
-                  const isNavigation = actionType === 'navigation';
-                  const isTabChange = actionType === 'tab_change';
-
-                  // Find previous step's URL (skip headings/dividers)
-                  let previousStepUrl: string | null = null;
-                  for (let i = index - 1; i >= 0; i--) {
-                    const prev = visibleSteps[i];
-                    if (prev.step_type === 'heading' || prev.step_type === 'divider') continue;
-                    previousStepUrl = prev.url || prev.source?.url || null;
-                    break;
-                  }
-                  const isUrlRedundant = stepUrl != null && previousStepUrl != null && stepUrl === previousStepUrl;
-
-                  return (
-                    <motion.div
-                      key={step.id}
-                      initial={{ opacity: 0, y: 50 }}
-                      whileInView={{ opacity: 1, y: 0 }}
-                      viewport={{ once: true, margin: '-80px' }}
-                      transition={{
-                        duration: 0.6,
-                        delay: Math.min(index * 0.08, 0.4),
-                        ease: [0.22, 1, 0.36, 1],
-                      }}
-                      className="relative"
-                    >
-                      {/* Timeline dot */}
-                      {isCountedStep && (
-                        <div className="absolute left-6 top-6 z-10 hidden -translate-x-1/2 sm:block">
-                          <motion.div
-                            initial={{ scale: 0 }}
-                            whileInView={{ scale: 1 }}
-                            viewport={{ once: true }}
-                            transition={{
-                              delay: Math.min(index * 0.08, 0.4) + 0.2,
-                              type: 'spring',
-                              stiffness: 300,
-                              damping: 20,
-                            }}
-                            className="relative"
-                          >
-                            <div className="h-3 w-3 rounded-full bg-brand-500 ring-[3px] ring-stone-50 shadow-md shadow-brand-200/50" />
-                            <div className="absolute inset-0 animate-ping rounded-full bg-brand-400 opacity-20" />
-                          </motion.div>
-                        </div>
-                      )}
-
-                      {/* Decorative step number (in the left gutter, before the timeline) */}
-                      {isCountedStep && (
-                        <div className="absolute left-0 top-0 z-0 hidden w-14 select-none pointer-events-none sm:flex sm:items-start sm:justify-end sm:-top-1">
-                          <span className="text-3xl font-black text-brand-200/80 lg:text-4xl">
-                            {String(currentStepNum).padStart(2, '0')}
-                          </span>
-                        </div>
-                      )}
-
-                      {/* Step card */}
-                      <div className="sm:pl-16">
-                        {/* Navigation/Tab change badge above card - hidden when URL is same as previous or show_url is false */}
-                        {stepUrl && (isNavigation || isTabChange) && !isUrlRedundant && step.show_url !== false && (
-                          <motion.div
-                            initial={{ opacity: 0, x: -10 }}
-                            whileInView={{ opacity: 1, x: 0 }}
-                            viewport={{ once: true }}
-                            transition={{
-                              delay: Math.min(index * 0.08, 0.4) + 0.1,
-                            }}
-                            className="mb-3 flex items-center gap-2"
-                          >
-                            <div
-                              className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium ${
-                                isTabChange
-                                  ? 'bg-amber-50 text-amber-700 border border-amber-200/60'
-                                  : 'bg-blue-50 text-blue-700 border border-blue-200/60'
-                              }`}
-                            >
-                              <Globe className="h-3 w-3" />
-                              <span>
-                                {isTabChange ? 'Switched to' : 'Navigated to'}
-                              </span>
-                              <span className="max-w-[200px] truncate font-normal opacity-80 sm:max-w-xs">
-                                {formatSourceUrl(stepUrl)}
-                              </span>
-                            </div>
-                          </motion.div>
-                        )}
-
-                        {/* Card wrapper */}
-                        <div className="group relative">
-                          {/* The actual card */}
-                          <div className="relative z-10 overflow-hidden rounded-2xl border border-stone-200/80 bg-white shadow-sm shadow-stone-200/50 transition-all duration-300 hover:border-stone-300/80 hover:shadow-lg hover:shadow-stone-200/60">
-                            <DocStepCard
-                              step={step}
-                              stepNumber={isCountedStep ? currentStepNum : 0}
-                              previousStepUrl={previousStepUrl}
-                              readOnly
-                              flattened
-                            />
-                          </div>
-                        </div>
-                      </div>
-                    </motion.div>
-                  );
-                })}
-              </div>
+      </header>
+      <div className="mx-auto max-w-6xl px-5 sm:px-8">
+        <section className="max-w-4xl py-12 sm:py-20" aria-labelledby="tutorial-title">
+          <p className="mb-5 flex items-center gap-3 text-xs font-semibold uppercase tracking-[0.14em] text-[#ad3d2b]">
+            <span className="h-2 w-2 rounded-full bg-[#bd402d]" aria-hidden="true" /> Step-by-step guide <span className="text-stone-500">/ {count} {count === 1 ? 'step' : 'steps'}</span>
+          </p>
+          <h1 id="tutorial-title" className="max-w-3xl break-words text-4xl font-semibold leading-[1.08] tracking-[-0.045em] sm:text-6xl">{tutorial.title}</h1>
+          {tutorial.description && <p className="mt-6 max-w-2xl whitespace-pre-wrap text-lg leading-relaxed text-stone-600">{tutorial.description}</p>}
+          <div className="mt-8 flex flex-wrap items-start gap-3">
+            {tutorial.publicToken && <DownloadPdfButton url={`/api/public/tutorials/${encodeURIComponent(tutorial.publicToken)}/pdf`} title={tutorial.title} />}
+            <div>
+              <Button variant="ghost" className="min-h-11 gap-2" onClick={copyLink}>{copied ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />}{copied ? 'Link copied' : 'Copy link'}</Button>
+              {copyError && <p role="alert" className="mt-2 text-sm text-red-700">Copy the address from your browser to share this guide.</p>}
             </div>
-
-            {/* Empty state */}
-            {visibleSteps.length === 0 && (
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="rounded-2xl border border-stone-200 bg-white p-16 text-center"
-              >
-                <div className="mx-auto mb-4 inline-flex h-16 w-16 items-center justify-center rounded-2xl bg-stone-100">
-                  <Play className="h-8 w-8 text-stone-400" />
-                </div>
-                <p className="text-lg text-stone-500">
-                  This tutorial has no content yet.
-                </p>
-              </motion.div>
-            )}
           </div>
-        </main>
-
-        {/* CTA Footer */}
-        <motion.footer
-          initial={{ opacity: 0 }}
-          whileInView={{ opacity: 1 }}
-          viewport={{ once: true }}
-          className="relative overflow-hidden border-t border-stone-200/50"
-        >
-          {/* Gradient background */}
-          <div className="absolute inset-0 bg-gradient-to-b from-white via-teal-50/30 to-teal-50/50" />
-          <div className="absolute inset-0">
-            <div className="absolute bottom-0 left-1/2 h-[300px] w-[600px] -translate-x-1/2 translate-y-1/2 rounded-full bg-brand-200/20 blur-[80px]" />
-          </div>
-
-          <div className="relative mx-auto max-w-4xl px-6 py-20 text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.1 }}
-              className="mb-6 inline-flex items-center gap-2 rounded-full border border-brand-200/60 bg-white/80 px-4 py-2 text-sm text-brand-600 shadow-sm backdrop-blur-sm"
-            >
-              <Sparkles className="h-4 w-4" />
-              <span className="font-medium">Created with CapTuto</span>
-            </motion.div>
-
-            <motion.h2
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.2 }}
-              className="text-3xl font-bold tracking-tight text-stone-900 sm:text-4xl"
-            >
-              Create your own tutorials
-            </motion.h2>
-
-            <motion.p
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.3 }}
-              className="mx-auto mt-4 max-w-lg text-stone-500 leading-relaxed"
-            >
-              Record your screen and let AI generate the instructions.
-              Beautiful tutorials in minutes, not hours.
-            </motion.p>
-
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.4 }}
-              className="mt-8"
-            >
-              <Link href="/login">
-                <Button
-                  size="lg"
-                  className="group h-12 gap-2 bg-gradient-to-r from-brand-600 to-teal-600 px-8 text-base font-medium text-white shadow-lg shadow-brand-300/40 transition-all hover:shadow-xl hover:shadow-brand-300/50 hover:from-brand-700 hover:to-teal-700"
-                >
-                  Try for free
-                  <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
-                </Button>
-              </Link>
-            </motion.div>
-
-            <motion.p
-              initial={{ opacity: 0 }}
-              whileInView={{ opacity: 1 }}
-              viewport={{ once: true }}
-              transition={{ delay: 0.5 }}
-              className="mt-16 text-sm text-stone-400"
-            >
-              &copy; {new Date().getFullYear()} The Vibe Company
-            </motion.p>
-          </div>
-        </motion.footer>
+        </section>
+        <div className="grid items-start gap-12 pb-20 lg:grid-cols-[200px_minmax(0,1fr)]">
+          <aside className="hidden lg:sticky lg:top-8 lg:block" aria-label="Guide contents">
+            <p className="mb-5 text-xs font-semibold uppercase tracking-[0.16em] text-stone-500">In this guide</p>
+            <nav className="max-h-[70vh] space-y-1 overflow-y-auto">
+              {numberedSteps.filter(item => item.number > 0).map(({ step, number }) => <a key={step.id} href={`#step-${step.id}`} className="flex gap-3 rounded-md px-2 py-2.5 text-sm leading-snug text-stone-600 hover:bg-stone-200/50 hover:text-stone-950 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2">
+                <span className="tabular-nums text-[#ad3d2b]">{String(number).padStart(2, '0')}</span><span className="line-clamp-2 break-words">{step.text_content || `Step ${number}`}</span>
+              </a>)}
+            </nav>
+          </aside>
+          <main id="guide" className="min-w-0 space-y-8">
+            {numberedSteps.map(({ step, number }, index) => {
+              const previous = [...steps.slice(0, index)].reverse().find(item => item.step_type === 'image' || item.step_type === 'text');
+              return <section key={step.id} id={`step-${step.id}`} aria-label={number ? `Step ${number}` : undefined} className="scroll-mt-8 overflow-hidden rounded-xl border border-stone-200 bg-white shadow-sm">
+                <DocStepCard step={step} stepNumber={number} previousStepUrl={previous?.url || previous?.source?.url || null} readOnly flattened={Boolean(tutorial.publicToken)} />
+              </section>;
+            })}
+            {steps.length === 0 && <p className="rounded-xl border border-dashed border-stone-300 px-8 py-16 text-center text-stone-600">This guide is being prepared. Check back soon.</p>}
+            {steps.length > 0 && <div className="border-t border-stone-200 pt-8"><p className="text-lg font-medium">You’re all set.</p><p className="mt-1 text-sm text-stone-600">Keep this guide handy whenever you need a refresher.</p></div>}
+          </main>
+        </div>
       </div>
-    </TooltipProvider>
-  );
+      <footer className="border-t border-stone-200">
+        <div className="mx-auto flex max-w-6xl flex-wrap items-center justify-between gap-4 px-5 py-8 text-sm sm:px-8">
+          <p className="text-stone-600">Recorded once. Shared clearly.</p>
+          <Link href="/login" className="inline-flex min-h-11 items-center gap-2 font-medium text-[#ad3d2b]">Create a guide with Captuto <ArrowUpRight className="h-4 w-4" /></Link>
+        </div>
+      </footer>
+    </div>
+  </TooltipProvider>;
 }

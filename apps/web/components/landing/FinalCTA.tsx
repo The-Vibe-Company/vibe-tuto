@@ -7,14 +7,14 @@ import { Button } from "@/components/ui/button";
 
 const benefits = [
   { icon: Zap, text: "10x faster" },
-  { icon: Check, text: "Perfect instructions" },
+  { icon: Check, text: "Editable steps" },
   { icon: Clock, text: "Instant sharing" },
 ];
 
 const badges = [
-  "No credit card required",
-  "30 sec setup",
-  "Cancel anytime",
+  "Stripe billing",
+  "Public links",
+  "Embeddable guides",
 ];
 
 export function FinalCTA() {
@@ -57,8 +57,8 @@ export function FinalCTA() {
           </h2>
 
           <p className="mx-auto mb-10 max-w-lg text-lg text-white/70">
-            Join hundreds of teams already saving hours every week with
-            AI-powered tutorials.
+            Capture the workflow, finish the guide, and share a link that looks
+            polished wherever your team works.
           </p>
 
           {/* Benefits */}
@@ -93,7 +93,7 @@ export function FinalCTA() {
                 size="lg"
                 className="group cursor-pointer h-14 bg-white px-10 text-lg font-semibold text-brand-700 shadow-2xl hover:bg-stone-50 transition-all duration-200"
               >
-                Start for free
+                Open Captuto
                 <ArrowRight className="ml-2 h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
             </Link>

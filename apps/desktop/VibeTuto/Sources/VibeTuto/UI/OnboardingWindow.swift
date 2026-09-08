@@ -21,7 +21,7 @@ final class OnboardingWindowController: NSWindowController {
 struct OnboardingView: View {
     @State private var screenRecordingGranted = false
     @State private var accessibilityGranted = false
-    @State private var apiToken = UserDefaults.standard.string(forKey: "apiToken") ?? ""
+    @AppStorage("apiToken") private var apiToken = ""
 
     private let permissionChecker = PermissionChecker()
 
@@ -54,12 +54,18 @@ struct OnboardingView: View {
             Divider()
 
             VStack(alignment: .leading, spacing: 8) {
-                Text("Account")
+                Text("Workspace")
                     .font(.headline)
-                SecureField("API token", text: $apiToken)
-                    .textFieldStyle(.roundedBorder)
-                Button("Get token from website", action: openBrowserSettings)
+                if apiToken.isEmpty {
+                    DesktopConnectView()
+                } else {
+                    Label("Connected", systemImage: "checkmark.circle.fill")
+                        .foregroundStyle(.green)
+                    Button("Use another workspace") {
+                        apiToken = ""
+                    }
                     .buttonStyle(.link)
+                }
             }
 
             Spacer()
@@ -134,10 +140,4 @@ struct OnboardingView: View {
         permissionChecker.promptAccessibility()
     }
 
-    private func openBrowserSettings() {
-        let baseURL = UserDefaults.standard.string(forKey: "apiBaseURL") ?? "https://captuto.com"
-        if let url = URL(string: "\(baseURL)/settings") {
-            NSWorkspace.shared.open(url)
-        }
-    }
 }
