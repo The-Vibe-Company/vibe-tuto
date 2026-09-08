@@ -1,0 +1,304 @@
+apps/web/lib/agent/service.test.ts
+  s_1930cc3a6b228d::t_43a73fd1f986ec 1-43
+apps/desktop/VibeTuto/Sources/VibeTuto/Core/Capture/CaptureCoordinates.swift
+  s_1930cc3a6b228d::t_ddbbbaeead2d19 1-13
+apps/desktop/VibeTuto/Sources/VibeTuto/Upload/SupabaseClient.swift
+  s_1930cc3a6b228d::t_d346b143d83c39 13,16
+  s_1930cc3a6b228d::t_e1585df37a1260 85-101
+apps/web/components/settings-agent.tsx
+  s_1930cc3a6b228d::t_a99e3954ccfcfa 1-17,20-27
+  s_1930cc3a6b228d::t_c35215c81ca884 18-19
+apps/web/lib/types/editor.ts
+  s_1930cc3a6b228d::t_7f1cd5e24aec1e 142
+apps/web/app/api/public/tutorials/token/[token]/route.ts
+  s_1930cc3a6b228d::t_5cfe1bbb745a84 1
+  s_1930cc3a6b228d::t_e5217b90f35b83 45-47,110-111,122
+  s_1930cc3a6b228d::t_a8ce366f8948b4 74,82
+  s_1930cc3a6b228d::t_d75477cbac4d2c 2,139
+  s_1930cc3a6b228d::t_2e2768f3165bd7 4,14,31
+apps/desktop/VibeTuto/Sources/VibeTuto/Core/Capture/CaptureEngine.swift
+  s_1930cc3a6b228d::t_ddbbbaeead2d19 27-28,51-52,54,81-82,122-123
+  s_1930cc3a6b228d::t_2de63eefaca0d2 21-26,50,53
+apps/web/lib/agent/service.ts
+  s_1930cc3a6b228d::t_f826875ac35df6 1,3-124,126-134,138-141
+  s_1930cc3a6b228d::t_a36be4ecc418aa 2,135
+  s_1930cc3a6b228d::t_2e2768f3165bd7 137
+  s_1930cc3a6b228d::t_8271075e916360 125,136
+apps/web/lib/queries/public-tutorials.ts
+  s_1930cc3a6b228d::t_2e2768f3165bd7 2,29,92,109,184
+  s_1930cc3a6b228d::t_a8ce366f8948b4 38
+  s_1930cc3a6b228d::t_d75477cbac4d2c 1,156,244
+apps/web/lib/queries/public-presentation.test.ts
+  s_1930cc3a6b228d::t_e5217b90f35b83 1-23
+apps/web/app/api/tutorials/[id]/share/route.test.ts
+  s_1930cc3a6b228d::t_049220db607e57 323,343,345
+apps/web/lib/render/annotation-font.ts
+  s_1930cc3a6b228d::t_0eeac21bd1e6e9 1-25
+apps/web/lib/supabase/types.ts
+  s_1930cc3a6b228d::t_bf81f725c08923 12-18,237-238
+  s_1930cc3a6b228d::t_f826875ac35df6 109-112,123-126,137-140,159-160,181-182,203-204
+apps/web/app/api/transcribe/route.ts
+  s_1930cc3a6b228d::t_476b5d612b0d4d 1-6,8-13
+apps/web/app/api/recordings/route.test.ts
+  s_1930cc3a6b228d::t_049220db607e57 1-14,16-42
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/DesktopConnectView.swift
+  s_1930cc3a6b228d::t_ee4445286e9488 1-25
+apps/web/components/editor/AnnotationCanvas.tsx
+  s_1930cc3a6b228d::t_7f1cd5e24aec1e 230-231,310,316,320-326,484,802
+  s_1930cc3a6b228d::t_2128ec4337a3a6 6,195-196,202-203,216,232,237,241-242,252,260,270,281,285,297,301,303,305,319,339,342,369,377,383,385,395,407,414,419,425,429,440,481,501,551-556,940-941,944,955
+  s_1930cc3a6b228d::t_de032e4125c656 557
+apps/web/components/editor/QuickAnnotationBar.tsx
+  s_1930cc3a6b228d::t_3eb3b15aefbabd 3
+  s_1930cc3a6b228d::t_7f1cd5e24aec1e 21
+  s_1930cc3a6b228d::t_48aa5b3a985938 42
+docs/captuto/spec.md
+  s_1930cc3a6b228d::t_7f7cd2edd71b96 1-45
+apps/desktop/VibeTuto/Sources/VibeTuto/App/MenuBarDropdownView.swift
+  s_1930cc3a6b228d::t_ee4445286e9488 7-8,16-21,23-25,27-30
+  s_1930cc3a6b228d::t_2cee05fd4383a4 51,87-90
+  s_1930cc3a6b228d::t_b3b25f4be90935 31-33,35-49,52-54,56-60,62-63,66,69,71,74,76,78-86,92-93,196-217
+scripts/check-desktop-pairing.mjs
+  s_1930cc3a6b228d::t_e66cbd189f3e27 1-48
+apps/web/app/api/tutorials/[id]/export/pdf/route.ts
+  s_1930cc3a6b228d::t_a36be4ecc418aa 1-13
+apps/web/lib/queries/public-presentation.ts
+  s_1930cc3a6b228d::t_d75477cbac4d2c 1-25
+scripts/dev-backend.mjs
+  s_1930cc3a6b228d::t_5cfe1bbb745a84 40-46
+  s_1930cc3a6b228d::t_27293a716808cc 1-39,47-52
+apps/desktop/VibeTuto/Tests/VibeTutoTests/CapturePersistenceTests.swift
+  s_1930cc3a6b228d::t_2cee05fd4383a4 5-14
+  s_1930cc3a6b228d::t_cf6b59591f39bb 1-4,15-36,38-44
+  s_1930cc3a6b228d::t_de965a3edd8469 37
+apps/web/lib/render/render.test.ts
+  s_1930cc3a6b228d::t_ba09cebddd5055 32-48
+  s_1930cc3a6b228d::t_1bd09f67e55606 1,3-31,49-57,59-69
+  s_1930cc3a6b228d::t_b9de4a1bfa032c 2,58
+apps/web/lib/desktop/connect.ts
+  s_1930cc3a6b228d::t_bf81f725c08923 1-20
+apps/web/lib/supabase/admin.ts
+  s_1930cc3a6b228d::t_2453a1146b330d 13-15
+apps/desktop/VibeTuto/Sources/VibeTuto/Storage/LocalStore.swift
+  s_1930cc3a6b228d::t_e1585df37a1260 9,11,16,24,34-39
+docs/captuto/validation.md
+  s_1930cc3a6b228d::t_9995b4a4f9b5b3 1-4,6-20
+  s_1930cc3a6b228d::t_dd7208be171533 5
+apps/web/app/t/[token]/page.tsx
+  s_1930cc3a6b228d::t_d75477cbac4d2c 26
+  s_1930cc3a6b228d::t_5cfe1bbb745a84 1
+apps/web/app/api/mcp/route.test.ts
+  s_1930cc3a6b228d::t_aa9eb1b240d5a5 1-30
+scripts/test-agent-flow.mjs
+  s_1930cc3a6b228d::t_4f3d40b9d5a4c4 1-6,11-21,23-88
+  s_1930cc3a6b228d::t_a02ae431dde46f 7-10,22
+apps/web/lib/queries/public-tutorials.test.ts
+  s_1930cc3a6b228d::t_2e2768f3165bd7 3-4,7,10
+  s_1930cc3a6b228d::t_a8ce366f8948b4 150,161,164,182,185,200,246,265-266
+apps/desktop/VibeTuto/Sources/VibeTuto/App/SessionManager.swift
+  s_1930cc3a6b228d::t_ddbbbaeead2d19 126,329-333,339-342
+  s_1930cc3a6b228d::t_2cee05fd4383a4 24-25,138,146-147,193-194,205,209-210,214,239,317,336,450,486
+  s_1930cc3a6b228d::t_e1585df37a1260 33-34,44-47,51,70,148,251,277-283,359-360,374,397-404,407-411,417-419,426-444,446,494-495
+  s_1930cc3a6b228d::t_d346b143d83c39 135-137,139-145,149,151-161,163-181,184-186
+  s_1930cc3a6b228d::t_c4a9bb36214bd4 32,55,67-69,83,128-130,249-250,316,318-319,326,445,447
+apps/web/app/settings/page.tsx
+  s_1930cc3a6b228d::t_a99e3954ccfcfa 2,382
+scripts/dev-start.sh
+  s_1930cc3a6b228d::t_27293a716808cc 8,19-20,71,93-95,97,125-129,131,141-143,162,192-194
+  s_1930cc3a6b228d::t_6c16aeb1304370 91-92,96,98-99,102
+  s_1930cc3a6b228d::t_21c993f6b8e1f7 153-161
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/AppPickerView.swift
+  s_1930cc3a6b228d::t_ee4445286e9488 30,75,131,137
+apps/web/app/api/desktop/connect/[id]/approve/route.ts
+  s_1930cc3a6b228d::t_bf81f725c08923 1-20
+apps/web/app/api/recordings/route.ts
+  s_1930cc3a6b228d::t_7f7cd2edd71b96 45-46,48-51,53,55-57
+  s_1930cc3a6b228d::t_bf06088cc58e95 1-23,25-26,28-40,42-43,58-65,67-71
+apps/web/app/api/public/tutorials/slug/[slug]/route.test.ts
+  s_1930cc3a6b228d::t_a8ce366f8948b4 142,154-155,157,160,180,183,200
+  s_1930cc3a6b228d::t_2e2768f3165bd7 3-4,7,10
+apps/web/app/api/public/tutorials/[token]/pdf/route.ts
+  s_1930cc3a6b228d::t_2e2768f3165bd7 1,9
+  s_1930cc3a6b228d::t_a36be4ecc418aa 2-8,10-15
+supabase/migrations/20260908220100_complete_source_metadata.sql
+  s_1930cc3a6b228d::t_cb2e86da03f113 1-2
+apps/web/lib/utils/annotation-hit-test.ts
+  s_1930cc3a6b228d::t_7f1cd5e24aec1e 18,42,240
+supabase/migrations/20260908220000_protect_captured_sources.sql
+  s_1930cc3a6b228d::t_2e2768f3165bd7 1-7
+apps/desktop/VibeTuto/Sources/VibeTuto/Upload/DesktopConnection.swift
+  s_1930cc3a6b228d::t_ee4445286e9488 1-29,31-34,36-42,45,47-77,81-105
+  s_1930cc3a6b228d::t_7f7cd2edd71b96 30,35,43-44,46
+  s_1930cc3a6b228d::t_c35215c81ca884 78-80
+scripts/dev-backend.sh
+  s_1930cc3a6b228d::t_27293a716808cc 1-42
+apps/web/app/layout.tsx
+  s_1930cc3a6b228d::t_0eeac21bd1e6e9 2,8-13,39
+apps/desktop/VibeTuto/Sources/VibeTuto/Upload/UploadManager.swift
+  s_1930cc3a6b228d::t_e1585df37a1260 16-18,43-45
+  s_1930cc3a6b228d::t_334c9fd587ecc8 3,20-34,36-40,42,46
+apps/web/lib/render/tutorial-pdf.ts
+  s_1930cc3a6b228d::t_4dee8b2018e631 1,60,75-79
+  s_1930cc3a6b228d::t_92ccab0d384b78 69-70,80-88,92-95
+  s_1930cc3a6b228d::t_2e2768f3165bd7 12,59,71-74
+  s_1930cc3a6b228d::t_b069b84d57ec6a 2-11,13-58,61-68,89-91,96-105
+apps/web/components/public/DownloadPdfButton.tsx
+  s_1930cc3a6b228d::t_3eb3b15aefbabd 1-36
+apps/web/app/tutorial/[slug]/page.tsx
+  s_1930cc3a6b228d::t_d75477cbac4d2c 26
+  s_1930cc3a6b228d::t_5cfe1bbb745a84 1
+supabase/config.toml
+  s_1930cc3a6b228d::t_6c16aeb1304370 114
+apps/web/components/public/PublicTutorialViewer.tsx
+  s_1930cc3a6b228d::t_3eb3b15aefbabd 3-5,9-10,31,33-37,39,41,43-51,53-65,68-88,90-97
+apps/web/lib/agent/transcription.test.ts
+  s_1930cc3a6b228d::t_476b5d612b0d4d 1-16
+apps/web/lib/auth/request.test.ts
+  s_1930cc3a6b228d::t_f9ac5f461878d9 1-20
+apps/web/app/api/public/tutorials/[token]/steps/[stepId]/preview/route.test.ts
+  s_1930cc3a6b228d::t_2e2768f3165bd7 3
+  s_1930cc3a6b228d::t_e5217b90f35b83 1-2,4-36
+.gitignore
+  s_1930cc3a6b228d::t_27293a716808cc 80-83
+apps/web/lib/render/annotations.ts
+  s_1930cc3a6b228d::t_2128ec4337a3a6 76
+  s_1930cc3a6b228d::t_1bd09f67e55606 1,15
+  s_1930cc3a6b228d::t_b069b84d57ec6a 2,4,7-14,17-21,24-30,32-37,39-40,42-47,54-56,68-69,78,80,82-86
+  s_1930cc3a6b228d::t_0eeac21bd1e6e9 3,5-6,16,22-23,31,38,41,48-53,57-67,70-75,77,79,81
+apps/web/lib/agent/transcription.ts
+  s_1930cc3a6b228d::t_476b5d612b0d4d 1-23
+apps/web/app/api/desktop/connect/route.ts
+  s_1930cc3a6b228d::t_bf81f725c08923 1-17
+apps/web/app/api/public/tutorials/slug/[slug]/route.ts
+  s_1930cc3a6b228d::t_2e2768f3165bd7 4,14
+  s_1930cc3a6b228d::t_e5217b90f35b83 40-42,105-106,117
+  s_1930cc3a6b228d::t_d75477cbac4d2c 2,134
+  s_1930cc3a6b228d::t_a8ce366f8948b4 69,77
+  s_1930cc3a6b228d::t_5cfe1bbb745a84 1
+apps/web/app/api/steps/[id]/route.ts
+  s_1930cc3a6b228d::t_a99e3954ccfcfa 101
+apps/web/lib/constants/annotation-styles.ts
+  s_1930cc3a6b228d::t_0eeac21bd1e6e9 45-48
+CLAUDE.md
+  s_1930cc3a6b228d::t_ee8994436866dc 5,42,90
+apps/web/components/editor/AnnotationToolbar.tsx
+  s_1930cc3a6b228d::t_7f1cd5e24aec1e 6,60,98,108
+apps/web/lib/render/fonts/OFL.txt
+  s_1930cc3a6b228d::t_a50993e1d9381b 1-94
+apps/web/components/dashboard/ShareDialog.tsx
+  s_1930cc3a6b228d::t_48aa5b3a985938 49,54,61,64,71-73,141
+  s_1930cc3a6b228d::t_3eb3b15aefbabd 16,44,51-52,55,62,79,87,93,142-145,158,167,187,207-208,219,241,253,274,286
+docs/captuto/development.md
+  s_1930cc3a6b228d::t_7f7cd2edd71b96 44-45
+  s_1930cc3a6b228d::t_c35215c81ca884 23-29
+  s_1930cc3a6b228d::t_10274bd20f5ffe 1-22,30-43,46-79
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/OnboardingWindow.swift
+  s_1930cc3a6b228d::t_ee4445286e9488 238-241
+apps/web/app/api/desktop/connect/[id]/route.ts
+  s_1930cc3a6b228d::t_bf81f725c08923 1-17
+apps/desktop/VibeTuto/Tests/VibeTutoTests/AudioUploadTests.swift
+  s_1930cc3a6b228d::t_7f7cd2edd71b96 2-26,61
+  s_1930cc3a6b228d::t_467285f78920fc 1,27-60,62-88
+apps/desktop/VibeTuto/Sources/VibeTuto/Models/RecordingSession.swift
+  s_1930cc3a6b228d::t_e1585df37a1260 95,103
+apps/web/next.config.mjs
+  s_1930cc3a6b228d::t_10274bd20f5ffe 10-15,83
+  s_1930cc3a6b228d::t_a36be4ecc418aa 25-26
+  s_1930cc3a6b228d::t_e693cc755385d0 7-8
+  s_1930cc3a6b228d::t_1d64d3448d1f1b 74-75
+apps/web/app/api/public/tutorials/[token]/steps/[stepId]/preview/route.ts
+  s_1930cc3a6b228d::t_2e2768f3165bd7 1,9
+  s_1930cc3a6b228d::t_d75477cbac4d2c 2-8,10-18
+apps/desktop/VibeTuto/Sources/VibeTuto/Models/RecordingTimeline.swift
+  s_1930cc3a6b228d::t_2cee05fd4383a4 1-25
+apps/web/app/api/transcribe/route.test.ts
+  s_1930cc3a6b228d::t_476b5d612b0d4d 1-14
+apps/web/app/t/[token]/embed/page.tsx
+  s_1930cc3a6b228d::t_5cfe1bbb745a84 1
+apps/web/app/api/tutorials/[id]/steps/[stepId]/preview/route.ts
+  s_1930cc3a6b228d::t_a36be4ecc418aa 1-12
+apps/web/lib/auth/safe-next.test.ts
+  s_1930cc3a6b228d::t_53fb27a0ed4185 1-9
+apps/web/app/api/tutorials/[id]/share/route.ts
+  s_1930cc3a6b228d::t_a36be4ecc418aa 124-125,153,175
+apps/web/lib/desktop/connect.test.ts
+  s_1930cc3a6b228d::t_53fb27a0ed4185 1-77
+supabase/seed.sql
+  s_1930cc3a6b228d::t_6c16aeb1304370 1-3
+apps/desktop/VibeTuto/Sources/VibeTuto/Core/Events/EventMonitor.swift
+  s_1930cc3a6b228d::t_ddbbbaeead2d19 68-69,74,77,79
+  s_1930cc3a6b228d::t_16a7b828d19ffd 83
+apps/desktop/VibeTuto/VibeTuto.xcodeproj/project.pbxproj
+  s_1930cc3a6b228d::t_1242460b26c270 17,116,257,411
+  s_1930cc3a6b228d::t_7f7cd2edd71b96 56-57,96,114,161,243,417-418
+  s_1930cc3a6b228d::t_44c3448d304625 58,71,153,437
+apps/web/app/api/public/tutorials/token/[token]/route.test.ts
+  s_1930cc3a6b228d::t_2e2768f3165bd7 3-4,7,10
+  s_1930cc3a6b228d::t_a8ce366f8948b4 160,172,174,177,197,200,217
+.impeccable.md
+  s_1930cc3a6b228d::t_8606dd239e01f0 1-20
+apps/desktop/VibeTuto/Sources/VibeTuto/UI/RegionSelectorOverlay.swift
+  s_1930cc3a6b228d::t_b389178918107d 34
+apps/web/app/api/mcp/route.ts
+  s_1930cc3a6b228d::t_24e6654d4733dd 1-29
+apps/web/app/api/recordings/[id]/audio/route.ts
+  s_1930cc3a6b228d::t_0b7c9e86741c5a 1-26
+apps/web/app/auth/callback/route.ts
+  s_1930cc3a6b228d::t_ad965a8b32e347 1,8
+apps/web/app/connect/desktop/DesktopConsent.tsx
+  s_1930cc3a6b228d::t_4b5b5469eb60a3 1-45
+apps/web/app/connect/desktop/page.tsx
+  s_1930cc3a6b228d::t_0ae0c0dcd45b70 1-20
+apps/web/app/login/page.tsx
+  s_1930cc3a6b228d::t_c6b4c596ced303 6,37,91
+apps/web/components/editor/DocStepCard.tsx
+  s_1930cc3a6b228d::t_fbd4a9e06505dd 562
+apps/web/components/editor/EditorClient.tsx
+  s_1930cc3a6b228d::t_856a1cec79bf24 3-4,40,160-161,215-219,227,232-235,707
+apps/web/components/editor/GenerateDialog.tsx
+  s_1930cc3a6b228d::t_58e2e50b6c6bcd 366
+apps/web/components/editor/SourcesSidebar.tsx
+  s_1930cc3a6b228d::t_078a83726b3dc0 235,419
+apps/web/components/editor/StepScreenshot.tsx
+  s_1930cc3a6b228d::t_5246a96dbfe83a 117
+apps/web/lib/agent/mcp.ts
+  s_1930cc3a6b228d::t_1339db68596be6 1-33
+apps/web/lib/agent/schema.test.ts
+  s_1930cc3a6b228d::t_f0fc6ea48ced8a 1-17
+apps/web/lib/agent/schema.ts
+  s_1930cc3a6b228d::t_7c4c30146430e7 1-36
+apps/web/lib/auth/request.ts
+  s_1930cc3a6b228d::t_f25bb84a3d4648 1-15
+apps/web/lib/auth/safe-next.ts
+  s_1930cc3a6b228d::t_a31c1ed35c970a 1-11
+apps/web/lib/utils/pending-save.test.ts
+  s_1930cc3a6b228d::t_dc08cf6be822a3 1-9
+apps/web/lib/utils/pending-save.ts
+  s_1930cc3a6b228d::t_6166c09ae1c02d 1-4
+apps/web/package.json
+  s_1930cc3a6b228d::t_5bce968778d1ff 20-21,48,51,54-55
+pnpm-lock.yaml
+  s_1930cc3a6b228d::t_b32d40e1aa669a 49,62-67,146-148,155-157,167-169,455-457,791-796,810-955,976-985,1068-1076,2073,2218-2221,2236-2243,2388-2391,2414-2417,2530-2541,2566-2573,2578-2581,2684-2687,2696-2699,2735-2737,2747-2750,2811-2813,2937-2940,2945-2952,2961-2970,3019-3022,3056-3059,3077-3080,3137,3231-3234,3238-3241,3255-3258,3303-3310,3409-3411,3497-3499,3531-3533,3669-3672,3681-3684,3696-3703,3766-3769,3844-3847,3894-3896,3909-3912,3936-3938,3946-3948,3968-3971,4092-4095,4104-4107,4111-4118,4237-4240,4281-4293,4306-4317,4330-4333,4346-4349,4382-4385,4543-4546,4575-4577,4627-4630,4673-4676,4717-4720,4904-4911,4916,4919-4920,5239-5243,5441-5444,5457-5562,5591-5612,5674-5685,6865-6869,6880-6883,7049-7062,7093-7094,7216-7221,7246-7249,7252-7256,7361-7362,7367-7368,7401-7402,7409-7410,7579-7580,7785-7786,7789-7794,7801-7841,7886-7896,7939-7940,7952-7953,8120-8121,8124-8131,8140-8143,8194-8197,8290-8291,8377-8378,8402-8403,8530-8531,8537-8538,8548-8553,8600-8603,8683-8686,8744-8745,8759-8760,8776-8777,8782-8788,8799-8800,8957-8961,8966-8970,8973-8981,9128-9137,9179-9205,9228-9262,9274-9278,9302-9309,9332-9333,9521-9522,9546-9547,9585-9590,9643-9644,9700-9701,9927-9932
+supabase/migrations/20260908223000_add_desktop_connections.sql
+  s_1930cc3a6b228d::t_7826f77ec424a2 1-64
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.2",
+  "base_commit_sha": "a74b71e8ac348ff39ff85a7dab4794b2cea7d6ff",
+  "prompts": {},
+  "humans": {
+    "h_42fad98ca714c8": {
+      "author": "StanGirard"
+    }
+  },
+  "sessions": {
+    "s_1930cc3a6b228d": {
+      "agent_id": {
+        "tool": "codex",
+        "id": "01a08264-1a3c-7973-8ac1-d1503c6b7118",
+        "model": "gpt-6-astra"
+      },
+      "human_author": "StanGirard <stan@quivr.app>"
+    }
+  }
+}
