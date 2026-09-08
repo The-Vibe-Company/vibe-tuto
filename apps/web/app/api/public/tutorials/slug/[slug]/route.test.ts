@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn(),
 }));
 
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { GET } from './route';
 
-const mockCreateClient = createClient as ReturnType<typeof vi.fn>;
+const mockCreateClient = createAdminClient as ReturnType<typeof vi.fn>;
 
 function createMockClient({
   tutorialResult = { data: null, error: null },
@@ -139,7 +139,7 @@ describe('GET /api/public/tutorials/slug/[slug]', () => {
     expect(data.steps).toHaveLength(1);
   });
 
-  it('generates signed URLs for screenshots with 7-day expiry', async () => {
+  it('returns flattened previews without granting raw storage access', async () => {
     const mockClient = createMockClient({
       tutorialResult: { data: mockTutorial, error: null },
       stepsResult: { data: [mockStep], error: null },
@@ -151,16 +151,13 @@ describe('GET /api/public/tutorials/slug/[slug]', () => {
     const response = await GET(request as any, { params: Promise.resolve({ slug: 'test-slug' }) });
     const data = await response.json();
 
-    expect(data.steps[0].signedScreenshotUrl).toBe('https://signed.url/img.png');
-    // Verify createSignedUrl was called with 7 day seconds
+    expect(data.steps[0].signedScreenshotUrl).toBe('/api/public/tutorials/token-abc/steps/step-1/preview');
+    // Public responses never grant access to the raw screenshot
     const storageMock = mockClient.storage.from('screenshots');
-    expect(storageMock.createSignedUrl).toHaveBeenCalledWith(
-      'path/to/image.png',
-      60 * 60 * 24 * 7
-    );
+    expect(storageMock.createSignedUrl).not.toHaveBeenCalled();
   });
 
-  it('parses element_info when stored as string', async () => {
+  it('omits captured element metadata', async () => {
     const stepWithStringInfo = {
       ...mockStep,
       sources: {
@@ -180,10 +177,10 @@ describe('GET /api/public/tutorials/slug/[slug]', () => {
     const response = await GET(request as any, { params: Promise.resolve({ slug: 'test-slug' }) });
     const data = await response.json();
 
-    expect(data.steps[0].element_info).toEqual({ tag: 'button', text: 'Submit' });
+    expect(data.steps[0].element_info).toBeNull();
   });
 
-  it('parses annotations when stored as string', async () => {
+  it('omits annotations already flattened into previews', async () => {
     const stepWithStringAnnotations = {
       ...mockStep,
       annotations: JSON.stringify([{ type: 'highlight' }]),
@@ -200,7 +197,7 @@ describe('GET /api/public/tutorials/slug/[slug]', () => {
     const response = await GET(request as any, { params: Promise.resolve({ slug: 'test-slug' }) });
     const data = await response.json();
 
-    expect(data.steps[0].annotations).toEqual([{ type: 'highlight' }]);
+    expect(data.steps[0].annotations).toEqual([]);
   });
 
   it('returns 500 when steps query fails', async () => {

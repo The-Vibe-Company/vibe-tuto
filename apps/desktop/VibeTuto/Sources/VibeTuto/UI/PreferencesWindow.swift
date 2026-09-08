@@ -15,10 +15,6 @@ struct PreferencesView: View {
                     Label("Shortcuts", systemImage: "keyboard")
                 }
 
-            AudioPreferencesView()
-                .tabItem {
-                    Label("Audio", systemImage: "mic")
-                }
 
             AdvancedPreferencesView()
                 .tabItem {
@@ -62,10 +58,6 @@ struct GeneralPreferencesView: View {
                 }
                 Toggle("Auto-open editor after upload", isOn: $autoOpenEditor)
                     .tint(DT.Colors.accentRed)
-                Picker("Capture quality", selection: $captureQuality) {
-                    Text("Standard (1x)").tag("standard")
-                    Text("High (2x Retina)").tag("high")
-                }
             }
 
             Section("Account") {

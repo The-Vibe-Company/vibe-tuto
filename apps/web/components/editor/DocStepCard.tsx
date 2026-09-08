@@ -559,6 +559,7 @@ function DocStepCardComponent({
                     className="group relative aspect-video overflow-hidden rounded-lg border border-border bg-muted transition-all hover:border-primary hover:ring-2 hover:ring-primary/20"
                   >
                     <Image
+                unoptimized
                       src={source.signedScreenshotUrl!}
                       alt="Source thumbnail"
                       fill

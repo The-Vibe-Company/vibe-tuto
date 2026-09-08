@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn(),
 }));
 
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { GET } from './route';
 
-const mockCreateClient = createClient as ReturnType<typeof vi.fn>;
+const mockCreateClient = createAdminClient as ReturnType<typeof vi.fn>;
 
 function createMockClient({
   tutorialResult = { data: null, error: null },
@@ -157,7 +157,7 @@ describe('GET /api/public/tutorials/token/[token]', () => {
     expect(data.steps).toHaveLength(1);
   });
 
-  it('generates signed URLs for screenshots', async () => {
+  it('returns flattened screenshot previews', async () => {
     const mockClient = createMockClient({
       tutorialResult: { data: mockTutorial, error: null },
       stepsResult: { data: [mockStep], error: null },
@@ -169,15 +169,12 @@ describe('GET /api/public/tutorials/token/[token]', () => {
     const response = await GET(request as any, { params: Promise.resolve({ token: 'token-abc' }) });
     const data = await response.json();
 
-    expect(data.steps[0].signedScreenshotUrl).toBe('https://signed.url/img.png');
+    expect(data.steps[0].signedScreenshotUrl).toBe('/api/public/tutorials/token-abc/steps/step-1/preview');
     const storageMock = mockClient.storage.from('screenshots');
-    expect(storageMock.createSignedUrl).toHaveBeenCalledWith(
-      'path/to/image.png',
-      60 * 60 * 24 * 7
-    );
+    expect(storageMock.createSignedUrl).not.toHaveBeenCalled();
   });
 
-  it('parses element_info from string JSON', async () => {
+  it('omits captured element metadata', async () => {
     const stepWithStringInfo = {
       ...mockStep,
       sources: {
@@ -197,10 +194,10 @@ describe('GET /api/public/tutorials/token/[token]', () => {
     const response = await GET(request as any, { params: Promise.resolve({ token: 'token-abc' }) });
     const data = await response.json();
 
-    expect(data.steps[0].element_info).toEqual({ tag: 'input', text: 'Search' });
+    expect(data.steps[0].element_info).toBeNull();
   });
 
-  it('parses annotations from string JSON', async () => {
+  it('omits annotations already flattened into previews', async () => {
     const stepWithStringAnnotations = {
       ...mockStep,
       annotations: JSON.stringify([{ type: 'circle', x: 50, y: 50 }]),
@@ -217,7 +214,7 @@ describe('GET /api/public/tutorials/token/[token]', () => {
     const response = await GET(request as any, { params: Promise.resolve({ token: 'token-abc' }) });
     const data = await response.json();
 
-    expect(data.steps[0].annotations).toEqual([{ type: 'circle', x: 50, y: 50 }]);
+    expect(data.steps[0].annotations).toEqual([]);
   });
 
   it('returns 500 when steps query fails', async () => {

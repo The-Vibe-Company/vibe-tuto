@@ -2,7 +2,7 @@ You are working on https://linear.app/thevibecompany/project/vibe-tuto-1a5dd4d3d
 
 When you are looking for information on the project, use Linear MCP to get the information from the project. 
 
-A query should always have an issue linked to it. Always ask the user which issue he wants you to work on, assume it is the project if none given
+Work can proceed without a Linear issue. Use an issue when the user provides one; otherwise work directly from the request without asking for or creating a ticket as a prerequisite.
 
 If i ask you to do something that Linear could do, you should use Linear MCP to do it. 
 
@@ -39,7 +39,7 @@ The Screenshot should be in the folder `screenshots/pr-<pr-number>/<screenshot-n
 https://raw.githubusercontent.com/The-Vibe-Company/vibe-tuto/<branch-name>/screenshots/pr-<number>/<image>.png
 ```
 
-Always add the link to the issue in the PR description. 
+Add the issue link to the PR description when the work has an associated issue.
 
 ## Git
 

@@ -18,6 +18,14 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
     private var currentFilter: SCContentFilter?
     private var currentRegionRect: CGRect?
     private var isCapturing = false
+    private var selectedDisplayID: CGDirectDisplayID?
+    @MainActor func selectScreen() {
+        let screen = NSScreen.main ?? NSScreen.screens.first
+        selectedDisplayID = screen?.deviceDescription[NSDeviceDescriptionKey("NSScreenNumber")] as? CGDirectDisplayID
+        screenFrame = screen?.frame ?? .zero
+    }
+    private(set) var screenFrame: CGRect = .zero
+    private var capturePixelSize: CGSize = CGSize(width: 2560, height: 1600)
 
     /// Check if screen recording permission is granted.
     static func checkPermission() async -> PermissionStatus {
@@ -39,12 +47,14 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
 
         let content = try await SCShareableContent.excludingDesktopWindows(false, onScreenWindowsOnly: true)
 
+        guard let display = content.displays.first(where: { $0.displayID == selectedDisplayID }) ?? content.displays.first else {
+            throw CaptureError.noDisplayFound
+        }
+        if screenFrame.isEmpty { screenFrame = CGRect(x: 0, y: 0, width: display.width, height: display.height) }
+        capturePixelSize = CGSize(width: display.width, height: display.height)
         let filter: SCContentFilter
         switch mode {
         case .fullScreen:
-            guard let display = content.displays.first else {
-                throw CaptureError.noDisplayFound
-            }
             filter = SCContentFilter(display: display, excludingWindows: [])
 
         case .singleApp:
@@ -52,15 +62,9 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
                   let app = content.applications.first(where: { $0.bundleIdentifier == bundleID }) else {
                 throw CaptureError.applicationNotFound
             }
-            guard let display = content.displays.first else {
-                throw CaptureError.noDisplayFound
-            }
             filter = SCContentFilter(display: display, including: [app], exceptingWindows: [])
 
         case .region:
-            guard let display = content.displays.first else {
-                throw CaptureError.noDisplayFound
-            }
             filter = SCContentFilter(display: display, excludingWindows: [])
         }
 
@@ -73,10 +77,9 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
             let scale = await MainActor.run { NSScreen.main?.backingScaleFactor ?? 2.0 }
             config.width = Int(regionRect.width * scale)
             config.height = Int(regionRect.height * scale)
-            config.destinationRect = CGRect(origin: .zero, size: CGSize(width: regionRect.width, height: regionRect.height))
         } else {
-            config.width = 2560
-            config.height = 1600
+            config.width = Int(capturePixelSize.width)
+            config.height = Int(capturePixelSize.height)
         }
         config.minimumFrameInterval = CMTime(value: 1, timescale: 2) // 2 fps background capture
         config.queueDepth = 5
@@ -115,10 +118,9 @@ final class CaptureEngine: NSObject, CaptureEngineProtocol, @unchecked Sendable 
             let scale = await MainActor.run { NSScreen.main?.backingScaleFactor ?? 2.0 }
             config.width = Int(regionRect.width * scale)
             config.height = Int(regionRect.height * scale)
-            config.destinationRect = CGRect(origin: .zero, size: CGSize(width: regionRect.width, height: regionRect.height))
         } else {
-            config.width = 2560
-            config.height = 1600
+            config.width = Int(capturePixelSize.width)
+            config.height = Int(capturePixelSize.height)
         }
         config.pixelFormat = kCVPixelFormatType_32BGRA
         config.showsCursor = true

@@ -4,6 +4,8 @@ struct FloatingPanelView: View {
     @ObservedObject private var session = SessionManager.shared
     @AppStorage("lastRecordingMode") private var lastMode: String = RecordingMode.fullScreen.rawValue
 
+    @AppStorage("apiToken") private var apiToken = ""
+
     private let modes: [(mode: RecordingMode, label: String, icon: String)] = [
         (.fullScreen, "Screen", "rectangle.on.rectangle"),
         (.singleApp, "App", "app"),
@@ -11,274 +13,85 @@ struct FloatingPanelView: View {
     ]
 
     var body: some View {
-        ZStack {
-            NativePanelBackground()
-                .clipShape(RoundedRectangle(cornerRadius: 22, style: .continuous))
-
-            RoundedRectangle(cornerRadius: 22, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            Color(red: 0.08, green: 0.11, blue: 0.14).opacity(0.96),
-                            Color(red: 0.08, green: 0.18, blue: 0.24).opacity(0.94)
-                        ],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-                .overlay(
-                    RoundedRectangle(cornerRadius: 22, style: .continuous)
-                        .strokeBorder(Color.white.opacity(0.08), lineWidth: 1)
-                )
-
-            VStack(alignment: .leading, spacing: 12) {
-                captureCard
-                modeSelector
-                if lastMode == RecordingMode.singleApp.rawValue {
-                    AppPickerView()
+        ScrollView {
+        VStack(alignment: .leading, spacing: 20) {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("CapTuto").font(.system(size: 28, weight: .semibold))
+                    Text("Show it once. Make it clear.").font(.subheadline).foregroundStyle(.secondary)
                 }
-                quickOptions
-                footer
+                Spacer()
+                SettingsLink { Image(systemName: "gearshape") }
+                    .accessibilityLabel("Settings")
             }
-            .padding(.horizontal, 16)
-            .padding(.bottom, 16)
-            .padding(.top, 42)
+            Divider()
+            if session.state == .idle && apiToken.isEmpty {
+                DesktopConnectView()
+            } else if session.state == .idle {
+                Picker("Capture", selection: $lastMode) {
+                    ForEach(modes, id: \.mode) { item in
+                        Text(item.label).tag(item.mode.rawValue)
+                    }
+                }.pickerStyle(.segmented).accessibilityIdentifier("capture-mode")
+                if lastMode == RecordingMode.singleApp.rawValue { AppPickerView() }
+                Toggle("Record microphone", isOn: $session.micEnabled)
+                    .accessibilityIdentifier("record-microphone")
+                Text("Clicks become steps. Your narration adds context.")
+                    .font(.callout).foregroundStyle(.secondary)
+                Button(action: startRecording) {
+                    Label(primaryActionLabel, systemImage: "record.circle")
+                        .frame(maxWidth: .infinity).padding(.vertical, 8)
+                }.buttonStyle(.borderedProminent).tint(.primary)
+                    .disabled(lastMode == RecordingMode.singleApp.rawValue && session.selectedAppBundleID == nil)
+                    .accessibilityIdentifier("start-recording")
+                if session.pendingRecordingCount > 0 {
+                    Button("Resume saved recording (\(session.pendingRecordingCount))", action: session.resumePendingUpload)
+                        .accessibilityIdentifier("resume-upload")
+                }
+            } else {
+                Text(statusDescription).font(.headline)
+                Text("\(formattedElapsedTime) · \(session.stepCount) steps").monospacedDigit().foregroundStyle(.secondary)
+                nativeControls
+            }
+            Spacer(minLength: 0)
+            Text("Capture here. Refine and share in your workspace.")
+                .font(.caption).foregroundStyle(.secondary)
+        }
+        .padding(24).padding(.top, 20)
         }
         .frame(width: DT.Size.floatingPanelWidth, height: DT.Size.floatingPanelHeight)
-        .preferredColorScheme(.dark)
+        .background { CapturePanelSurface() }
     }
 
-    private var captureCard: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack(alignment: .top) {
-                HStack(alignment: .top, spacing: 12) {
-                    Image(nsImage: NSApp.applicationIconImage)
-                        .resizable()
-                        .frame(width: 34, height: 34)
-                        .clipShape(RoundedRectangle(cornerRadius: 10, style: .continuous))
-
-                    VStack(alignment: .leading, spacing: 3) {
-                        Text("CapTuto")
-                            .font(.system(size: 24, weight: .bold))
-                            .foregroundStyle(.white)
-                        Text(statusDescription)
-                            .font(.system(size: 11))
-                            .foregroundStyle(Color.white.opacity(0.72))
-                            .lineLimit(2)
-                    }
-                }
-
-                Spacer()
-
-                Text(statusBadge)
-                    .font(.system(size: 10, weight: .semibold))
-                    .foregroundStyle(statusTint)
-                    .padding(.horizontal, 8)
-                    .padding(.vertical, 4)
-                    .background(
-                        Capsule(style: .continuous)
-                            .fill(Color.white.opacity(0.08))
-                    )
-            }
-
-            HStack(spacing: 10) {
-                compactInfo(label: "Duration", value: formattedElapsedTime)
-                compactInfo(label: "Steps", value: "\(session.stepCount)")
-            }
-
-            controls
-        }
-        .padding(14)
-        .background(
-            RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [Color.white.opacity(0.09), Color.white.opacity(0.03)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
-                    )
-                )
-        )
-    }
-
-    @ViewBuilder
-    private var controls: some View {
+    @ViewBuilder private var nativeControls: some View {
         switch session.state {
-        case .idle, .completed, .error:
-            Button(action: startRecording) {
-                HStack(spacing: 10) {
-                    Image(systemName: "record.circle.fill")
-                    Text(primaryActionLabel)
-                }
-                .frame(maxWidth: .infinity)
-            }
-            .buttonStyle(PrimaryCaptureButtonStyle())
-            .disabled(lastMode == RecordingMode.singleApp.rawValue && session.selectedAppBundleID == nil)
-
         case .recording:
-            HStack(spacing: 10) {
+            HStack {
                 Button("Pause", action: session.pauseRecording)
-                    .buttonStyle(SecondaryCaptureButtonStyle())
-                Button("Stop", action: session.stopRecording)
-                    .buttonStyle(SecondaryCaptureButtonStyle())
+                Button("Finish recording", action: session.stopRecording).buttonStyle(.borderedProminent)
             }
-
         case .paused:
-            HStack(spacing: 10) {
+            HStack {
                 Button("Resume", action: session.resumeRecording)
-                    .buttonStyle(PrimaryCaptureButtonStyle())
-                Button("Stop", action: session.stopRecording)
-                    .buttonStyle(SecondaryCaptureButtonStyle())
+                Button("Finish recording", action: session.stopRecording).buttonStyle(.borderedProminent)
             }
-
-        case .countdown(let remaining):
-            inlineNotice(title: "Starting in \(remaining)", text: "CapTuto hides while the capture begins.")
-
-        case .selectingRegion:
-            inlineNotice(title: "Choose area", text: "Drag on screen. Press Escape to cancel.")
-
-        case .stopping:
-            inlineNotice(title: "Finishing", text: "Saving the recording.")
-
-        case .uploading(let progress):
-            VStack(alignment: .leading, spacing: 10) {
-                HStack {
-                    Text("Uploading")
-                        .font(.system(size: 13, weight: .medium))
-                        .foregroundStyle(.white)
-                    Spacer()
-                    Text("\(Int(progress * 100))%")
-                        .font(.system(size: 12, weight: .medium, design: .monospaced))
-                        .foregroundStyle(Color(nsColor: .secondaryLabelColor))
-                }
-                ProgressView(value: progress)
-                    .progressViewStyle(.linear)
-                    .tint(.white)
+        case .uploading(let progress): ProgressView(value: progress)
+        case .completed:
+            Button("Open tutorial") {
+                if let url = session.tutorialEditorURL { NSWorkspace.shared.open(url) }
+                session.reset()
+            }.buttonStyle(.borderedProminent)
+            Button("New recording", action: session.reset)
+        case .error(let message):
+            Text(message).font(.callout).foregroundStyle(.red)
+            if session.canRetryUpload {
+                Button("Retry upload", action: session.retryUpload)
+            } else {
+                Button("Start again", action: session.reset)
             }
+            Button("Back", action: session.reset)
+        default: ProgressView()
         }
-    }
-
-    private var modeSelector: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            sectionLabel("Capture Mode")
-
-            HStack(spacing: 8) {
-                ForEach(modes, id: \.mode) { item in
-                    Button {
-                        lastMode = item.mode.rawValue
-                    } label: {
-                        HStack(spacing: 6) {
-                            Image(systemName: item.icon)
-                                .font(.system(size: 11, weight: .semibold))
-                            Text(item.label)
-                                .font(.system(size: 13, weight: .medium))
-                        }
-                        .foregroundStyle(lastMode == item.mode.rawValue ? .black : .white.opacity(0.85))
-                        .frame(maxWidth: .infinity)
-                        .padding(.vertical, 9)
-                        .background(
-                            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                                .fill(lastMode == item.mode.rawValue ? Color.white : Color.white.opacity(0.05))
-                        )
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
-            .onChange(of: lastMode) { _, newMode in
-                if newMode != RecordingMode.singleApp.rawValue {
-                    session.selectedAppBundleID = nil
-                }
-                if newMode != RecordingMode.region.rawValue {
-                    session.selectedRegion = nil
-                }
-            }
-
-            if lastMode == RecordingMode.region.rawValue {
-                Text("The app hides itself so you can draw the capture area.")
-                    .font(.system(size: 10))
-                    .foregroundStyle(Color(nsColor: .secondaryLabelColor))
-            }
-        }
-    }
-
-    private var quickOptions: some View {
-        VStack(alignment: .leading, spacing: 6) {
-            sectionLabel("Quick Options")
-
-            compactToggle(title: "Microphone", isOn: $session.micEnabled)
-            compactToggle(title: "Action detection", isOn: $session.actionDetectionEnabled)
-        }
-    }
-
-    private var footer: some View {
-        HStack {
-            Button("Preferences", action: showPreferences)
-                .buttonStyle(FooterLinkButtonStyle())
-            Spacer()
-            Button("Quit") {
-                NSApplication.shared.terminate(nil)
-            }
-                .buttonStyle(FooterLinkButtonStyle())
-        }
-    }
-
-    private func compactInfo(label: String, value: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(value)
-                .font(.system(size: 16, weight: .semibold, design: .rounded))
-                .foregroundStyle(.white)
-            Text(label)
-                .font(.system(size: 10))
-                .foregroundStyle(Color.white.opacity(0.65))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(.horizontal, 12)
-        .padding(.vertical, 10)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.white.opacity(0.06))
-        )
-    }
-
-    private func inlineNotice(title: String, text: String) -> some View {
-        VStack(alignment: .leading, spacing: 4) {
-            Text(title)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.white)
-            Text(text)
-                .font(.system(size: 11))
-                .foregroundStyle(Color(nsColor: .secondaryLabelColor))
-        }
-        .frame(maxWidth: .infinity, alignment: .leading)
-        .padding(12)
-        .background(
-            RoundedRectangle(cornerRadius: 14, style: .continuous)
-                .fill(Color.white.opacity(0.05))
-        )
-    }
-
-    private func compactToggle(title: String, isOn: Binding<Bool>) -> some View {
-        HStack {
-            Text(title)
-                .font(.system(size: 12, weight: .medium))
-                .foregroundStyle(.white)
-            Spacer()
-            Toggle("", isOn: isOn)
-                .labelsHidden()
-                .toggleStyle(.switch)
-        }
-        .padding(.horizontal, 12)
-        .padding(.vertical, 9)
-        .background(
-            RoundedRectangle(cornerRadius: 12, style: .continuous)
-                .fill(Color.white.opacity(0.05))
-        )
-    }
-
-    private func sectionLabel(_ title: String) -> some View {
-        Text(title)
-            .font(.system(size: 11, weight: .medium))
-            .foregroundStyle(Color(nsColor: .secondaryLabelColor))
     }
 
     private var statusDescription: String {
@@ -301,30 +114,6 @@ struct FloatingPanelView: View {
             return "Your recording finished successfully."
         case .error:
             return "The recording flow was interrupted."
-        }
-    }
-
-    private var statusBadge: String {
-        switch session.state {
-        case .idle: return "Idle"
-        case .selectingRegion: return "Select"
-        case .countdown: return "Countdown"
-        case .recording: return "Live"
-        case .paused: return "Paused"
-        case .stopping: return "Saving"
-        case .uploading: return "Upload"
-        case .completed: return "Done"
-        case .error: return "Error"
-        }
-    }
-
-    private var statusTint: Color {
-        switch session.state {
-        case .recording: return .red
-        case .paused: return .yellow
-        case .completed: return .green
-        case .error: return .orange
-        default: return Color(nsColor: .secondaryLabelColor)
         }
     }
 
@@ -402,5 +191,27 @@ private struct FooterLinkButtonStyle: ButtonStyle {
             .font(.system(size: 12, weight: .medium))
             .foregroundStyle(Color(nsColor: .secondaryLabelColor))
             .opacity(configuration.isPressed ? 0.7 : 1)
+    }
+}
+
+private struct CapturePanelSurface: View {
+    @Environment(\.accessibilityReduceTransparency) private var reduceTransparency
+    var body: some View {
+        if reduceTransparency {
+            Color(nsColor: .windowBackgroundColor)
+        } else {
+            glassSurface
+        }
+    }
+    @ViewBuilder private var glassSurface: some View {
+        #if compiler(>=6.2)
+        if #available(macOS 26.0, *) {
+            Color.clear.glassEffect(.regular, in: RoundedRectangle(cornerRadius: 22))
+        } else {
+            Rectangle().fill(.regularMaterial)
+        }
+        #else
+        Rectangle().fill(.regularMaterial)
+        #endif
     }
 }

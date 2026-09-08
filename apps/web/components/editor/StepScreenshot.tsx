@@ -114,6 +114,7 @@ export function StepScreenshot({
             <div className="relative aspect-video w-full">
               <Image
                 src={src}
+                unoptimized
                 alt={alt}
                 fill
                 className="object-contain"

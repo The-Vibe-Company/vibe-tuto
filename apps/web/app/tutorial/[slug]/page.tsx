@@ -1,3 +1,4 @@
+export const dynamic = 'force-dynamic';
 import { notFound } from 'next/navigation';
 import { Metadata } from 'next';
 import { PublicTutorialViewer } from '@/components/public/PublicTutorialViewer';
@@ -22,7 +23,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const pageUrl = `${baseUrl}/tutorial/${slug}`;
   const imageUrl =
-    data.previewImageUrl ||
+    (data.previewImageUrl ? new URL(data.previewImageUrl, baseUrl).toString() : null) ||
     `${baseUrl}/api/og/tutorial?title=${encodeURIComponent(tutorial.title)}&steps=${data.steps.length}`;
   const description = tutorial.description || `Step-by-step tutorial: ${tutorial.title}`;
 

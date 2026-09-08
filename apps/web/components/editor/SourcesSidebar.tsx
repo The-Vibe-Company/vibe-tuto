@@ -232,6 +232,7 @@ function TimelineItemComponent({
           <div className="relative mx-2 mb-2 overflow-hidden rounded-lg border border-border/40 bg-muted/50">
             <div className="relative h-[120px] w-full overflow-hidden">
               <Image
+                unoptimized
                 src={source.signedScreenshotUrl}
                 alt={`Action ${index + 1}`}
                 fill
@@ -415,6 +416,7 @@ function CollapsedItem({
           {source.signedScreenshotUrl ? (
             <div className="relative h-full w-full overflow-hidden rounded-lg">
               <Image
+                unoptimized
                 src={source.signedScreenshotUrl}
                 alt={`#${index + 1}`}
                 fill

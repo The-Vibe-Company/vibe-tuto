@@ -1,13 +1,13 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
+vi.mock('@/lib/supabase/admin', () => ({
+  createAdminClient: vi.fn(),
 }));
 
-import { createClient } from '@/lib/supabase/server';
+import { createAdminClient } from '@/lib/supabase/admin';
 import { getPublicTutorialByToken, getPublicTutorialBySlug } from './public-tutorials';
 
-const mockCreateClient = createClient as ReturnType<typeof vi.fn>;
+const mockCreateClient = createAdminClient as ReturnType<typeof vi.fn>;
 
 function createMockClient({
   tutorialResult = { data: null, error: null },
@@ -147,7 +147,7 @@ describe('getPublicTutorialByToken', () => {
     expect(result!.tutorial.title).toBe('Test Tutorial');
   });
 
-  it('generates signed URLs for step screenshots', async () => {
+  it('returns flattened previews for step screenshots', async () => {
     mockCreateClient.mockResolvedValue(
       createMockClient({
         tutorialResult: { data: mockTutorial, error: null },
@@ -158,10 +158,10 @@ describe('getPublicTutorialByToken', () => {
 
     const result = await getPublicTutorialByToken('token-abc');
     expect(result).not.toBeNull();
-    expect(result!.steps[0].signedScreenshotUrl).toBe('https://signed.url/image.png');
+    expect(result!.steps[0].signedScreenshotUrl).toBe('/api/public/tutorials/token-abc/steps/step-1/preview');
   });
 
-  it('parses string element_info as JSON', async () => {
+  it('omits captured element metadata', async () => {
     const stepWithStringInfo = {
       ...mockStep,
       sources: {
@@ -179,10 +179,10 @@ describe('getPublicTutorialByToken', () => {
 
     const result = await getPublicTutorialByToken('token-abc');
     expect(result).not.toBeNull();
-    expect(result!.steps[0].element_info).toEqual({ tag: 'button', text: 'Submit' });
+    expect(result!.steps[0].element_info).toBeNull();
   });
 
-  it('parses string annotations as JSON', async () => {
+  it('omits annotations already flattened into previews', async () => {
     const stepWithStringAnnotations = {
       ...mockStep,
       annotations: JSON.stringify([{ type: 'highlight', x: 10, y: 20 }]),
@@ -197,7 +197,7 @@ describe('getPublicTutorialByToken', () => {
 
     const result = await getPublicTutorialByToken('token-abc');
     expect(result).not.toBeNull();
-    expect(result!.steps[0].annotations).toEqual([{ type: 'highlight', x: 10, y: 20 }]);
+    expect(result!.steps[0].annotations).toEqual([]);
   });
 
   it('returns null when steps query fails', async () => {
@@ -243,7 +243,7 @@ describe('getPublicTutorialBySlug', () => {
     expect(result!.steps).toHaveLength(1);
   });
 
-  it('parses string element_info and annotations', async () => {
+  it('omits raw metadata and annotation overlays', async () => {
     const stepWithStrings = {
       ...mockStep,
       annotations: JSON.stringify([{ type: 'arrow' }]),
@@ -262,8 +262,8 @@ describe('getPublicTutorialBySlug', () => {
 
     const result = await getPublicTutorialBySlug('test-tutorial');
     expect(result).not.toBeNull();
-    expect(result!.steps[0].element_info).toEqual({ tag: 'a', text: 'Link' });
-    expect(result!.steps[0].annotations).toEqual([{ type: 'arrow' }]);
+    expect(result!.steps[0].element_info).toBeNull();
+    expect(result!.steps[0].annotations).toEqual([]);
   });
 
   it('returns null when steps query fails', async () => {

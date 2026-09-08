@@ -363,6 +363,7 @@ export function GenerateDialog({
                             {/* Thumbnail */}
                             {source?.signedScreenshotUrl && (
                               <Image
+                unoptimized
                                 src={source.signedScreenshotUrl}
                                 alt={`Step ${index + 1}`}
                                 width={64}

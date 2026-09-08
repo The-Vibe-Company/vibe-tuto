@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import { safeNext } from '@/lib/auth/safe-next';
 import { createClient } from '@/lib/supabase/client';
 
 const AUTH_CHECK_TIMEOUT_MS = 5000;
@@ -33,7 +34,7 @@ export default function LoginPage() {
         if (!isMounted) return;
 
         if (authResult?.data.user) {
-          router.push('/dashboard');
+          router.push(safeNext(new URLSearchParams(window.location.search).get('next')));
         } else {
           setCheckingAuth(false);
         }
@@ -87,7 +88,7 @@ export default function LoginPage() {
         syncToExtension(data.user.email || email, data.session.access_token);
 
         // Redirect to dashboard
-        router.push('/dashboard');
+        router.push(safeNext(new URLSearchParams(window.location.search).get('next')));
       }
     } catch (err) {
       setError('An error occurred. Please try again.');

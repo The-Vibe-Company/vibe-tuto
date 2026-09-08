@@ -1,4 +1,5 @@
 'use client';
+import { AgentConnection } from '@/components/settings-agent';
 
 import { useState, useEffect, useCallback } from 'react';
 import Link from 'next/link';
@@ -378,6 +379,7 @@ export default function SettingsPage() {
         </p>
       </div>
 
+      <AgentConnection />
       <div className="mb-8 grid gap-6 lg:grid-cols-2">
         <BillingSection />
         <ApiTokensSection />

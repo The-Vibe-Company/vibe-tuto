@@ -14,6 +14,7 @@
 		13F880DB19CB80F2B0AEEEDF /* AppSwitchTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = EBA7A180234AC59814B1633D /* AppSwitchTracker.swift */; };
 		185D14C4BAC344DD68FC3D99 /* AppPickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D84A2586D69E052BECA29C /* AppPickerView.swift */; };
 		214093E66CB254378F64955A /* EventMonitor.swift in Sources */ = {isa = PBXBuildFile; fileRef = C56E7B267124BF67AD7E8749 /* EventMonitor.swift */; };
+		21BBD834D14B24103738F123 /* CaptureCoordinates.swift in Sources */ = {isa = PBXBuildFile; fileRef = E5B1775A58F7830F71C89A78 /* CaptureCoordinates.swift */; };
 		273B5BAC1872FA4FC011D4E5 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB02579639E6EA731AEA0C34 /* AppDelegate.swift */; };
 		2BD6C98FDF17AC0DFFF248BF /* ContextTracker.swift in Sources */ = {isa = PBXBuildFile; fileRef = F070A063E4C97ADD612D0EF3 /* ContextTracker.swift */; };
 		2D5245366035EB9BD519C7CF /* PreferencesWindow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 80BC66CE434557C1546A12D4 /* PreferencesWindow.swift */; };
@@ -52,6 +53,9 @@
 		CC3C1567E386B3E1BBB990D1 /* CoreGraphics.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 5FB4562302619255A57CFA8B /* CoreGraphics.framework */; };
 		CCEC79F02AAA05CA86B1ABD1 /* RecordingToolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5FDDF62C96F91B142CB5AB45 /* RecordingToolbar.swift */; };
 		D022F129906DEB63C4BDA0FC /* DetectedStep.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9140EADCB6F2AEBDEF842736 /* DetectedStep.swift */; };
+		D2CCB86DF7C6DAFF8F9049D1 /* DesktopConnection.swift in Sources */ = {isa = PBXBuildFile; fileRef = DEEF48DFFAE849D41FC4D9E6 /* DesktopConnection.swift */; };
+		DE4A3D737E75043B2D9BBC9D /* DesktopConnectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 960FE5935550C1302F44E862 /* DesktopConnectView.swift */; };
+		E32884D74DFF7E97C5056BBE /* RecordingTimeline.swift in Sources */ = {isa = PBXBuildFile; fileRef = 318761302EB9D8487F4DB965 /* RecordingTimeline.swift */; };
 		E5BA3D151270DA147E47E929 /* SupabaseClient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3D58E8F5C4464F1C226197EF /* SupabaseClient.swift */; };
 		E62536C5E06E5454E5A93837 /* RegionSelectorOverlay.swift in Sources */ = {isa = PBXBuildFile; fileRef = A0C42FACAC2DCCBC884826AF /* RegionSelectorOverlay.swift */; };
 		E627CB383226319A9A089599 /* PermissionChecker.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFE016EF78211B2C266AEC9A /* PermissionChecker.swift */; };
@@ -64,6 +68,7 @@
 		1BFB58482CAA174CE51FAC1B /* TerminalPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TerminalPlugin.swift; sourceTree = "<group>"; };
 		24B388485E442C141AFB0FEA /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = Cocoa.framework; sourceTree = "<group>"; };
 		288BD3F7C89CB3D8A800ECE7 /* VibeTuto.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = VibeTuto.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		318761302EB9D8487F4DB965 /* RecordingTimeline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecordingTimeline.swift; sourceTree = "<group>"; };
 		3392E9751508CA1D8D38BC33 /* ElementInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ElementInfo.swift; sourceTree = "<group>"; };
 		3D58E8F5C4464F1C226197EF /* SupabaseClient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseClient.swift; sourceTree = "<group>"; };
 		3F3A65271A33E8F476233201 /* RetryQueue.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RetryQueue.swift; sourceTree = "<group>"; };
@@ -88,6 +93,7 @@
 		90D542D5623F14DBE2D48FC4 /* ActionBuffer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActionBuffer.swift; sourceTree = "<group>"; };
 		9140EADCB6F2AEBDEF842736 /* DetectedStep.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DetectedStep.swift; sourceTree = "<group>"; };
 		92B5C91131047D2A9F320011 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = CoreMedia.framework; sourceTree = "<group>"; };
+		960FE5935550C1302F44E862 /* DesktopConnectView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopConnectView.swift; sourceTree = "<group>"; };
 		9CA132FBD94216A777C63433 /* PluginProtocol.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PluginProtocol.swift; sourceTree = "<group>"; };
 		9DA0EE03F367A402F3A65AE3 /* SessionManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SessionManager.swift; sourceTree = "<group>"; };
 		A0C42FACAC2DCCBC884826AF /* RegionSelectorOverlay.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RegionSelectorOverlay.swift; sourceTree = "<group>"; };
@@ -105,7 +111,9 @@
 		DB02579639E6EA731AEA0C34 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DC555B299D3BDF3D34F00CFD /* CaptureEngine.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureEngine.swift; sourceTree = "<group>"; };
 		DDFDD41FD69978B945959514 /* OnboardingWindow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingWindow.swift; sourceTree = "<group>"; };
+		DEEF48DFFAE849D41FC4D9E6 /* DesktopConnection.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DesktopConnection.swift; sourceTree = "<group>"; };
 		DFE016EF78211B2C266AEC9A /* PermissionChecker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PermissionChecker.swift; sourceTree = "<group>"; };
+		E5B1775A58F7830F71C89A78 /* CaptureCoordinates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CaptureCoordinates.swift; sourceTree = "<group>"; };
 		EB17A22C17045798B68200E9 /* AccessibilityReader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccessibilityReader.swift; sourceTree = "<group>"; };
 		EBA7A180234AC59814B1633D /* AppSwitchTracker.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppSwitchTracker.swift; sourceTree = "<group>"; };
 		EE3B35FE6C5BA01CB293B8DA /* FrameProcessor.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FrameProcessor.swift; sourceTree = "<group>"; };
@@ -142,6 +150,7 @@
 				65C0C14112D209FD8E3A6756 /* RecordingMode.swift */,
 				7B90039699C96F31D00B5C45 /* RecordingSession.swift */,
 				C3189217557EE184AF096ECB /* RecordingState.swift */,
+				318761302EB9D8487F4DB965 /* RecordingTimeline.swift */,
 			);
 			path = Models;
 			sourceTree = "<group>";
@@ -149,6 +158,7 @@
 		1322ADADBC656471F9F25B10 /* Upload */ = {
 			isa = PBXGroup;
 			children = (
+				DEEF48DFFAE849D41FC4D9E6 /* DesktopConnection.swift */,
 				3F3A65271A33E8F476233201 /* RetryQueue.swift */,
 				3D58E8F5C4464F1C226197EF /* SupabaseClient.swift */,
 				4B84011FD3BB60622BC86DC4 /* UploadManager.swift */,
@@ -230,6 +240,7 @@
 				84D84A2586D69E052BECA29C /* AppPickerView.swift */,
 				52B8F1C20AE4C8B3F9C1196C /* CountdownOverlayView.swift */,
 				5758D2653C988B55F9871EA6 /* DesignTokens.swift */,
+				960FE5935550C1302F44E862 /* DesktopConnectView.swift */,
 				DDFDD41FD69978B945959514 /* OnboardingWindow.swift */,
 				80BC66CE434557C1546A12D4 /* PreferencesWindow.swift */,
 				B16D34F18A8AED3B493025B5 /* RecordingBorder.swift */,
@@ -243,6 +254,7 @@
 		8641F13FA4CDDAD84E24C71D /* Capture */ = {
 			isa = PBXGroup;
 			children = (
+				E5B1775A58F7830F71C89A78 /* CaptureCoordinates.swift */,
 				DC555B299D3BDF3D34F00CFD /* CaptureEngine.swift */,
 				EE3B35FE6C5BA01CB293B8DA /* FrameProcessor.swift */,
 			);
@@ -396,11 +408,14 @@
 				13F880DB19CB80F2B0AEEEDF /* AppSwitchTracker.swift in Sources */,
 				CAE40D08EB806E34F07708CA /* AudioRecorder.swift in Sources */,
 				53020B772C9E4B7D5982CAAA /* BrowserPlugin.swift in Sources */,
+				21BBD834D14B24103738F123 /* CaptureCoordinates.swift in Sources */,
 				3288F9C0A569B70259F35CE9 /* CaptureEngine.swift in Sources */,
 				59DE893C279D9C9F8351CC80 /* CapturedAction.swift in Sources */,
 				2BD6C98FDF17AC0DFFF248BF /* ContextTracker.swift in Sources */,
 				AF8278E316F2686A4E0AADF0 /* CountdownOverlayView.swift in Sources */,
 				4AC694D20F23869BB8193451 /* DesignTokens.swift in Sources */,
+				DE4A3D737E75043B2D9BBC9D /* DesktopConnectView.swift in Sources */,
+				D2CCB86DF7C6DAFF8F9049D1 /* DesktopConnection.swift in Sources */,
 				D022F129906DEB63C4BDA0FC /* DetectedStep.swift in Sources */,
 				9C561F93AB713D76D0580899 /* ElementInfo.swift in Sources */,
 				214093E66CB254378F64955A /* EventMonitor.swift in Sources */,
@@ -419,6 +434,7 @@
 				4BCA8C1EB2E74F029CE0CAA1 /* RecordingMode.swift in Sources */,
 				BA68068591559D696EAA9CB7 /* RecordingSession.swift in Sources */,
 				B51C94D050E70B00B66C5C31 /* RecordingState.swift in Sources */,
+				E32884D74DFF7E97C5056BBE /* RecordingTimeline.swift in Sources */,
 				CCEC79F02AAA05CA86B1ABD1 /* RecordingToolbar.swift in Sources */,
 				E62536C5E06E5454E5A93837 /* RegionSelectorOverlay.swift in Sources */,
 				7EE448642CD35AF9CF90298F /* RetryQueue.swift in Sources */,

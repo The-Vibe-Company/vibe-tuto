@@ -27,7 +27,7 @@ struct AppPickerView: View {
                 TextField("Search apps", text: $searchText)
                     .textFieldStyle(.plain)
                     .font(.system(size: 12))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
                 if !searchText.isEmpty {
                     Button(action: { searchText = "" }) {
                         Image(systemName: "xmark.circle.fill")
@@ -68,14 +68,11 @@ struct AppPickerView: View {
                                     withAnimation(.easeOut(duration: 0.16)) {
                                         session.selectedAppBundleID = app.id
                                     }
-                                    NSRunningApplication.runningApplications(withBundleIdentifier: app.id)
-                                        .first?
-                                        .activate()
                                 }
                         }
                     }
                 }
-                .frame(maxHeight: 160)
+                .frame(height: 140)
             }
         }
         .task {
@@ -131,13 +128,13 @@ struct AppRow: View {
             }
             Text(app.name)
                 .font(.system(size: 13))
-                .foregroundStyle(.white)
+                .foregroundStyle(.primary)
                 .lineLimit(1)
             Spacer()
             if isSelected {
                 Image(systemName: "checkmark")
                     .font(.system(size: 11, weight: .semibold))
-                    .foregroundStyle(.white)
+                    .foregroundStyle(.primary)
             }
         }
         .padding(.horizontal, 12)

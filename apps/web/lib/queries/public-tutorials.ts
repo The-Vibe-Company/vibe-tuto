@@ -1,4 +1,5 @@
-import { createClient } from '@/lib/supabase/server';
+import { publicPresentationSteps } from './public-presentation';
+import { createAdminClient } from '@/lib/supabase/admin';
 import type { StepWithSignedUrl, StepType } from '@/lib/types/editor';
 
 export interface PublicTutorial {
@@ -25,7 +26,7 @@ function getPreviewImageUrl(steps: StepWithSignedUrl[]) {
 }
 
 async function processSteps(
-  supabase: Awaited<ReturnType<typeof createClient>>,
+  _supabase: Awaited<ReturnType<typeof createAdminClient>>,
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   steps: any[]
 ): Promise<StepWithSignedUrl[]> {
@@ -34,13 +35,7 @@ async function processSteps(
       let signedScreenshotUrl: string | null = null;
       const source = step.sources;
 
-      if (source?.screenshot_url) {
-        const { data: signedUrl } = await supabase.storage
-          .from('screenshots')
-          .createSignedUrl(source.screenshot_url, 60 * 60 * 24 * 7); // 7 days
-
-        signedScreenshotUrl = signedUrl?.signedUrl || null;
-      }
+      if (source?.screenshot_url) signedScreenshotUrl = 'captured-image';
 
       // Parse element_info if it's a string
       let elementInfo = source?.element_info;
@@ -94,7 +89,7 @@ export async function getPublicTutorialByToken(
   token: string
 ): Promise<PublicTutorialData | null> {
   try {
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Fetch tutorial by public token
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -111,7 +106,7 @@ export async function getPublicTutorialByToken(
     }
 
     // Check visibility (should already be enforced by RLS)
-    if (tutorial.visibility === 'private') {
+    if (!['public', 'link_only'].includes(tutorial.visibility)) {
       return null;
     }
 
@@ -158,7 +153,7 @@ export async function getPublicTutorialByToken(
       return null;
     }
 
-    const stepsWithUrls = await processSteps(supabase, steps || []);
+    const stepsWithUrls = publicPresentationSteps(await processSteps(supabase, steps || []), tutorial.public_token);
 
     return {
       tutorial: {
@@ -186,7 +181,7 @@ export async function getPublicTutorialBySlug(
   slug: string
 ): Promise<PublicTutorialData | null> {
   try {
-    const supabase = await createClient();
+    const supabase = await createAdminClient();
 
     // Fetch tutorial by slug (only public tutorials)
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -246,7 +241,7 @@ export async function getPublicTutorialBySlug(
       return null;
     }
 
-    const stepsWithUrls = await processSteps(supabase, steps || []);
+    const stepsWithUrls = publicPresentationSteps(await processSteps(supabase, steps || []), tutorial.public_token);
 
     return {
       tutorial: {

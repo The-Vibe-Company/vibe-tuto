@@ -98,37 +98,12 @@ export async function PATCH(
     }
 
     // 5. Update step
-    let { data: updatedStep, error: updateError } = await supabase
+    const { data: updatedStep, error: updateError } = await supabase
       .from('steps')
       .update(updateData)
       .eq('id', id)
       .select()
       .single();
-
-    // If update fails and we tried to save annotations, retry without annotations
-    // This handles the case where the annotations column doesn't exist yet
-    if (updateError && updateData.annotations !== undefined) {
-      console.warn('Failed to save annotations, retrying without:', updateError.message);
-      const { annotations: _, ...updateDataWithoutAnnotations } = updateData;
-
-      if (Object.keys(updateDataWithoutAnnotations).length > 0) {
-        const retryResult = await supabase
-          .from('steps')
-          .update(updateDataWithoutAnnotations)
-          .eq('id', id)
-          .select()
-          .single();
-
-        updatedStep = retryResult.data;
-        updateError = retryResult.error;
-      } else {
-        // Only annotations were being saved, return success with warning
-        return NextResponse.json({
-          step: step,
-          warning: 'Annotations could not be saved. Please add the annotations column to the database.'
-        });
-      }
-    }
 
     if (updateError) {
       console.error('Failed to update step:', updateError);

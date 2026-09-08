@@ -15,6 +15,7 @@ export function hitTestAnnotation(
       return hitTestArrow(annotation, point);
     case 'text':
       return hitTestText(annotation, point);
+    case 'rectangle':
     case 'highlight':
     case 'blur':
       return hitTestRect(annotation, point);
@@ -38,6 +39,7 @@ export function getAnnotationBounds(annotation: Annotation): {
 } {
   switch (annotation.type) {
     case 'circle':
+    case 'rectangle':
     case 'highlight':
     case 'blur': {
       const width = annotation.width || 0.1;
@@ -235,7 +237,7 @@ export function hitTestCorner(
   point: { x: number; y: number },
   tolerance: number = 0.03
 ): ResizeCorner | null {
-  if (!['circle', 'highlight', 'blur'].includes(annotation.type)) return null;
+  if (!['circle', 'rectangle', 'highlight', 'blur'].includes(annotation.type)) return null;
 
   const bounds = getAnnotationBounds(annotation);
   const corners: [ResizeCorner, number, number][] = [

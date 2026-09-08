@@ -65,20 +65,22 @@ final class EventMonitor: @unchecked Sendable {
 
     // MARK: - Event Handlers
 
+    var captureScreenFrame: CGRect?
+
     private func handleClickEvent(_ event: NSEvent) {
         guard let sessionStart = sessionStartTime else { return }
 
         let screenLocation = event.locationInWindow
-        let screenFrame = NSScreen.main?.frame ?? CGRect(x: 0, y: 0, width: 2560, height: 1600)
+        let screenFrame = captureScreenFrame ?? NSScreen.main?.frame ?? CGRect(x: 0, y: 0, width: 2560, height: 1600)
 
         // Convert to normalized coordinates (0-1 range)
-        let normalizedX = screenLocation.x / screenFrame.width
+        let normalizedX = (screenLocation.x - screenFrame.minX) / screenFrame.width
         // NSEvent y is from bottom, flip to top-origin
-        let normalizedY = 1.0 - (screenLocation.y / screenFrame.height)
+        let normalizedY = 1.0 - ((screenLocation.y - screenFrame.minY) / screenFrame.height)
 
         // Get accessibility info at click point
         let elementInfo = accessibilityReader.elementAt(
-            point: CGPoint(x: screenLocation.x, y: screenFrame.height - screenLocation.y)
+            point: CGPoint(x: screenLocation.x, y: (NSScreen.screens.first?.frame.height ?? screenFrame.height) - screenLocation.y)
         )
 
         let frontApp = NSWorkspace.shared.frontmostApplication

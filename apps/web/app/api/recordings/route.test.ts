@@ -1,384 +1,43 @@
-import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { POST } from './route';
-
-// Mock the Supabase server client
-vi.mock('@/lib/supabase/server', () => ({
-  createClient: vi.fn(),
-}));
-
-// Mock crypto.randomUUID
-vi.stubGlobal('crypto', {
-  randomUUID: vi.fn().mockReturnValue('recording-uuid-123'),
-});
-
-import { createClient } from '@/lib/supabase/server';
-
-const mockCreateClient = vi.mocked(createClient);
-
-// Helper to create a mock Request with JSON body
-function createMockRequest(body: object): Request {
-  return new Request('http://localhost:3678/api/recordings', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(body),
-  });
+import { beforeEach,describe,it,expect,vi } from 'vitest';
+vi.mock('@/lib/auth/request',()=>({resolveRequestUser:vi.fn()}));
+import {resolveRequestUser} from '@/lib/auth/request';
+import {POST} from './route';
+const id='11111111-1111-4111-a111-111111111111';
+const payload={recording:{client_id:id,duration:3,started_at:'2026-09-08T00:00:00Z'},steps:[{timestamp:0,action_type:'click',screenshot_key:'a.jpg',screenshot_data:'aGVsbG8=',viewport_width:1000,viewport_height:500,click_x:0.2,click_y:0.4}]};
+const request=(body:unknown)=>new Request('http://localhost/api/recordings',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body)});
+function auth(options:{existing?:unknown;uploadError?:unknown;sourceError?:unknown;createError?:unknown}={}){
+ const insert=vi.fn().mockResolvedValue({error:options.createError??null});
+ const upsert=vi.fn().mockResolvedValue({error:options.sourceError??null});
+ const upload=vi.fn().mockResolvedValue({error:options.uploadError??null});
+ const from=vi.fn((table:string)=> table==='tutorials'?{select:()=>({eq:()=>({maybeSingle:async()=>({data:options.existing??null,error:null})})}),insert}:{upsert});
+ vi.mocked(resolveRequestUser).mockResolvedValue({userId:'owner',supabase:{from,storage:{from:()=>({upload})}}} as never);
+ return {insert,upsert,upload};
 }
-
-// Helper to create a valid recording payload
-function createValidPayload() {
-  return {
-    recording: {
-      title: 'Test Desktop Recording',
-      duration: 167,
-      started_at: '2026-02-06T10:30:00Z',
-      macos_version: '15.3',
-      screen_resolution: '2560x1600',
-      apps_used: ['com.google.Chrome', 'com.microsoft.VSCode'],
-    },
-    steps: [
-      {
-        order_index: 0,
-        timestamp: 3.2,
-        action_type: 'click' as const,
-        screenshot_key: 'user-123/tutorial-123/0.png',
-        click_x: 0.45,
-        click_y: 0.32,
-        viewport_width: 2560,
-        viewport_height: 1600,
-        app_bundle_id: 'com.google.Chrome',
-        app_name: 'Google Chrome',
-        window_title: 'GitHub - Pull Requests',
-        url: 'https://github.com/org/repo/pulls',
-        element_info: {
-          role: 'AXButton',
-          title: 'New pull request',
-        },
-        auto_caption: "Click the 'New pull request' button",
-      },
-      {
-        order_index: 1,
-        timestamp: 8.1,
-        action_type: 'type' as const,
-        screenshot_key: 'user-123/tutorial-123/1.png',
-        app_bundle_id: 'com.microsoft.VSCode',
-        app_name: 'Visual Studio Code',
-        window_title: 'index.ts - my-project',
-        auto_caption: 'Type in the editor',
-      },
-    ],
-  };
-}
-
-describe('POST /api/recordings', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
-
-  it('returns 401 when user is not authenticated', async () => {
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: null },
-          error: { message: 'Not authenticated' },
-        }),
-      },
-    } as any);
-
-    const request = createMockRequest(createValidPayload());
-    const response = await POST(request);
-
-    expect(response.status).toBe(401);
-    const body = await response.json();
-    expect(body.error).toBe('Unauthorized');
-  });
-
-  it('returns 400 when body is not valid JSON', async () => {
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-    } as any);
-
-    const request = new Request('http://localhost:3678/api/recordings', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: 'not valid json{',
-    });
-    const response = await POST(request);
-
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body.error).toBe('Invalid JSON body');
-  });
-
-  it('returns 400 when recording metadata is missing', async () => {
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-    } as any);
-
-    const request = createMockRequest({ steps: [{ order_index: 0, timestamp: 0, action_type: 'click', screenshot_key: 'x.png' }] });
-    const response = await POST(request);
-
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body.error).toBe('Missing recording metadata');
-  });
-
-  it('returns 400 when steps array is empty', async () => {
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-    } as any);
-
-    const request = createMockRequest({
-      recording: { duration: 10, started_at: '2026-02-06T10:30:00Z' },
-      steps: [],
-    });
-    const response = await POST(request);
-
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body.error).toBe('No steps provided');
-  });
-
-  it('returns 400 when duration is invalid', async () => {
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-    } as any);
-
-    const request = createMockRequest({
-      recording: { duration: -5, started_at: '2026-02-06T10:30:00Z' },
-      steps: [{ order_index: 0, timestamp: 0, action_type: 'click', screenshot_key: 'x.png' }],
-    });
-    const response = await POST(request);
-
-    expect(response.status).toBe(400);
-    const body = await response.json();
-    expect(body.error).toBe('Invalid recording duration');
-  });
-
-  it('returns 200 and creates tutorial with sources for valid desktop recording', async () => {
-    const mockTutorial = {
-      id: 'tutorial-123',
-      user_id: 'user-123',
-      title: 'Test Desktop Recording',
-      status: 'processing',
-    };
-
-    const mockInsert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        single: vi.fn().mockResolvedValue({
-          data: mockTutorial,
-          error: null,
-        }),
-      }),
-    });
-
-    const mockSourcesInsert = vi.fn().mockResolvedValue({
-      error: null,
-    });
-
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-      from: vi.fn((table: string) => {
-        if (table === 'tutorials') {
-          return { insert: mockInsert };
-        }
-        if (table === 'sources') {
-          return { insert: mockSourcesInsert };
-        }
-        return {};
-      }),
-    } as any);
-
-    const request = createMockRequest(createValidPayload());
-    const response = await POST(request);
-
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body.tutorialId).toBe('tutorial-123');
-    expect(body.recordingId).toBe('recording-uuid-123');
-    expect(body.status).toBe('processing');
-    expect(body.sourcesCreated).toBe(2);
-    expect(body.editorUrl).toBe('/editor/tutorial-123');
-
-    // Verify tutorial was created with correct data
-    expect(mockInsert).toHaveBeenCalledWith({
-      user_id: 'user-123',
-      title: 'Test Desktop Recording',
-      status: 'processing',
-    });
-
-    // Verify sources were created with desktop-specific fields
-    expect(mockSourcesInsert).toHaveBeenCalledWith(
-      expect.arrayContaining([
-        expect.objectContaining({
-          tutorial_id: 'tutorial-123',
-          order_index: 0,
-          app_bundle_id: 'com.google.Chrome',
-          app_name: 'Google Chrome',
-          window_title: 'GitHub - Pull Requests',
-          action_type: 'click',
-          auto_caption: "Click the 'New pull request' button",
-          recording_id: 'recording-uuid-123',
-          click_x: 1152,  // 0.45 * 2560
-          click_y: 512,   // 0.32 * 1600
-        }),
-        expect.objectContaining({
-          tutorial_id: 'tutorial-123',
-          order_index: 1,
-          app_bundle_id: 'com.microsoft.VSCode',
-          app_name: 'Visual Studio Code',
-          action_type: 'type',
-          recording_id: 'recording-uuid-123',
-        }),
-      ])
-    );
-  });
-
-  it('uses default title when none provided', async () => {
-    const mockTutorial = {
-      id: 'tutorial-456',
-      user_id: 'user-123',
-      title: 'Desktop Recording',
-      status: 'processing',
-    };
-
-    const mockInsert = vi.fn().mockReturnValue({
-      select: vi.fn().mockReturnValue({
-        single: vi.fn().mockResolvedValue({
-          data: mockTutorial,
-          error: null,
-        }),
-      }),
-    });
-
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-      from: vi.fn((table: string) => {
-        if (table === 'tutorials') {
-          return { insert: mockInsert };
-        }
-        if (table === 'sources') {
-          return { insert: vi.fn().mockResolvedValue({ error: null }) };
-        }
-        return {};
-      }),
-    } as any);
-
-    const payload = createValidPayload();
-    delete (payload.recording as any).title;
-    const request = createMockRequest(payload);
-    const response = await POST(request);
-
-    expect(response.status).toBe(200);
-    expect(mockInsert).toHaveBeenCalledWith(
-      expect.objectContaining({
-        title: 'Desktop Recording',
-      })
-    );
-  });
-
-  it('returns 500 when tutorial creation fails', async () => {
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-      from: vi.fn().mockReturnValue({
-        insert: vi.fn().mockReturnValue({
-          select: vi.fn().mockReturnValue({
-            single: vi.fn().mockResolvedValue({
-              data: null,
-              error: { message: 'DB error', code: 'PGRST000' },
-            }),
-          }),
-        }),
-      }),
-    } as any);
-
-    const request = createMockRequest(createValidPayload());
-    const response = await POST(request);
-
-    expect(response.status).toBe(500);
-    const body = await response.json();
-    expect(body.error).toBe('Failed to create tutorial');
-  });
-
-  it('succeeds even when sources insertion fails', async () => {
-    const mockTutorial = {
-      id: 'tutorial-789',
-      user_id: 'user-123',
-      title: 'Test',
-      status: 'processing',
-    };
-
-    mockCreateClient.mockResolvedValue({
-      auth: {
-        getUser: vi.fn().mockResolvedValue({
-          data: { user: { id: 'user-123', email: 'test@example.com' } },
-          error: null,
-        }),
-      },
-      from: vi.fn((table: string) => {
-        if (table === 'tutorials') {
-          return {
-            insert: vi.fn().mockReturnValue({
-              select: vi.fn().mockReturnValue({
-                single: vi.fn().mockResolvedValue({
-                  data: mockTutorial,
-                  error: null,
-                }),
-              }),
-            }),
-          };
-        }
-        if (table === 'sources') {
-          return {
-            insert: vi.fn().mockResolvedValue({
-              error: { message: 'Sources insert failed' },
-            }),
-          };
-        }
-        return {};
-      }),
-    } as any);
-
-    const request = createMockRequest(createValidPayload());
-    const response = await POST(request);
-
-    // Should still succeed - sources failure is non-fatal
-    expect(response.status).toBe(200);
-    const body = await response.json();
-    expect(body.tutorialId).toBe('tutorial-789');
-  });
+beforeEach(()=>vi.resetAllMocks());
+describe('human recording ingestion',()=>{
+ it('requires authentication',async()=>{vi.mocked(resolveRequestUser).mockResolvedValue(null);expect((await POST(request(payload))).status).toBe(401);});
+ it('rejects malformed JSON and incomplete recordings',async()=>{
+  auth();expect((await POST(new Request('http://localhost',{method:'POST',body:'{'}))).status).toBe(400);
+  for(const body of [{},{...payload,steps:[]},{...payload,recording:{...payload.recording,duration:-1}}])expect((await POST(request(body))).status).toBe(400);
+ });
+ it('stores sources and returns the stable client recording ID',async()=>{
+  const db=auth();const r=await POST(request(payload));expect(r.status).toBe(200);expect((await r.json()).tutorialId).toBe(id);
+  expect(db.insert).toHaveBeenCalledWith(expect.objectContaining({title:'Desktop recording',user_id:'owner'}));
+  expect(db.upsert).toHaveBeenCalledWith([expect.objectContaining({click_x:200,click_y:200,tutorial_id:id})],{onConflict:'id'});
+ });
+ it('retries the same recording without creating a second tutorial',async()=>{
+  const db=auth({existing:{id,user_id:'owner'}});expect((await POST(request(payload))).status).toBe(200);expect(db.insert).not.toHaveBeenCalled();
+ });
+ it('cannot overwrite another owner recording',async()=>{
+  const db=auth({existing:{id,user_id:'someone-else'}});expect((await POST(request(payload))).status).toBe(409);expect(db.upload).not.toHaveBeenCalled();expect(db.upsert).not.toHaveBeenCalled();
+ });
+ it('never reports success after a failed screenshot upload',async()=>{
+  const db=auth({uploadError:{message:'offline'}});expect((await POST(request(payload))).status).toBe(500);expect(db.upsert).not.toHaveBeenCalled();
+ });
+ it('reports a failed source write so the recorder retains its local backup',async()=>{
+  auth({sourceError:{message:'offline'}});expect((await POST(request(payload))).status).toBe(500);
+ });
+ it('rejects a capture with no image instead of storing an unusable local path',async()=>{
+  auth();expect((await POST(request({...payload,steps:[{...payload.steps[0],screenshot_data:null}]}))).status).toBe(400);
+ });
 });

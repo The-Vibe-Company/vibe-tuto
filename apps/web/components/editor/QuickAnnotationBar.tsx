@@ -1,6 +1,6 @@
 'use client';
 
-import { Circle, MoveRight, Type, Highlighter, EyeOff, Hash } from 'lucide-react';
+import { Circle, Square, MoveRight, Type, Highlighter, EyeOff, Hash } from 'lucide-react';
 import type { AnnotationType } from '@/lib/types/editor';
 import { Button } from '@/components/ui/button';
 import {
@@ -18,6 +18,7 @@ interface QuickAnnotationBarProps {
 
 const ALL_TOOLS: { type: AnnotationType; icon: typeof Circle; label: string }[] = [
   { type: 'circle', icon: Circle, label: 'Circle' },
+  { type: 'rectangle', icon: Square, label: 'Rectangle' },
   { type: 'arrow', icon: MoveRight, label: 'Arrow' },
   { type: 'text', icon: Type, label: 'Text' },
   { type: 'numbered-callout', icon: Hash, label: 'Numbered Callout' },
@@ -38,6 +39,7 @@ export function QuickAnnotationBar({ onToolSelect, className }: QuickAnnotationB
         <Tooltip key={type}>
           <TooltipTrigger asChild>
             <Button
+              aria-label={label}
               variant="ghost"
               size="icon"
               onClick={() => onToolSelect(type)}

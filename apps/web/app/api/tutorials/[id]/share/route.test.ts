@@ -320,7 +320,7 @@ describe('POST /api/tutorials/[id]/share', () => {
     expect(response.status).toBe(403);
   });
 
-  it('returns 400 when setting public without a slug', async () => {
+  it('generates a share URL when publishing without an existing slug', async () => {
     mockCreateClient.mockResolvedValue(
       createMockSupabase({
         user: { id: 'user-123' },
@@ -340,9 +340,9 @@ describe('POST /api/tutorials/[id]/share', () => {
       { visibility: 'public' }
     );
     const response = await POST(request as any, wrapParams({ id: 't1' }));
-    expect(response.status).toBe(400);
+    expect(response.status).toBe(200);
     const body = await response.json();
-    expect(body.error).toContain('slug');
+    expect(body.slugUrl).toBe(`${BASE_URL}/tutorial/guide-mock-token-12`);
   });
 
   it('generates token when making link_only and no existing token', async () => {

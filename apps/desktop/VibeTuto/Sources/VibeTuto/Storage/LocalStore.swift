@@ -6,14 +6,14 @@ final class LocalStore: @unchecked Sendable {
     private let storageDirectory: URL
     private let fileManager = FileManager.default
 
-    init() {
+    init(directory: URL? = nil) {
         let appSupport = fileManager.urls(for: .applicationSupportDirectory, in: .userDomainMask).first!
-        storageDirectory = appSupport.appendingPathComponent("VibeTuto/recordings", isDirectory: true)
+        storageDirectory = directory ?? appSupport.appendingPathComponent("VibeTuto/recordings", isDirectory: true)
         try? fileManager.createDirectory(at: storageDirectory, withIntermediateDirectories: true)
     }
 
     /// Save a recording session locally for later upload.
-    func saveSession(_ session: RecordingSession, screenshots: [String: Data]) throws -> URL {
+    func saveSession(_ session: RecordingSession, screenshots: [String: Data], audioFile: URL? = nil) throws -> URL {
         let sessionDir = storageDirectory.appendingPathComponent(session.id.uuidString, isDirectory: true)
         try fileManager.createDirectory(at: sessionDir, withIntermediateDirectories: true)
 
@@ -21,7 +21,7 @@ final class LocalStore: @unchecked Sendable {
         let encoder = JSONEncoder()
         encoder.dateEncodingStrategy = .iso8601
         let metadataData = try encoder.encode(session)
-        try metadataData.write(to: sessionDir.appendingPathComponent("session.json"))
+        try metadataData.write(to: sessionDir.appendingPathComponent("session.json"), options: .atomic)
 
         // Save screenshots (keys may contain '/' so create parent dirs)
         for (key, data) in screenshots {
@@ -31,6 +31,12 @@ final class LocalStore: @unchecked Sendable {
             try data.write(to: fileURL)
         }
 
+        if let audioFile {
+            let destination = sessionDir.appendingPathComponent("narration.m4a")
+            if audioFile != destination {
+                try Data(contentsOf: audioFile).write(to: destination, options: .atomic)
+            }
+        }
         return sessionDir
     }
 

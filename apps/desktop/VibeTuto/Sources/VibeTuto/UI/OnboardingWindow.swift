@@ -235,79 +235,10 @@ struct OnboardingView: View {
     // MARK: - Step 3: Sign In (Token)
 
     private var signInStep: some View {
-        VStack(spacing: DT.Spacing.lg) {
-            Spacer()
-
-            // Key icon in circle
-            ZStack {
-                Circle()
-                    .fill(DT.Colors.card)
-                    .frame(width: 72, height: 72)
-                    .overlay(
-                        Circle()
-                            .strokeBorder(DT.Colors.border, lineWidth: 1)
-                    )
-
-                Image(systemName: "key.fill")
-                    .font(.system(size: 28))
-                    .foregroundStyle(DT.Colors.accentAmber)
-            }
-
-            VStack(spacing: DT.Spacing.xs) {
-                Text("Connect your account")
-                    .font(DT.Typography.heading)
-                    .foregroundStyle(DT.Colors.textPrimary)
-
-                Text("Paste your API token to upload recordings.\nYou can find it in your account settings.")
-                    .font(DT.Typography.caption)
-                    .foregroundStyle(DT.Colors.textSecondary)
-                    .multilineTextAlignment(.center)
-                    .lineSpacing(3)
-            }
-
-            VStack(spacing: DT.Spacing.sm) {
-                SecureField("Paste your API token", text: $apiToken)
-                    .textFieldStyle(.plain)
-                    .font(DT.Typography.mono)
-                    .foregroundStyle(DT.Colors.textPrimary)
-                    .padding(.horizontal, DT.Spacing.md)
-                    .padding(.vertical, DT.Spacing.sm)
-                    .background(
-                        RoundedRectangle(cornerRadius: DT.Radius.sm)
-                            .fill(DT.Colors.card)
-                    )
-                    .overlay(
-                        RoundedRectangle(cornerRadius: DT.Radius.sm)
-                            .strokeBorder(DT.Colors.border, lineWidth: 1)
-                    )
-                    .frame(maxWidth: 300)
-
-                Button("Get Token from Website") {
-                    openBrowserSettings()
-                }
-                .buttonStyle(.plain)
-                .font(DT.Typography.caption)
-                .foregroundStyle(DT.Colors.accentBlue)
-            }
-
-            Spacer()
-
-            HStack(spacing: DT.Spacing.md) {
-                Button("Skip for now") {
-                    NSApp.keyWindow?.close()
-                }
-                .buttonStyle(GhostButtonStyle())
-
-                Button("Save & Finish") {
-                    UserDefaults.standard.set(apiToken, forKey: "apiToken")
-                    NSApp.keyWindow?.close()
-                }
-                .buttonStyle(RecordButtonStyle())
-                .disabled(apiToken.isEmpty)
-            }
-            .padding(.bottom, DT.Spacing.xxl)
-        }
-        .padding(.horizontal, 48)
+        VStack(spacing: 24) {
+            DesktopConnectView()
+            Button("Close") { NSApp.keyWindow?.close() }
+        }.padding(40)
     }
 
     // MARK: - Actions

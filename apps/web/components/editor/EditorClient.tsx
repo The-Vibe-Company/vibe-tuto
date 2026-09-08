@@ -1,5 +1,7 @@
 'use client';
 
+import { acknowledgeSaved } from '@/lib/utils/pending-save';
+
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { DocEditor, type NewStepType } from './DocEditor';
 import { GenerateDialog } from './GenerateDialog';
@@ -35,6 +37,7 @@ export function EditorClient({
   const [saveStatus, setSaveStatus] = useState<SaveStatus>('saved');
   const [isReordering, setIsReordering] = useState(false);
   const [editorError, setEditorError] = useState<string | null>(null);
+  const savingRef = useRef(false);
   const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   // AI Generation state
@@ -154,8 +157,8 @@ export function EditorClient({
   }, []);
 
   const handleSave = useCallback(async () => {
-    if (!hasChanges) return;
-
+    if (!hasChanges || savingRef.current) return;
+    savingRef.current = true;
     setIsSaving(true);
     setSaveStatus('saving');
 
@@ -209,11 +212,11 @@ export function EditorClient({
 
       await Promise.all(savePromises);
 
-      setPendingChanges({});
-      setPendingDescriptions({});
-      setPendingAnnotations({});
-      setPendingUrls({});
-      setPendingShowUrls({});
+      setPendingChanges(current => acknowledgeSaved(current, pendingChanges));
+      setPendingDescriptions(current => acknowledgeSaved(current, pendingDescriptions));
+      setPendingAnnotations(current => acknowledgeSaved(current, pendingAnnotations));
+      setPendingUrls(current => acknowledgeSaved(current, pendingUrls));
+      setPendingShowUrls(current => acknowledgeSaved(current, pendingShowUrls));
       setSaveStatus('saved');
       setEditorError(null);
     } catch (error) {
@@ -221,9 +224,14 @@ export function EditorClient({
       setSaveStatus('error');
       setEditorError('Some changes could not be saved. Check your connection and retry.');
     } finally {
+      savingRef.current = false;
       setIsSaving(false);
     }
   }, [pendingChanges, pendingDescriptions, pendingAnnotations, pendingUrls, pendingShowUrls, hasChanges]);
+
+  useEffect(() => {
+    if (!isSaving && hasChanges && saveStatus === 'saved') setSaveStatus('unsaved');
+  }, [isSaving, hasChanges, saveStatus]);
 
   // Handle step reordering via drag & drop
   const handleReorderSteps = useCallback(async (newSteps: StepWithSignedUrl[]) => {
@@ -696,7 +704,7 @@ export function EditorClient({
         clearTimeout(debounceTimerRef.current);
       }
     };
-  }, [pendingChanges, pendingDescriptions, pendingAnnotations, pendingUrls, pendingShowUrls, hasChanges, handleSave]);
+  }, [pendingChanges, pendingDescriptions, pendingAnnotations, pendingUrls, pendingShowUrls, hasChanges, handleSave, isSaving]);
 
   // Keyboard shortcuts
   useEffect(() => {
